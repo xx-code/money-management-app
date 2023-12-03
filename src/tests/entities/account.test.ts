@@ -1,4 +1,4 @@
-import { Account } from '../../entities/Account';
+import { Account } from '../../entities/account';
 
 describe('Test Account module', () => {
     test('Creation Account', () => {
