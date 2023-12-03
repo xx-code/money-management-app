@@ -1,0 +1,18 @@
+{
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules"],
+    //"extends": "@tsconfig/node20/tsconfig.json",
+    "compilerOptions": {
+        "lib": ["es2023"],
+        "module": "node16",
+        "target": "es2022",
+        "checkJs": true,
+        "allowJs": true,
+        "outDir": "dist",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "moduleResolution": "node16"
+      }
+  }
