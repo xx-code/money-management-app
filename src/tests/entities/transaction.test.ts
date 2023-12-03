@@ -17,7 +17,8 @@ describe('Test Transaction module', () => {
         let transaction = new Transaction(account, title_transaction, type_transaction, desc_transaction, price_transaction, date_transaction);
 
         expect(transaction.get_account().get_title()).toBe(account.get_title());
-        expect(transaction.get_price()).toBe(transaction);
+        expect(transaction.get_price()).toBe(price_transaction);
+        expect(transaction.get_date()).toBe(date_transaction);
     })
     test('Add new transaction spend', () => {
         let title_transaction = 'Internet'
