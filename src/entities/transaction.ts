@@ -52,18 +52,24 @@ export class DebitOperation implements TypeTransaction {
 
 
 export class Transaction {
+    private account: Account;
     private type: TypeTransaction;
     private title: string;
     private description: string;
     private price: number;
     private date: Date;
 
-    constructor(title: string, type: TypeTransaction, description: string, price: number, date: Date) {
+    constructor(account: Account, title: string, type: TypeTransaction, description: string, price: number, date: Date) {
+        this.account = account;
         this.title = title;
         this.type = type;
         this.description = description;
         this.price = price;
         this.date = date;
+    }
+
+    set_account(account: Account) {
+        this.account = account;
     }
 
     set_title(title: string): void {
@@ -81,6 +87,10 @@ export class Transaction {
 
     set_date(date: Date): void {
         this.date = date;
+    }
+
+    get_account(): Account {
+        return this.account;
     }
 
     get_title(): string {
