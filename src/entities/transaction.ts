@@ -1,26 +1,12 @@
 import { Account } from './account';
-
-export enum Category {
-    Housing,
-    Healthcare,
-    Transportation,
-    Food,
-    Grocery,
-    Transfert,
-    Subscriptions,
-    Debts,
-    Divers,
-    Gift,
-    Salary,
-    Cash,
-}
+import { Category } from './category';
 
 interface TypeTransaction {
-    get_price(price: number): number;
+    display_price_transaction(price: number): number;
     get_category(): Category;
 }
 
-export class CreditOperation implements TypeTransaction {
+export class CreditTransaction implements TypeTransaction {
     category: Category;
     constructor(category: Category) {
         this.category = category;
@@ -30,12 +16,12 @@ export class CreditOperation implements TypeTransaction {
         return this.category;
     }
 
-    get_price(price: number): number {
+    display_price_transaction(price: number): number {
         return -1*Math.abs(price);
     }
 }
 
-export class DebitOperation implements TypeTransaction {
+export class DebitTransaction implements TypeTransaction {
     category: Category;
     constructor(category: Category) {
         this.category = category;
@@ -45,7 +31,7 @@ export class DebitOperation implements TypeTransaction {
         return this.category;
     }
 
-    get_price(price: number): number {
+    display_price_transaction(price: number): number {
         return Math.abs(price);
     }
 }
@@ -95,7 +81,7 @@ export class Transaction {
     }
 
     get_price(): number {
-        return this.type.get_price(this.price);
+        return this.type.display_price_transaction(this.price);
     }
 
     get_category(): Category {
