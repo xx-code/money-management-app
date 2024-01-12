@@ -1,76 +1,151 @@
-import { AccountUseCase, AccountGateaway, AccountPresenter, RequestCreationDsAccount, RequestCreationAccount, ResponseAccount } from '../../interactions/accounts'; 
+import { Crypto, CreationAccountUseCase } from '../../interactions/account/creationAccountUseCase';
+import { AccountRepository, dbAccount, dbAccountResponse } from '../../interactions/repositories/accountRepository';
+import { ValidationError } from '../../interactions/errors/validationError';
+import { GetAccountUseCase } from '../../interactions/account/getAccountUseCase';
+import { NotFoundError } from '../../interactions/errors/notFoundError';
+import { AccountDisplay } from '../../entities/account';
+import { GetAllAccountUseCase } from '../../interactions/account/getAllAccountUseCase';
+import { DeleteAccountUseCase } from '../../interactions/account/deleteAccountUseCase';
 
-class MockAccountRegister implements AccountGateaway {
-    arr = new Map<string, ResponseAccount>();
+const replyRepositoryMock: AccountRepository = {
+    save: jest.fn().mockReturnValue('new id'),
+    exist: jest.fn().mockReturnValue(false),
+    get: jest.fn().mockReturnValue({
+            id: 'new id',
+            title: 'titre value',
+            credit_value: 6600,
+            credit_limit: 1000,
+            balance: 0}),
+    get_all: jest.fn().mockReturnValue(
+        [
+            {
+                id: 'new id',
+                title: 'titre value',
+                credit_value: 6600,
+                credit_limit: 1000,
+                balance: 0
+            },
+            {
+                id: 'new id',
+                title: 'titre value',
+                credit_value: 6600,
+                credit_limit: 1000,
+                balance: 0
+            }   
+        ]
+    ),
+    delete: jest.fn().mockReturnValue(true),
+    updated: jest.fn().mockReturnValue({
+        id: 'new id',
+        title: 'titre value',
+        credit_value: 6600,
+        credit_limit: 1000,
+        balance: 0
+    })
+}
 
-    save_account(request: RequestCreationDsAccount): ResponseAccount {
-        let res = new ResponseAccount(
-            request.id,
-            request.account_name,
-            request.account_init_transaction
-        );
-        this.arr.set(request.id, res);
-        return res
+class MockCrypto implements Crypto {
+    generate_uuid_to_string(): string {
+        return 'new id';
     }
+}
 
-    get_account(id: string): ResponseAccount {
-        return this.arr.get(id)!;
-    }
 
-    get_all_account(): ResponseAccount[] {
-        let results = [];
+describe('Creation Account Use Case', () => {
+    let repo: AccountRepository = {
+        save: jest.fn().mockReturnValue('new id'),
+        exist: jest.fn().mockReturnValue(false),
+        get:jest.fn(),
+        get_all:jest.fn(),
+        delete: jest.fn(),
+        updated: jest.fn()
+    };
+    
+    let crypto = new MockCrypto();
 
-        for (let val of this.arr.values()) {
-            results.push(val);
+    let use_case = new CreationAccountUseCase(repo, crypto);
+    
+    it('Test error titel creation', () => {
+        try { 
+            use_case.execute({
+                title: ' ',
+                credit_value: 0,
+                credit_limit: 0
+            });
+        } catch(err) {
+            expect(err).toStrictEqual(new ValidationError('Title of account is empty'));
         }
-
-        return results;
-    }
-}
-
-class MockPresenter implements AccountPresenter {
-    get_account(account: ResponseAccount){
-        return account;     
-    }
-
-    get_all_account(accounts: ResponseAccount[]) {
-        return accounts;
-    }
-}
-
-describe('Test interactions creation new account ', () => {
-    let register = new MockAccountRegister();
-    let presenter = new MockPresenter();
-
-    let account = new AccountUseCase(register, presenter);
-    test('creation accounts with base transaction', () => {
-        let request = new RequestCreationAccount(
-            "Base",
-            6600,
-            1500,
-            2000
-        );
-
-        let true_response = new ResponseAccount('0', 'Base', 2000);
-        let response = account.create_new_account(request);
-
-        expect(true_response.account_balance, response.account_balance);
-        expect(true_response.account_name, response.account_name);
     });
 
-    test('creation account without base transaction', () => {
-        let request = new RequestCreationAccount(
-            "Base",
-            6600,
-            0,
-            null
-        );
-
-        let true_response = new ResponseAccount('0', 'Base', 0);
-
-        let response = account.create_new_account(request);
-
-        expect(true_response.account_balance, response.account_balance);
-        expect(true_response.account_name, response.account_name);
+    it('Test error credit value', () => {
+        try {
+            use_case.execute({
+                title: 'value',
+                credit_limit: -4,
+                credit_value: 0
+            });
+        } catch(err) {
+            expect(err).toStrictEqual(new ValidationError('Credit limit must be greater than 0'));
+        }
     });
-})
+
+    it('Test error credit limit', () => {
+        try {
+            use_case.execute({
+                title: 'value',
+                credit_value: -4,
+                credit_limit: 0
+            });
+        } catch(err) {
+            expect(err).toStrictEqual(new ValidationError('Credit value must be greater than 0'));
+        }
+    });
+
+});
+
+describe('Get Account Use Case', () => {
+    let mock_rest: dbAccountResponse = {id: '1', title: 'trr', credit_limit: 0, credit_value: 0, balance: 0};
+    let repo: AccountRepository = {
+        save: jest.fn(),
+        exist: jest.fn().mockReturnValue(false),
+        get:jest.fn().mockReturnValue(null),
+        get_all:jest.fn().mockReturnValue([mock_rest]),
+        delete: jest.fn(),
+        updated: jest.fn()
+    };
+    
+    let use_case = new GetAccountUseCase(repo);
+    it('Test not found account', () => {
+        try {
+            use_case.execute('8');
+        } catch(err) {
+            expect(err).toStrictEqual(new NotFoundError('Account Not Found'));
+        }
+    });
+
+    let use_case2 = new GetAllAccountUseCase(repo);
+    it('Test get all account', () => {
+        let response = use_case2.execute() ;
+        expect(response.length).toBe(1);
+    });
+});
+
+describe('Delete Account Use case', () => {
+    let repo: AccountRepository = {
+        save: jest.fn(),
+        exist: jest.fn().mockReturnValue(false),
+        get: jest.fn().mockReturnValue(null),
+        get_all: jest.fn().mockReturnValue([]),
+        delete: jest.fn(),
+        updated: jest.fn()
+    };
+
+    let use_case = new DeleteAccountUseCase(repo);
+    it('Test not found account', () => {
+        try {
+            use_case.execute('9');
+        } catch(err) {
+            expect(err).toStrictEqual(new NotFoundError('Account Not Found'));
+        }
+    })
+});

@@ -1,4 +1,4 @@
-export type Category = {
+export type CategoryData = {
     title: string;
     icon: string;
 }
