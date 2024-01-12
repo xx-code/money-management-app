@@ -2,14 +2,6 @@ import { AccountDisplay } from "../../entities/account";
 import { NotFoundError } from "../errors/notFoundError";
 import { AccountRepository } from "../repositories/accountRepository";
 
-type Response = {
-    id: string;
-    title: string;
-    credit_value: number;
-    credit_limit: number;
-    balance: number;
-}
-
 interface IGetAccountUseCase {    
     execute(id: string): AccountDisplay;
 }
