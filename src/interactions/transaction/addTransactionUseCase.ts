@@ -1,10 +1,9 @@
 import { Type } from "../../entities/transaction";
-import { Crypto } from "../account/creationAccountUseCase";
 import { ValidationError } from "../errors/validationError";
 import { TransactionRepository } from "../repositories/transactionRepository";
+import { Crypto } from '../utils/cryto';
 
 export type Request = {
-    id: string;
     account_ref: string;
     price: number;
     category_ref: string;

@@ -16,7 +16,7 @@ export class DeleteTransactionUseCase implements IDeleteTransactionUseCase {
         try {
             let transaction = this.repository.get(id);
             if (transaction == null) {
-                throw new NotFoundError('Transaction no found');
+                throw new NotFoundError('Transaction not found');
             }
 
             let response = this.repository.delete(id);

@@ -1,4 +1,5 @@
-import { Crypto, CreationAccountUseCase } from '../../interactions/account/creationAccountUseCase';
+import { CreationAccountUseCase } from '../../interactions/account/creationAccountUseCase';
+import { Crypto } from '../../interactions/utils/cryto';
 import { AccountRepository, dbAccount, dbAccountResponse } from '../../interactions/repositories/accountRepository';
 import { ValidationError } from '../../interactions/errors/validationError';
 import { GetAccountUseCase } from '../../interactions/account/getAccountUseCase';

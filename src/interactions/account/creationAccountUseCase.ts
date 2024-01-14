@@ -1,14 +1,11 @@
 import { ValidationError } from '../errors/validationError';
 import { AccountRepository } from '../repositories/accountRepository';
+import { Crypto } from '../utils/cryto';
 
 export type Request = {
     title: string;
     credit_value: number;
     credit_limit: number;
-}
-
-export interface Crypto {
-    generate_uuid_to_string(): string;
 }
 
 interface ICreationAccountUseCase {
