@@ -10,7 +10,7 @@ export interface ICreationCategoryUseCase {
     execute(request: Request): string;
 }
 
-export class CreationTagUseCase implements ICreationCategoryUseCase {
+export class CreationCategoryUseCase implements ICreationCategoryUseCase {
     private repository: CategoryRepository;
 
     constructor(repo: CategoryRepository) {

@@ -10,7 +10,7 @@ export interface IGetAllUseCase {
     execute(): Array<Category>;
 }
 
-export class GetAllUseCase implements IGetAllUseCase {
+export class GetAllCategoryUseCase implements IGetAllUseCase {
     private repository: CategoryRepository;
 
     constructor(repo: CategoryRepository) {

@@ -1,4 +1,4 @@
-import { ValidationError } from "../errors/validationError";
+import { NotFoundError } from "../errors/notFoundError";
 import { CategoryRepository } from "../repositories/categoryRepository";
 
 export interface IDeleteCategoryUseCase {
@@ -17,7 +17,7 @@ export class DeleteCategoryUseCase implements IDeleteCategoryUseCase {
             let Category = this.repository.get(title);
 
             if (Category == null) {
-                throw new ValidationError('Category not found');
+                throw new NotFoundError('Category not found');
             }
 
             let response = this.repository.delete(title);

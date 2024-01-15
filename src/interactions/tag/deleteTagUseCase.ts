@@ -1,4 +1,4 @@
-import { ValidationError } from "../errors/validationError";
+import { NotFoundError } from "../errors/notFoundError";
 import { TagRepository } from "../repositories/tagRepository";
 
 export interface IDeleteTagUseCase {
@@ -17,7 +17,7 @@ export class DeleteTagUseCase implements IDeleteTagUseCase {
             let tag = this.repository.get(title);
 
             if (tag == null) {
-                throw new ValidationError('Tag not found');
+                throw new NotFoundError('Tag not found');
             }
 
             let response = this.repository.delete(title);

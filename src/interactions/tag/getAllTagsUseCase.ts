@@ -5,7 +5,7 @@ export interface IGetAllUseCase {
     execute(): Array<Tag>;
 }
 
-export class GetAllUseCase implements IGetAllUseCase {
+export class GetAllTagUseCase implements IGetAllUseCase {
     private repository: TagRepository;
 
     constructor(repo: TagRepository) {
