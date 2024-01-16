@@ -1,5 +1,6 @@
 import { ValidationError } from "../errors/validationError";
 import { TagRepository } from "../repositories/tagRepository";
+import { is_empty } from "../utils/verify_empty_value";
 
 export interface ICreationTagUseCase {
     execute(title: string): string;
@@ -14,7 +15,7 @@ export class CreationTagUseCase implements ICreationTagUseCase {
 
     execute(title: string): string {
         try {
-            if (title.replace(' ', '').length == 0) {
+            if (is_empty(title)) {
                 throw new ValidationError('Title field empty');
             }
 

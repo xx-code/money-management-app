@@ -2,6 +2,7 @@ import { BudgetWithCategoryDisplay, BudgetWithTagDisplay, Period } from "../../e
 import { NotFoundError } from "../errors/notFoundError";
 import { ValidationError } from "../errors/validationError";
 import { BudgetRepository } from "../repositories/budgetRepository";
+import { is_empty } from "../utils/verify_empty_value";
 
 export type ReqeustUpdateTagBudget = {
     id: string;
@@ -41,7 +42,7 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
             }
 
             if (request.title != null) {
-                if (request.title.replace(' ', '').length == 0) {
+                if (is_empty(request.title)) {
                     throw new ValidationError('Title field is empty');
                 }
             }

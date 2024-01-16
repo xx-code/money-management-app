@@ -2,6 +2,7 @@ import { TransactionDisplay, Type } from "../../entities/transaction";
 import { NotFoundError } from "../errors/notFoundError";
 import { ValidationError } from "../errors/validationError";
 import { TransactionRepository } from "../repositories/transactionRepository";
+import { is_empty } from "../utils/verify_empty_value";
 
 export type RequestUpdateTransactionUseCase = {
     id: string;
@@ -33,19 +34,19 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
             }
 
             if (request.description != null) {
-                if (request.description.replace(' ', '').length == 0) {
+                if (is_empty(request.description)) {
                     throw new ValidationError('Description ref field is emtpy');
                 }
             }
 
             if (request.category_ref != null) {
-                if (request.category_ref.replace(' ', '').length == 0) {
+                if (is_empty(request.category_ref)) {
                     throw new ValidationError('Category ref field is empty');
                 }
             }
 
             if (request.tag_ref != null) {
-                if (request.tag_ref.replace(' ', '').length == 0) {
+                if (is_empty(request.tag_ref)) {
                     throw new ValidationError('Tag ref field is empty');
                 } 
             }

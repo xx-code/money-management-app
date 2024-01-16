@@ -1,5 +1,6 @@
 import { ValidationError } from "../errors/validationError";
 import { CategoryRepository } from "../repositories/categoryRepository";
+import { is_empty } from "../utils/verify_empty_value";
 
 export type Request = {
     title: string,
@@ -20,11 +21,11 @@ export class CreationCategoryUseCase implements ICreationCategoryUseCase {
     execute(request: Request): string {
         try {
 
-            if (request.title.replace(' ', '').length == 0) {
+            if (is_empty(request.title)) {
                 throw new ValidationError('Title field empty');
             }
 
-            if (request.icon.replace(' ', '').length == 0) {
+            if (is_empty(request.icon)) {
                 throw new ValidationError('Icon field empty');
             }
 

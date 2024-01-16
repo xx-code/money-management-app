@@ -1,6 +1,7 @@
 import { ValidationError } from '../errors/validationError';
 import { AccountRepository } from '../repositories/accountRepository';
 import { Crypto } from '../utils/cryto';
+import { is_empty } from '../utils/verify_empty_value';
 
 export type Request = {
     title: string;
@@ -25,7 +26,7 @@ export class CreationAccountUseCase implements ICreationAccountUseCase {
         try {
             let id = this.crypto.generate_uuid_to_string();
 
-            if (request.title.replace(' ', '').length == 0) {
+            if (is_empty(request.title)) {
                 throw new ValidationError('Title of account is empty');
             }
 

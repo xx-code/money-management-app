@@ -2,6 +2,7 @@ import { Period } from "../../entities/budget";
 import { ValidationError } from "../errors/validationError";
 import { BudgetRepository } from "../repositories/budgetRepository";
 import { Crypto } from "../utils/cryto";
+import { is_empty } from "../utils/verify_empty_value";
 
 export type CreationBudgetCategoryUseCaseRequest = {
     title: string;
@@ -80,7 +81,7 @@ export class CreationBudgetTagUseCase implements ICreationBudgetUseCase {
 
     execute(request:CreationBudgetTagUseCaseRequest): string {
         try {
-            if (request.title.replace(' ', '').length == 0) {
+            if (is_empty(request.title)) {
                 throw new ValidationError('Title field is empty');
             }
 

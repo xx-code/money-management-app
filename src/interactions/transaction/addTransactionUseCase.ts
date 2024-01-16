@@ -2,6 +2,7 @@ import { Type } from "../../entities/transaction";
 import { ValidationError } from "../errors/validationError";
 import { TransactionRepository } from "../repositories/transactionRepository";
 import { Crypto } from '../utils/cryto';
+import { is_empty } from "../utils/verify_empty_value";
 
 export type RequestAddTransactionUseCase = {
     account_ref: string;
@@ -30,21 +31,21 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
         try {
             let new_id = this.crypto.generate_uuid_to_string();
 
-            if (request.account_ref.replace(' ', '').length == 0) {
+            if (is_empty(request.account_ref)) {
                 throw new ValidationError('Account ref field is empty');
             }
 
-            if (request.category_ref.replace(' ', '').length == 0) {
+            if (is_empty(request.category_ref)) {
                 throw new ValidationError('Category ref field is empty');
             }
 
             if (request.tag_ref != null) {
-               if (request.tag_ref.replace(' ', '').length == 0) {
+               if (is_empty(request.tag_ref)) {
                     throw new ValidationError('Tag ref field is empty');
                 } 
             }
 
-            if (request.description.replace(' ', '').length == 0) {
+            if (is_empty(request.description)) {
                 throw new ValidationError('Description ref field is emtpy');
             }
 
