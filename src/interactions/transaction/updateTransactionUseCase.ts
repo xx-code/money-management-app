@@ -1,8 +1,9 @@
 import { TransactionDisplay, Type } from "../../entities/transaction";
 import { NotFoundError } from "../errors/notFoundError";
+import { ValidationError } from "../errors/validationError";
 import { TransactionRepository } from "../repositories/transactionRepository";
 
-export type Request = {
+export type RequestUpdateTransactionUseCase = {
     id: string;
     tag_ref: string|null;
     category_ref: string|null;
@@ -13,7 +14,7 @@ export type Request = {
 }
 
 interface IUpdateTransactionUseCase {
-    execute(request: Request): TransactionDisplay
+    execute(request: RequestUpdateTransactionUseCase): TransactionDisplay
 }
 
 export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
@@ -23,11 +24,36 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
         this.repository = repo;
     }
 
-    execute(request: Request): TransactionDisplay {
+    execute(request: RequestUpdateTransactionUseCase): TransactionDisplay {
         try {
             let transaction = this.repository.get(request.id);
-            if (transaction != null) {
+            
+            if (transaction == null) {
                 throw new NotFoundError('Transaction not found');
+            }
+
+            if (request.description != null) {
+                if (request.description.replace(' ', '').length == 0) {
+                    throw new ValidationError('Description ref field is emtpy');
+                }
+            }
+
+            if (request.category_ref != null) {
+                if (request.category_ref.replace(' ', '').length == 0) {
+                    throw new ValidationError('Category ref field is empty');
+                }
+            }
+
+            if (request.tag_ref != null) {
+                if (request.tag_ref.replace(' ', '').length == 0) {
+                    throw new ValidationError('Tag ref field is empty');
+                } 
+            }
+
+            if (request.price != null) {
+                if (request.price < 0) {
+                    throw new ValidationError('Price must be greather to 0');
+                }
             }
 
             let response = this.repository.update({

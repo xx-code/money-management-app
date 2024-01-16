@@ -3,7 +3,7 @@ import { ValidationError } from "../errors/validationError";
 import { TransactionRepository } from "../repositories/transactionRepository";
 import { Crypto } from '../utils/cryto';
 
-export type Request = {
+export type RequestAddTransactionUseCase = {
     account_ref: string;
     price: number;
     category_ref: string;
@@ -14,7 +14,7 @@ export type Request = {
 }
 
 export interface IAddTransactionUseCase {
-    execute(request: Request): string;
+    execute(request: RequestAddTransactionUseCase): string;
 }
 
 export class AddTransactionUseCase implements IAddTransactionUseCase {
@@ -26,7 +26,7 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
         this.crypto = crypto;
     }
 
-    execute(request: Request): string {
+    execute(request: RequestAddTransactionUseCase): string {
         try {
             let new_id = this.crypto.generate_uuid_to_string();
 
@@ -38,12 +38,18 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
                 throw new ValidationError('Category ref field is empty');
             }
 
+            if (request.tag_ref != null) {
+               if (request.tag_ref.replace(' ', '').length == 0) {
+                    throw new ValidationError('Tag ref field is empty');
+                } 
+            }
+
             if (request.description.replace(' ', '').length == 0) {
                 throw new ValidationError('Description ref field is emtpy');
             }
 
             if (request.price < 0) {
-                throw new ValidationError('Price must be greather or equal to 0');
+                throw new ValidationError('Price must be greather to 0');
             }
             
             let response = this.repository.save({

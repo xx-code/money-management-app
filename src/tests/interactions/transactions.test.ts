@@ -7,6 +7,7 @@ import { TransactionDisplay, Type } from '../../entities/transaction';
 import { GetTransactionUseCase } from '../../interactions/transaction/getTransactionUseCase';
 import { GetPaginationTransaction } from '../../interactions/transaction/getPaginationTransactionUseCase';
 import { DeleteTransactionUseCase } from '../../interactions/transaction/deleteTransactionUseCase';
+import { UpdateTransactionUseCase } from '../../interactions/transaction/updateTransactionUseCase';
 
 class MockCrypto implements Crypto {
     generate_uuid_to_string(): string {
@@ -59,6 +60,22 @@ describe('Creation Account Use Case', () => {
         }
     });
 
+    it('Test error category empty', () => {
+        try {
+            use_case.execute({
+                description: 'df',
+                date: new Date("vot, tot"),
+                category_ref: 'dsfd',
+                account_ref: 'df',
+                tag_ref: ' ',
+                price: 0,
+                type: Type.Credit
+            });
+        } catch(err) {
+            expect(err).toStrictEqual(new ValidationError('Tag ref field is empty'));
+        }
+    });
+
     it('Test error price', () => {
         try {
             use_case.execute({
@@ -71,7 +88,7 @@ describe('Creation Account Use Case', () => {
                 type: Type.Credit
             });
         } catch(err) {
-            expect(err).toStrictEqual(new ValidationError('Price must be greather or equal to 0'));
+            expect(err).toStrictEqual(new ValidationError('Price must be greather to 0'));
         }
     });
 
@@ -150,6 +167,107 @@ describe('Get Account Use Case', () => {
         });
 
         expect(response.length).toBe(1)
+    });
+});
+
+describe('Update use case', () => {
+    let mock_rest: TransactionDisplay = {id: 'df', description: 'trr', date: new Date('gd'), tag_ref: 'df', category_ref: 'df', price: 45, account_ref: 'dff', type: 'Credit', };
+    let repo: TransactionRepository = {
+        save: jest.fn(),
+        get:jest.fn().mockReturnValue(null),
+        get_paginations:jest.fn().mockReturnValue([mock_rest]),
+        delete: jest.fn(),
+        update: jest.fn()
+    };
+
+    let use_case = new UpdateTransactionUseCase(repo);
+    it('test no found transaction', () => {
+        try {
+            use_case.execute({
+                id: 'df',
+                tag_ref: null,
+                category_ref: null,
+                date: null,
+                description: null,
+                price: null,
+                type: null
+            });
+        } catch (error) {
+            expect(error).toStrictEqual(new NotFoundError('Transaction not found'));
+        }
+    });
+    
+    let repo2: TransactionRepository = {
+        save: jest.fn(),
+        get:jest.fn().mockReturnValue(mock_rest),
+        get_paginations:jest.fn().mockReturnValue([mock_rest]),
+        delete: jest.fn(),
+        update: jest.fn()
+    };
+
+    let use_case2 = new UpdateTransactionUseCase(repo2);
+    it('Test description', () => {
+        try {
+            use_case2.execute({
+                id: 'df',
+                tag_ref: null,
+                category_ref: null,
+                date: null,
+                description: ' ',
+                price: null,
+                type: null
+            });
+        } catch (error) {
+            expect(error).toStrictEqual(new ValidationError('Description ref field is emtpy'));
+        }
+    });
+
+    it('test price error', () => {
+        try {
+            use_case2.execute({
+                id: 'df',
+                tag_ref: null,
+                category_ref: null,
+                date: null,
+                description: null,
+                price: -56,
+                type: null
+            });
+        } catch (error) {
+            expect(error).toStrictEqual(new ValidationError('Price must be greather to 0'));
+        }
+    });
+
+    it('category ref error', () => {
+        try {
+            use_case2.execute({
+                id: 'df',
+                tag_ref: null,
+                category_ref: ' ',
+                date: null,
+                description: null,
+                price: null,
+                type: null
+            });
+        } catch (error) {
+            expect(error).toStrictEqual(new ValidationError('Category ref field is empty'));
+        }
+    });
+
+    it('tag ref error', () => {
+        try {
+            use_case2.execute({
+                id: 'df',
+                tag_ref: ' ',
+                category_ref: null,
+                date: null,
+                description: null,
+                price: null,
+                type: null
+            });
+        } catch (error) {
+            expect(error).toStrictEqual(new ValidationError('Tag ref field is empty'));
+        }
     });
 });
 
