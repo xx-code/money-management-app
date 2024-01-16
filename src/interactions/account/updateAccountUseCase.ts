@@ -1,33 +1,51 @@
 import { AccountRepository } from "../repositories/accountRepository";
 import { AccountDisplay } from "../../entities/account";
 import { NotFoundError } from "../errors/notFoundError";
+import { ValidationError } from "../errors/validationError";
 
-type Request = {
+type RequestUpdateAccountUseCase = {
     id: string;
     title: string|null;
     credit_value: number|null;
     credit_limit: number|null;
-    balance: number|null;
 }
 
-interface IUpdateAccountFactoryUseCase {
-    execute(request: Request): AccountDisplay
+interface IUpdateAccountUseCase {
+    execute(request: RequestUpdateAccountUseCase): AccountDisplay
 }
 
 
-export class UpdateAccountUseCase implements IUpdateAccountFactoryUseCase {
+export class UpdateAccountUseCase implements IUpdateAccountUseCase {
     private repository: AccountRepository;
     
     constructor(repo: AccountRepository) {
         this.repository = repo;
     }
 
-    execute(request: Request): AccountDisplay {
+    execute(request: RequestUpdateAccountUseCase): AccountDisplay {
         try {
             let account = this.repository.get(request.id);
 
             if (account == null) {
                 throw new NotFoundError('Account No Found');
+            }
+
+            if (request.title != null) {
+                if (request.title.replace(' ', '').length == 0) {
+                    throw new ValidationError('Title of account is empty');
+                }
+            }
+
+            if (request.credit_limit != null) {
+                if (request.credit_limit < 0) {
+                    throw new ValidationError('Credit limit must be greater than 0');
+                }
+            } 
+
+            if (request.credit_value != null) {
+                if (request.credit_value < 0) {
+                    throw new ValidationError('Credit value must be greater than 0')
+                }
             }
 
             let response = this.repository.updated({
