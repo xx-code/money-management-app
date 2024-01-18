@@ -7,6 +7,7 @@ export type Request = {
     page: number;
     size: number;
     sort_by: string|null;
+    account_filter: Array<string>;
     category_filter: Array<string>;
     tag_filter: Array<string>;
 }
@@ -39,6 +40,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
             }
 
             let filters: dbFilter = {
+                accounts: request.account_filter, 
                 tags: request.tag_filter,
                 categories: request.category_filter
             };

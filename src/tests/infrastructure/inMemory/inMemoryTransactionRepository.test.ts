@@ -48,7 +48,7 @@ describe('Transaction in memory', () => {
 
     it('Verify if size is correct', () => {
         try {
-            transactions_repository.get_paginations(2, 10, null, {categories: [], tags: []});
+            transactions_repository.get_paginations(2, 10, null, {accounts: [], categories: [], tags: []});
         } catch(err) {
             expect(err).toStrictEqual(new PaginationError('This page don\'t exist'));
         }
@@ -62,12 +62,12 @@ describe('Transaction in memory', () => {
         type: TransactionType['Credit'].toString(),
         date: new Date('2024-01-17'),
         description: 'Init',
-        price: 2937.16
+        price: 200
     };
 
     it('test get paginations', () => {
         transactions_repository.save(value);
-        let response = transactions_repository.get_paginations(1, 10, null, {categories: [], tags: []});
+        let response = transactions_repository.get_paginations(1, 10, null, {accounts: [], categories: [], tags: []});
 
         expect(response.transactions.length).toBe(2);
     });
@@ -94,24 +94,30 @@ describe('Transaction in memory', () => {
         let respone = transactions_repository.delete('id-transaction-2');
 
         expect(respone).toBe(true);
-        expect(transactions_repository.get_paginations(1, 10, null, {categories: [], tags: []}).transactions.length).toBe(1);
+        expect(transactions_repository.get_paginations(1, 10, null, {accounts: [], categories: [], tags: []}).transactions.length).toBe(1);
     });
 
     it('Verify pagination system', () => {
         transactions_repository.save(value);
 
-        let response = transactions_repository.get_paginations(1, 1, null, {categories: [], tags: []});
+        let response = transactions_repository.get_paginations(1, 1, null, {accounts: [], categories: [], tags: []});
 
         expect(response.current_page).toBe(1);
         expect(response.max_page).toBe(2);
 
-        response = transactions_repository.get_paginations(2, 1, null, {categories: [], tags: []});
+        response = transactions_repository.get_paginations(2, 1, null, {accounts: [], categories: [], tags: []});
 
         expect(response.transactions[0].id).toBe('id-transaction-2');
     });
 
+    it('test balance', () => {
+        let response = transactions_repository.get_balance({accounts: ['id-perso-va'], categories: [], tags: []});
+
+        expect(response).toBe(2737.16);
+    });
+
     it('test filtering', () => {
-        let response = transactions_repository.get_paginations(1, 10, null, {categories: ['Food'], tags: []});
+        let response = transactions_repository.get_paginations(1, 10, null, {accounts: [], categories: ['Food'], tags: []});
 
         expect(response.transactions[0].id).toBe('id-transaction-2');
 
@@ -126,7 +132,7 @@ describe('Transaction in memory', () => {
             price: 2937.16
         });
 
-        response = transactions_repository.get_paginations(1, 10, null, {categories: ['Food'], tags: ['tag']});
+        response = transactions_repository.get_paginations(1, 10, null, {accounts: [], categories: ['Food'], tags: ['tag']});
 
         expect(response.transactions.length).toBe(1);
     });

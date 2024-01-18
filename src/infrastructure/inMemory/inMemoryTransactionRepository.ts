@@ -58,6 +58,10 @@ export class InMemoryTransactionRepository implements TransactionRepository {
             }
         }
 
+        if (filter_by.accounts.length > 0) {
+            transactions = transactions.filter((transaction) => filter_by.accounts.includes(transaction.account_ref));
+        }
+
         let categories: string[] = []
         for(let cat_ref of filter_by.categories) {
             let categ = this.category_repository.get(cat_ref);
@@ -159,6 +163,43 @@ export class InMemoryTransactionRepository implements TransactionRepository {
             tag: this.db.get(request.id)!.tag_ref,
             type: this.db.get(request.id)!.type
         }
+    }
+
+    get_balance(filter_by: dbFilter): number {
+        let transactions = Array.from(this.db.values());
+
+        if (filter_by.accounts.length > 0) {
+            transactions = transactions.filter((transaction) => filter_by.accounts.includes(transaction.account_ref));
+        }
+
+        let categories: string[] = []
+        for(let cat_ref of filter_by.categories) {
+            let categ = this.category_repository.get(cat_ref);
+            if (categ != null ) {
+                categories.push(categ.title);
+            }
+        }
+        if (categories.length > 0) {
+            transactions = transactions.filter((transaction) => categories.includes(transaction.category_ref));
+        }
+
+        let tags: string[] = []
+        for(let tag_ref of filter_by.tags) {
+            let tag = this.tag_repository.get(tag_ref);
+            if (tag != null) {
+                tags.push(tag.title);
+            }
+        }
+        if (tags.length > 0) {
+            transactions = transactions.filter((transaction) => transaction.tag_ref != null ? tags.includes(transaction.tag_ref) : true);
+        }
+
+        let balance_credit = 0;
+        for(let trans of transactions) {
+            balance_credit += trans.type == 'Credit' ? -trans.price : trans.price;
+        }
+
+        return balance_credit;
     }
 
     private get_category_info(id: string): dbCategory | null {

@@ -1,4 +1,5 @@
 export type dbFilter = {
+    accounts: Array<string>;
     categories: Array<string>;
     tags: Array<string>;
 }
@@ -46,6 +47,7 @@ export interface TransactionRepository {
     save(request: dbTransaction): string;
     get(id: string): dbTransactionResponse|null;
     get_paginations(page:number, size: number, sort_by: string|null, filter_by: dbFilter): dbTransactionPaginationResponse;
+    get_balance(filter_by: dbFilter): number;
     delete(id: string): boolean;
     update(request: dbTransactionUpdateRequest): dbTransactionResponse;
 }

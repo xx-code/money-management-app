@@ -20,6 +20,7 @@ describe('Creation Account Use Case', () => {
         save: jest.fn().mockReturnValue('new id'),
         get:jest.fn(),
         get_paginations:jest.fn(),
+        get_balance: jest.fn().mockReturnValue(0),
         delete: jest.fn(),
         update: jest.fn()
     };
@@ -114,7 +115,8 @@ describe('Get Account Use Case', () => {
     let repo: TransactionRepository = {
         save: jest.fn(),
         get:jest.fn().mockReturnValue(null),
-        get_paginations:jest.fn().mockReturnValue({transactions: [mock_rest], current_page: 1, max_pages: 1}),
+        get_paginations:jest.fn().mockReturnValue({transactions: [mock_rest], current_page: 1, max_pages:2}),
+        get_balance: jest.fn().mockReturnValue(0),
         delete: jest.fn(),
         update: jest.fn()
     };
@@ -135,6 +137,7 @@ describe('Get Account Use Case', () => {
                 page: 0,
                 size: 80,
                 sort_by: null,
+                account_filter: [],
                 tag_filter: [],
                 category_filter: []
             });
@@ -149,6 +152,7 @@ describe('Get Account Use Case', () => {
                 page: 1,
                 size: 0,
                 sort_by: null,
+                account_filter: [],
                 tag_filter: [],
                 category_filter: []
             });
@@ -162,6 +166,7 @@ describe('Get Account Use Case', () => {
             page: 1,
             size: 12,
             sort_by: null,
+            account_filter: [],
             tag_filter: [],
             category_filter: []
         });
@@ -175,7 +180,8 @@ describe('Update use case', () => {
     let repo: TransactionRepository = {
         save: jest.fn(),
         get:jest.fn().mockReturnValue(null),
-        get_paginations:jest.fn().mockReturnValue([mock_rest]),
+        get_paginations:jest.fn(),
+        get_balance: jest.fn().mockReturnValue(0),
         delete: jest.fn(),
         update: jest.fn()
     };
@@ -200,7 +206,8 @@ describe('Update use case', () => {
     let repo2: TransactionRepository = {
         save: jest.fn(),
         get:jest.fn().mockReturnValue(mock_rest),
-        get_paginations:jest.fn().mockReturnValue([mock_rest]),
+        get_paginations:jest.fn().mockReturnValue({transactions: [mock_rest], current_page: 1, max_pages:2}),
+        get_balance: jest.fn().mockReturnValue(0),
         delete: jest.fn(),
         update: jest.fn()
     };
@@ -275,7 +282,8 @@ describe('Delete Transaction Use case', () => {
     let repo: TransactionRepository = {
         save: jest.fn(),
         get: jest.fn().mockReturnValue(null),
-        get_paginations: jest.fn().mockReturnValue([]),
+        get_paginations: jest.fn(),
+        get_balance: jest.fn().mockReturnValue(0),
         delete: jest.fn(),
         update: jest.fn()
     };
