@@ -1,4 +1,4 @@
-export enum Type {
+export enum TransactionType {
     Debit,
     Credit
 }
@@ -7,7 +7,7 @@ export type Transaction = {
     account_ref: string;
     tag_ref: string|null;
     category_ref: string; 
-    type: Type;
+    type: TransactionType;
     price: number;
     date: Date;
     description: string;
@@ -16,8 +16,9 @@ export type Transaction = {
 export type TransactionDisplay = {
     id: string;
     account_ref: string;
-    category_ref: string;
-    tag_ref: string|null;
+    category_title: string;
+    category_icon: string;
+    tag: string|null;
     type: string;
     price: number;
     date: Date;

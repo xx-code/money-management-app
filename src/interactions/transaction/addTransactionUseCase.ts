@@ -1,4 +1,4 @@
-import { Type } from "../../entities/transaction";
+import { TransactionType } from "../../entities/transaction";
 import { ValidationError } from "../errors/validationError";
 import { TransactionRepository } from "../repositories/transactionRepository";
 import { Crypto } from '../utils/cryto';
@@ -11,7 +11,7 @@ export type RequestAddTransactionUseCase = {
     description: string;
     date: Date;
     tag_ref: string|null;
-    type: Type;
+    type: TransactionType;
 }
 
 export interface IAddTransactionUseCase {
@@ -52,6 +52,8 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
             if (request.price < 0) {
                 throw new ValidationError('Price must be greather to 0');
             }
+
+            let type: string = TransactionType[request.type] 
             
             let response = this.repository.save({
                 id: new_id,
@@ -61,7 +63,7 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
                 description: request.description,
                 price: request.price,
                 date: request.date,
-                type: request.type
+                type: type
             });
 
             return response;

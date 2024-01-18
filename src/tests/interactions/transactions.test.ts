@@ -3,7 +3,7 @@ import { Crypto } from '../../interactions/utils/cryto';
 import { TransactionRepository } from '../../interactions/repositories/transactionRepository';
 import { ValidationError } from '../../interactions/errors/validationError';
 import { NotFoundError } from '../../interactions/errors/notFoundError';
-import { TransactionDisplay, Type } from '../../entities/transaction';
+import { TransactionDisplay, TransactionType } from '../../entities/transaction';
 import { GetTransactionUseCase } from '../../interactions/transaction/getTransactionUseCase';
 import { GetPaginationTransaction } from '../../interactions/transaction/getPaginationTransactionUseCase';
 import { DeleteTransactionUseCase } from '../../interactions/transaction/deleteTransactionUseCase';
@@ -37,7 +37,7 @@ describe('Creation Account Use Case', () => {
                 account_ref: 'df',
                 tag_ref: 'df',
                 price: 0,
-                type: Type.Credit
+                type: TransactionType.Credit
             });
         } catch(err) {
             expect(err).toStrictEqual(new ValidationError('Description ref field is emtpy'));
@@ -53,7 +53,7 @@ describe('Creation Account Use Case', () => {
                 account_ref: 'df',
                 tag_ref: 'df',
                 price: 0,
-                type: Type.Credit
+                type: TransactionType.Credit
             });
         } catch(err) {
             expect(err).toStrictEqual(new ValidationError('Category ref field is empty'));
@@ -69,7 +69,7 @@ describe('Creation Account Use Case', () => {
                 account_ref: 'df',
                 tag_ref: ' ',
                 price: 0,
-                type: Type.Credit
+                type: TransactionType.Credit
             });
         } catch(err) {
             expect(err).toStrictEqual(new ValidationError('Tag ref field is empty'));
@@ -85,7 +85,7 @@ describe('Creation Account Use Case', () => {
                 account_ref: 'df',
                 tag_ref: 'df',
                 price: -12,
-                type: Type.Credit
+                type: TransactionType.Credit
             });
         } catch(err) {
             expect(err).toStrictEqual(new ValidationError('Price must be greather to 0'));
@@ -101,7 +101,7 @@ describe('Creation Account Use Case', () => {
                 account_ref: ' ',
                 tag_ref: 'df',
                 price: -12,
-                type: Type.Credit
+                type: TransactionType.Credit
             });
         } catch(err) {
             expect(err).toStrictEqual(new ValidationError('Account ref field is empty'));
@@ -110,11 +110,11 @@ describe('Creation Account Use Case', () => {
 });
 
 describe('Get Account Use Case', () => {
-    let mock_rest: TransactionDisplay = {id: '1', description: 'trr', date: new Date('gd'), tag_ref: 'df', category_ref: 'df', price: 45, account_ref: 'dff', type: 'Credit', };
+    let mock_rest: TransactionDisplay = {id: '1', description: 'trr', date: new Date('gd'), tag: 'df', category_icon: 'df', category_title: 'df', price: 45, account_ref: 'dff', type: 'Credit', };
     let repo: TransactionRepository = {
         save: jest.fn(),
         get:jest.fn().mockReturnValue(null),
-        get_paginations:jest.fn().mockReturnValue([mock_rest]),
+        get_paginations:jest.fn().mockReturnValue({transactions: [mock_rest], current_page: 1, max_pages: 1}),
         delete: jest.fn(),
         update: jest.fn()
     };
@@ -166,12 +166,12 @@ describe('Get Account Use Case', () => {
             category_filter: []
         });
 
-        expect(response.length).toBe(1)
+        expect(response.transactions.length).toBe(1)
     });
 });
 
 describe('Update use case', () => {
-    let mock_rest: TransactionDisplay = {id: 'df', description: 'trr', date: new Date('gd'), tag_ref: 'df', category_ref: 'df', price: 45, account_ref: 'dff', type: 'Credit', };
+    let mock_rest: TransactionDisplay = {id: 'df', description: 'trr', date: new Date('gd'), tag: 'df', category_icon: 'df', category_title: 'df', price: 45, account_ref: 'dff', type: 'Credit', };
     let repo: TransactionRepository = {
         save: jest.fn(),
         get:jest.fn().mockReturnValue(null),

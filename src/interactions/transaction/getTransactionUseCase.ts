@@ -24,8 +24,9 @@ export class GetTransactionUseCase implements IGetTransactionUseCase {
             return {
                 id: transaction.id,
                 account_ref: transaction.account_ref, 
-                tag_ref: transaction.tag_ref,
-                category_ref: transaction.category_ref,
+                tag: transaction.tag,
+                category_title: transaction.category_title,
+                category_icon: transaction.category_icon,
                 date: transaction.date,
                 description: transaction.description,
                 price: transaction.price,

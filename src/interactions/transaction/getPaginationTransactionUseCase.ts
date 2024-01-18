@@ -11,8 +11,14 @@ export type Request = {
     tag_filter: Array<string>;
 }
 
+export type Response = {
+    transactions: Array<TransactionDisplay>;
+    current_page: number;
+    max_pages: number;
+}
+
 export interface IGetPaginationTransaction {
-    execute(request: Request): Array<TransactionDisplay>;
+    execute(request: Request): Response;
 }
 
 export class GetPaginationTransaction implements IGetPaginationTransaction {
@@ -22,7 +28,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
         this.repository = repo;
     }
 
-    execute(request: Request): TransactionDisplay[] {
+    execute(request: Request): Response {
         try {
             if (request.page <= 0) {
                 throw new ValidationError('Page request must be greather than 0');
@@ -39,7 +45,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
 
             let results = this.repository.get_paginations(request.page, request.size, request.sort_by, filters);
 
-            return results;
+            return { transactions: results.transactions, current_page: results.current_page, max_pages: results.max_page };
         } catch (err) {
             throw err;
         }

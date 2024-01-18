@@ -1,4 +1,4 @@
-import { TransactionDisplay, Type } from "../../entities/transaction";
+import { TransactionDisplay, TransactionType } from "../../entities/transaction";
 import { NotFoundError } from "../errors/notFoundError";
 import { ValidationError } from "../errors/validationError";
 import { TransactionRepository } from "../repositories/transactionRepository";
@@ -8,7 +8,7 @@ export type RequestUpdateTransactionUseCase = {
     id: string;
     tag_ref: string|null;
     category_ref: string|null;
-    type: Type|null;
+    type: string|null;
     description: string|null;
     date: Date|null;
     price: number|null;
@@ -57,6 +57,12 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
                 }
             }
 
+            if (request.type != null) {
+                if (request.type != 'Credit' && request.type != 'Debit') {
+                    throw new ValidationError('Type must be Debit or Credit');
+                }
+            }
+
             let response = this.repository.update({
                 id: request.id,
                 tag_ref: request.tag_ref,
@@ -69,8 +75,9 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
 
             return {
                 id: response.id,
-                tag_ref: response.tag_ref,
-                category_ref: response.category_ref,
+                tag: response.tag,
+                category_title: response.category_title,
+                category_icon: response.category_icon,
                 account_ref: response.account_ref,
                 date: response.date,
                 price: response.price,
