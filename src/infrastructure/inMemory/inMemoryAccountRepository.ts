@@ -3,11 +3,11 @@ import { TransactionRepository } from "../../interactions/repositories/transacti
 
 export class InMemoryAccountRepository implements AccountRepository {
     private db: Map<string, dbAccount> = new Map();
-    /*private transaction_repository: TransactionRepository;
+    private transaction_repository: TransactionRepository;
 
     constructor(transaction_repository: TransactionRepository) {
         this.transaction_repository = transaction_repository;
-    }*/
+    }
 
     exist(title: string): boolean {
         let accounts = Array.from(this.db.values());
@@ -83,6 +83,6 @@ export class InMemoryAccountRepository implements AccountRepository {
     }
 
     private get_balance(account_ref: string): number {
-        return 0;
+        return this.transaction_repository.get_balance({accounts: [account_ref], categories: [], tags: []});
     }
 }
