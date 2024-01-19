@@ -1,12 +1,12 @@
 import { Period } from "../../entities/budget";
-import { GetAllAccountUseCase } from "../../interactions/account/getAllAccountUseCase";
 import { CreationBudgetCategoryUseCase, CreationBudgetTagUseCase } from "../../interactions/budgets/creationBudgetUseCase";
-import { GetAllBudgetUseCase } from "../../interactions/budgets/getAllBudgetUseCase";
-import { GetBudgetUseCase } from "../../interactions/budgets/getBudgetUseCase";
+import { DeleteBudgetCategoryUseCase, DeleteBudgetTagUseCase } from "../../interactions/budgets/deleteBudgetUseCase";
+import { GetAllBudgetCategoryUseCase, GetAllBudgetTagUseCase } from "../../interactions/budgets/getAllBudgetUseCase";
+import { GetBudgetTagUseCase, GetBudgetCategoryUseCase } from "../../interactions/budgets/getBudgetUseCase";
 import { UpdateBudgetCategoryUseCase, UpdateBudgetTagUseCase } from "../../interactions/budgets/updateBudgetUseCase";
 import { NotFoundError } from "../../interactions/errors/notFoundError";
 import { ValidationError } from "../../interactions/errors/validationError";
-import { BudgetRepository, dbBudgetTagResponse } from "../../interactions/repositories/budgetRepository";
+import { BudgetCategoryRepository, BudgetTagRepository, dbBudgetCategoryResponse, dbBudgetTagResponse } from "../../interactions/repositories/budgetRepository";
 import { Crypto } from "../../interactions/utils/cryto";
 
 class MockCrypto implements Crypto {
@@ -18,17 +18,23 @@ class MockCrypto implements Crypto {
 
 describe('Creation Budget Test', () => {
     
-    let repo: BudgetRepository = {
-        save_category: jest.fn(),
-        save_tag: jest.fn(),
+    let repo_cat: BudgetCategoryRepository = {
+        save: jest.fn(),
         delete: jest.fn(),
         get: jest.fn(),
         get_all: jest.fn(),
-        update_category: jest.fn(),
-        update_tag: jest.fn()
+        update: jest.fn()
     }
 
-    let use_case = new CreationBudgetTagUseCase(repo, new MockCrypto())
+    let repo_tag: BudgetTagRepository = {
+        save: jest.fn(),
+        delete: jest.fn(),
+        get: jest.fn(),
+        get_all: jest.fn(),
+        update: jest.fn()
+    }
+
+    let use_case = new CreationBudgetTagUseCase(repo_tag, new MockCrypto())
     test('Error title', () => {
         try {
             use_case.execute({
@@ -74,7 +80,7 @@ describe('Creation Budget Test', () => {
         }
     });
 
-    let use_case2 = new CreationBudgetCategoryUseCase(repo, new MockCrypto());
+    let use_case2 = new CreationBudgetCategoryUseCase(repo_cat, new MockCrypto());
     test('Error categories', () => {
         try {
             use_case2.execute({
@@ -122,7 +128,7 @@ describe('Creation Budget Test', () => {
     });
 });
 
-describe('Get budget test', () => {
+describe('Get budget test tag', () => {
     let true_val:dbBudgetTagResponse = {
         id: 'df',
         target: 1500,
@@ -133,17 +139,15 @@ describe('Get budget test', () => {
         title: 'dfffg'
     }
 
-    let repo: BudgetRepository = {
-        save_category: jest.fn(),
-        save_tag: jest.fn(),
+    let repo: BudgetTagRepository = {
+        save: jest.fn(),
         delete: jest.fn(),
         get: jest.fn().mockReturnValue(null),
         get_all: jest.fn().mockReturnValue([true_val]),
-        update_category: jest.fn(),
-        update_tag: jest.fn()
+        update: jest.fn()
     }
 
-    let use_case = new GetBudgetUseCase(repo);
+    let use_case = new GetBudgetTagUseCase(repo);
 
     test('error no found', () => {
         try {
@@ -153,7 +157,7 @@ describe('Get budget test', () => {
         }
     });
 
-    let use_case2 = new GetAllBudgetUseCase(repo);
+    let use_case2 = new GetAllBudgetTagUseCase(repo);
     test('get All budget', () => {
         let response = use_case2.execute();
         
@@ -161,22 +165,75 @@ describe('Get budget test', () => {
     });
 });
 
-describe('Delete budget test', ( ) => {
-    let repo: BudgetRepository = {
-        save_category: jest.fn(),
-        save_tag: jest.fn(),
-        delete: jest.fn().mockReturnValue(false),
-        get: jest.fn().mockReturnValue(null),
-        get_all: jest.fn(),
-        update_category: jest.fn(),
-        update_tag: jest.fn()
+describe('Get budget test category', () => {
+    let true_val:dbBudgetCategoryResponse = {
+        id: 'df',
+        target: 1500,
+        current: 2688,
+        period: 1,
+        period_time: Period.Month,
+        categories: ["df"],
+        title: 'dfffg'
     }
 
-    let use_case = new GetBudgetUseCase(repo);
+    let repo: BudgetCategoryRepository = {
+        save: jest.fn(),
+        delete: jest.fn(),
+        get: jest.fn().mockReturnValue(null),
+        get_all: jest.fn().mockReturnValue([true_val]),
+        update: jest.fn()
+    }
 
-    test('test delete', () => {
+    let use_case = new GetBudgetCategoryUseCase(repo);
+
+    test('error no found', () => {
         try {
             use_case.execute('ff');
+        } catch(err) {
+            expect(err).toStrictEqual(new NotFoundError('Budget not found'));
+        }
+    });
+
+    let use_case2 = new GetAllBudgetCategoryUseCase(repo);
+    test('get All budget', () => {
+        let response = use_case2.execute();
+        
+        expect(response.length).toBe(1);
+    });
+});
+
+describe('Delete budget test cat', ( ) => {
+    let repo_cat: BudgetCategoryRepository = {
+        save: jest.fn(),
+        delete: jest.fn().mockReturnValue(true),
+        get: jest.fn().mockReturnValue(null),
+        get_all: jest.fn(),
+        update: jest.fn()
+    }
+
+    let repo_tag: BudgetTagRepository = {
+        save: jest.fn(),
+        delete: jest.fn().mockReturnValue(true),
+        get: jest.fn().mockReturnValue(null),
+        get_all: jest.fn(),
+        update: jest.fn()
+    }
+
+    let use_case = new DeleteBudgetCategoryUseCase(repo_cat);
+
+    test('test delete category', () => {
+        try {
+            use_case.execute('ff');
+        } catch(err) {
+            expect(err).toStrictEqual(new NotFoundError('Budget not found'));
+        } 
+    });
+
+    let use_case2 = new DeleteBudgetTagUseCase(repo_tag);
+
+    test('test delete tag', () => {
+        try {
+            use_case2.execute('ff');
         } catch(err) {
             expect(err).toStrictEqual(new NotFoundError('Budget not found'));
         } 
@@ -194,14 +251,12 @@ describe('Update Budget test', () => {
         title: 'dfffg'
     }
 
-    let repo: BudgetRepository = {
-        save_category: jest.fn(),
-        save_tag: jest.fn(),
+    let repo: BudgetTagRepository = {
+        save: jest.fn(),
         delete: jest.fn().mockReturnValue(false),
         get: jest.fn().mockReturnValue(null),
         get_all: jest.fn(),
-        update_category: jest.fn(),
-        update_tag: jest.fn()
+        update: jest.fn()
     }
 
     let use_case = new UpdateBudgetTagUseCase(repo);
@@ -221,16 +276,22 @@ describe('Update Budget test', () => {
         }
     });
 
-    let repo2: BudgetRepository = {
-        save_category: jest.fn(),
-        save_tag: jest.fn(),
+    let repo_tag: BudgetTagRepository = {
+        save: jest.fn(),
         delete: jest.fn().mockReturnValue(false),
         get: jest.fn().mockReturnValue(true_val),
         get_all: jest.fn(),
-        update_category: jest.fn(),
-        update_tag: jest.fn()
+        update: jest.fn()
     }
-    let use_case2 = new UpdateBudgetTagUseCase(repo2);
+
+    let repo_cat: BudgetCategoryRepository = {
+        save: jest.fn(),
+        delete: jest.fn().mockReturnValue(false),
+        get: jest.fn().mockReturnValue(true_val),
+        get_all: jest.fn(),
+        update: jest.fn()
+    }
+    let use_case2 = new UpdateBudgetTagUseCase(repo_tag);
     test('Verify Update title', () => {
         try {
             use_case2.execute({
@@ -291,7 +352,7 @@ describe('Update Budget test', () => {
         }
     });
 
-    let use_case3 = new UpdateBudgetCategoryUseCase(repo2);
+    let use_case3 = new UpdateBudgetCategoryUseCase(repo_cat);
     test('Verify update categories', () => {
         try {
             use_case3.execute({

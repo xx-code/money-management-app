@@ -56,13 +56,19 @@ export type dbBudgetTagUpdate = {
     tags: Array<string>|null;
 }
 
-export interface BudgetRepository {
-    save_category(request: dbBudgetCategory): string;
-    save_tag(request: dbBudgetTag): string;
-    get(id: string): dbBudgetCategoryResponse | dbBudgetTagResponse | null;
-    get_all(): Array<dbBudgetCategoryResponse | dbBudgetTagResponse>;
+export interface BudgetTagRepository {
+    save(request: dbBudgetTag): string;
+    get(id: string): dbBudgetTagResponse | null;
+    get_all(): Array<dbBudgetTagResponse>;
     delete(id: string): boolean;
-    update_category(request: dbBudgetCategoryUpdate): dbBudgetCategoryResponse;
-    update_tag(request: dbBudgetTagUpdate): dbBudgetTagResponse;
+    update(request: dbBudgetTagUpdate): dbBudgetTagResponse;
 }
 
+
+export interface BudgetCategoryRepository {
+    save(request: dbBudgetCategory): string;
+    get(id: string): dbBudgetCategoryResponse | null;
+    get_all(): Array<dbBudgetCategoryResponse>;
+    delete(id: string): boolean;
+    update(request: dbBudgetCategoryUpdate): dbBudgetCategoryResponse
+}

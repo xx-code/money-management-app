@@ -1,6 +1,6 @@
 import { Period } from "../../entities/budget";
 import { ValidationError } from "../errors/validationError";
-import { BudgetRepository } from "../repositories/budgetRepository";
+import { BudgetCategoryRepository, BudgetTagRepository } from "../repositories/budgetRepository";
 import { Crypto } from "../utils/cryto";
 import { is_empty } from "../utils/verify_empty_value";
 
@@ -25,10 +25,10 @@ export interface ICreationBudgetUseCase {
 }
 
 export class CreationBudgetCategoryUseCase implements ICreationBudgetUseCase {
-    private repository: BudgetRepository;
+    private repository: BudgetCategoryRepository;
     private crypto: Crypto;
 
-    constructor(repo: BudgetRepository, crypto: Crypto) {
+    constructor(repo: BudgetCategoryRepository, crypto: Crypto) {
         this.repository = repo;
         this.crypto = crypto;
     }
@@ -54,7 +54,7 @@ export class CreationBudgetCategoryUseCase implements ICreationBudgetUseCase {
 
             let new_id = this.crypto.generate_uuid_to_string()
 
-            let response = this.repository.save_category({
+            let response = this.repository.save({
                 id: new_id,
                 title: request.title,
                 target: request.target,
@@ -71,10 +71,10 @@ export class CreationBudgetCategoryUseCase implements ICreationBudgetUseCase {
 }
 
 export class CreationBudgetTagUseCase implements ICreationBudgetUseCase {
-    private repository: BudgetRepository;
+    private repository: BudgetTagRepository;
     private crypto: Crypto;
 
-    constructor(repo: BudgetRepository, crypto: Crypto) {
+    constructor(repo: BudgetTagRepository, crypto: Crypto) {
         this.repository = repo;
         this.crypto = crypto;
     }
@@ -100,7 +100,7 @@ export class CreationBudgetTagUseCase implements ICreationBudgetUseCase {
 
             let new_id = this.crypto.generate_uuid_to_string()
 
-            let response = this.repository.save_tag({
+            let response = this.repository.save({
                 id: new_id,
                 title: request.title,
                 target: request.target,

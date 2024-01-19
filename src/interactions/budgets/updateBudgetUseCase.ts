@@ -1,7 +1,7 @@
 import { BudgetWithCategoryDisplay, BudgetWithTagDisplay, Period } from "../../entities/budget";
 import { NotFoundError } from "../errors/notFoundError";
 import { ValidationError } from "../errors/validationError";
-import { BudgetRepository } from "../repositories/budgetRepository";
+import { BudgetCategoryRepository, BudgetTagRepository } from "../repositories/budgetRepository";
 import { is_empty } from "../utils/verify_empty_value";
 
 export type ReqeustUpdateTagBudget = {
@@ -27,9 +27,9 @@ export interface IUpdateBudgetUseCase {
 }
 
 export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
-    private repository: BudgetRepository;
+    private repository: BudgetCategoryRepository;
 
-    constructor(repo: BudgetRepository) {
+    constructor(repo: BudgetCategoryRepository) {
         this.repository = repo;
     }
 
@@ -65,7 +65,7 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 } 
             }
 
-            let response = this.repository.update_category({
+            let response = this.repository.update({
                 id: request.id,
                 title: request.title,
                 target: request.target,
@@ -82,9 +82,9 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
 }
 
 export class UpdateBudgetTagUseCase implements IUpdateBudgetUseCase {
-    private repository: BudgetRepository;
+    private repository: BudgetTagRepository;
 
-    constructor(repo: BudgetRepository) {
+    constructor(repo: BudgetTagRepository) {
         this.repository = repo;
     }
 
@@ -120,7 +120,7 @@ export class UpdateBudgetTagUseCase implements IUpdateBudgetUseCase {
                 } 
             }
 
-            let response = this.repository.update_tag({
+            let response = this.repository.update({
                 id: request.id,
                 title: request.title,
                 target: request.target,
