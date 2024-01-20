@@ -170,8 +170,8 @@ describe('Get budget test category', () => {
         id: 'df',
         target: 1500,
         current: 2688,
-        period: 1,
-        period_time: Period.Month,
+        period: 'Month',
+        period_time: 1,
         categories: ["df"],
         title: 'dfffg'
     }

@@ -4,7 +4,7 @@ export type dbBudgetCategory = {
     id: string;
     title: string;
     target: number;
-    period: Period;
+    period: string;
     period_time: number;
     categories: Array<string>;
 }
@@ -23,7 +23,7 @@ export type dbBudgetCategoryResponse = {
     title: string;
     target: number;
     current: number;
-    period: Period;
+    period: string;
     period_time: number;
     categories: Array<string>;
 }
@@ -42,7 +42,7 @@ export type dbBudgetCategoryUpdate = {
     id: string;
     title: string|null;
     target: number|null;
-    period: Period|null;
+    period: string|null;
     period_time: number|null;
     categories: Array<string>|null;
 }

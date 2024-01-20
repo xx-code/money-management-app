@@ -7,7 +7,7 @@ import { is_empty } from "../utils/verify_empty_value";
 export type CreationBudgetCategoryUseCaseRequest = {
     title: string;
     target: number;
-    period: Period,
+    period: Period;
     period_time: number;
     categories: Array<string>;
 } 
@@ -52,13 +52,15 @@ export class CreationBudgetCategoryUseCase implements ICreationBudgetUseCase {
                 throw new ValidationError('Period time must be greather than 0');
             }
 
-            let new_id = this.crypto.generate_uuid_to_string()
+            let new_id = this.crypto.generate_uuid_to_string();
+
+            let period: string = Period[request.period]; 
 
             let response = this.repository.save({
                 id: new_id,
                 title: request.title,
                 target: request.target,
-                period: request.period,
+                period: period,
                 period_time: request.period_time,
                 categories: request.categories
             });

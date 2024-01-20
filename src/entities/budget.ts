@@ -1,8 +1,8 @@
 export enum Period {
-    Day,
-    Week,
-    Month,
-    Year
+    Day = 'Day',
+    Week = 'Week',
+    Month = 'Month',
+    Year = 'Year'
 } 
 
 export type BudgetWithCategory = {
@@ -26,7 +26,7 @@ export type BudgetWithCategoryDisplay = {
     title: string;
     target: number;
     current: number;
-    period: Period;
+    period: string;
     period_time: number;
     categories: Array<string>
 }
