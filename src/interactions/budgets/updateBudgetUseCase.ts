@@ -65,11 +65,17 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 } 
             }
 
+            let period: string|null = null;
+
+            if (request.period != null) {
+                period = Period[request.period]; 
+            }
+
             let response = this.repository.update({
                 id: request.id,
                 title: request.title,
                 target: request.target,
-                period: request.period,
+                period: period,
                 period_time: request.period_time,
                 categories: request.categories
             });
