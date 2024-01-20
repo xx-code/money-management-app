@@ -1,9 +1,12 @@
 import { Router, Request, Response } from 'express';
-import { CreationAccountRequestMapper } from './dataMapper'; 
+import { CreationAccountRequestMapper } from './creationAccountDataMapper'; 
 import { CreationAccountUseCase } from '../../../interactions/account/creationAccountUseCase';
 import { CrytoGraphie } from '../utils/cryto';
 import { accountRepository } from '../resources/initInMemoryRepository';
 import { GetAccountUseCase } from '../../../interactions/account/getAccountUseCase';
+import { GetAllAccountUseCase } from '../../../interactions/account/getAllAccountUseCase';
+import { UpdateAccountRequestDataMapper } from './updateAccountDataMapper';
+import { UpdateAccountUseCase } from '../../../interactions/account/updateAccountUseCase';
 
 const router = Router();
 
@@ -28,8 +31,42 @@ router.get('/:id', (req: Request, res: Response) => {
 
         let usecase = new GetAccountUseCase(accountRepository);
         let response = usecase.execute(id);
-        
+
         res.status(201).send(response);
+    } catch (error: any) {
+        res.status(400).send(error.message);
+    }
+});
+
+
+router.get('/', (_: Request, res: Response) => {
+    try {
+        let usecase = new GetAllAccountUseCase(accountRepository);
+        let response = usecase.execute();
+
+        res.status(201).send(response);
+    } catch (error: any) {
+        res.status(400).send(error.message);
+    }
+});
+
+router.put('/:id', (req: Request, res: Response) => {
+    try {
+        let dataMapper = new UpdateAccountRequestDataMapper();
+        let data = dataMapper.extract(req);
+
+        let usecase = new UpdateAccountUseCase(accountRepository);
+        let response = usecase.execute(data);
+
+        res.status(201).send(response);
+    } catch (error: any) {
+        res.status(400).send(error.message);
+    }
+});
+
+router.delete('/', (req: Request, res: Response) => {
+    try {
+        
     } catch (error: any) {
         res.status(400).send(error.message);
     }

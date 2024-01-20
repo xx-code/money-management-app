@@ -3,7 +3,7 @@ import { AccountDisplay } from "../../entities/account";
 import { NotFoundError } from "../errors/notFoundError";
 import { ValidationError } from "../errors/validationError";
 
-type RequestUpdateAccountUseCase = {
+export type RequestUpdateAccountUseCase = {
     id: string;
     title: string|null;
     credit_value: number|null;
