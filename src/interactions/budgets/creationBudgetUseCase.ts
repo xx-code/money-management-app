@@ -36,7 +36,7 @@ export class CreationBudgetCategoryUseCase implements ICreationBudgetUseCase {
     execute(request: CreationBudgetCategoryUseCaseRequest): string {
         try {
             
-            if (request.title.replace(' ', '').length == 0) {
+            if (is_empty(request.title)) {
                 throw new ValidationError('Title field is empty');
             }
 
