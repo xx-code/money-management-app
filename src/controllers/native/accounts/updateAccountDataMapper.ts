@@ -5,7 +5,7 @@ import { RequestUpdateAccountUseCase } from '../../../interactions/account/updat
 export class UpdateAccountRequestDataMapper {
     extract(request: Request): RequestUpdateAccountUseCase {
         let body = request.body;
-        if (body.credit_value == undefined) {
+        if (request.params.id == undefined) {
             throw new ValidationError('Id field must not be empty');
         }
 
@@ -31,7 +31,7 @@ export class UpdateAccountRequestDataMapper {
             if (isNaN(Number(body.credit_limit))) {
                 throw new ValidationError('Credit value must be a number');
             }   
-            data.credit_limit == body.credit_value;
+            data.credit_limit == body.credit_limit;
         }
 
         return data;
