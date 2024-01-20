@@ -3,14 +3,14 @@ import { AccountRepository } from '../repositories/accountRepository';
 import { Crypto } from '../utils/cryto';
 import { is_empty } from '../utils/verify_empty_value';
 
-export type Request = {
+export type CreationAccountUseCaseRequest = {
     title: string;
     credit_value: number;
     credit_limit: number;
 }
 
 interface ICreationAccountUseCase {
-    execute(request: Request): string;
+    execute(request: CreationAccountUseCaseRequest): string;
 }
 
 export class CreationAccountUseCase implements ICreationAccountUseCase {
@@ -22,7 +22,7 @@ export class CreationAccountUseCase implements ICreationAccountUseCase {
         this.crypto = crypto;
     }
 
-    execute(request: Request): string {
+    execute(request: CreationAccountUseCaseRequest): string {
         try {
             let id = this.crypto.generate_uuid_to_string();
 
