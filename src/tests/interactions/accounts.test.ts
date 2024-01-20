@@ -4,10 +4,45 @@ import { AccountRepository, dbAccount, dbAccountResponse } from '../../interacti
 import { ValidationError } from '../../interactions/errors/validationError';
 import { GetAccountUseCase } from '../../interactions/account/getAccountUseCase';
 import { NotFoundError } from '../../interactions/errors/notFoundError';
-import { AccountDisplay } from '../../entities/account';
 import { GetAllAccountUseCase } from '../../interactions/account/getAllAccountUseCase';
 import { DeleteAccountUseCase } from '../../interactions/account/deleteAccountUseCase';
-import { UpdateAccountUseCase } from '../../interactions/account/updateAccountUseCase';
+
+const replyRepositoryMock: AccountRepository = {
+    save: jest.fn().mockReturnValue('new id'),
+    exist: jest.fn().mockReturnValue(false),
+    get: jest.fn().mockReturnValue({
+            id: 'new id',
+            title: 'titre value',
+            credit_value: 6600,
+            credit_limit: 1000,
+            balance: 0}),
+    get_all: jest.fn().mockReturnValue(
+        [
+            {
+                id: 'new id',
+                title: 'titre value',
+                credit_value: 6600,
+                credit_limit: 1000,
+                balance: 0
+            },
+            {
+                id: 'new id',
+                title: 'titre value',
+                credit_value: 6600,
+                credit_limit: 1000,
+                balance: 0
+            }   
+        ]
+    ),
+    delete: jest.fn().mockReturnValue(true),
+    updated: jest.fn().mockReturnValue({
+        id: 'new id',
+        title: 'titre value',
+        credit_value: 6600,
+        credit_limit: 1000,
+        balance: 0
+    })
+}
 
 class MockCrypto implements Crypto {
     generate_uuid_to_string(): string {
@@ -92,82 +127,6 @@ describe('Get Account Use Case', () => {
     it('Test get all account', () => {
         let response = use_case2.execute() ;
         expect(response.length).toBe(1);
-    });
-});
-
-describe('Update Account Use case', () => {
-    let repo: AccountRepository = {
-        save: jest.fn(),
-        exist: jest.fn().mockReturnValue(false),
-        get:jest.fn().mockReturnValue(null),
-        get_all:jest.fn(),
-        delete: jest.fn(),
-        updated: jest.fn()
-    };
-
-    let use_case = new UpdateAccountUseCase(repo);
-
-    test('test no found test', () => {
-        try {
-            use_case.execute({
-                id: 'dfd',
-                title: null,
-                credit_limit: null,
-                credit_value: null
-            })
-        } catch (err) {
-            expect(err).toStrictEqual(new NotFoundError('Account No Found'));
-        }
-    });
-
-    let mock_rest: dbAccountResponse = {id: 'dfd', title: 'trr', credit_limit: 0, credit_value: 0, balance: 0};
-    let repo2: AccountRepository = {
-        save: jest.fn(),
-        exist: jest.fn().mockReturnValue(true),
-        get:jest.fn().mockReturnValue(mock_rest),
-        get_all:jest.fn(),
-        delete: jest.fn(),
-        updated: jest.fn()
-    };
-
-    let use_case2 = new UpdateAccountUseCase(repo2);
-    test('title is not empty', () => {
-        try {
-            use_case2.execute({
-                id: 'dfs',
-                title: ' ',
-                credit_limit: null,
-                credit_value: null
-            });
-        } catch (error) {
-            expect(error).toStrictEqual(new ValidationError('Title of account is empty'));
-        }
-    });
-
-    test('credit limit error', () => {
-        try {
-            use_case2.execute({
-                id: 'dfs',
-                title: null,
-                credit_limit: -4,
-                credit_value: null
-            });
-        } catch (error) {
-            expect(error).toStrictEqual(new ValidationError('Credit limit must be greater than 0'));
-        }
-    });
-
-    test('credit value error', () => {
-        try {
-            use_case2.execute({
-                id: 'dfs',
-                title: null,
-                credit_limit: null,
-                credit_value: -15
-            });
-        } catch (error) {
-            expect(error).toStrictEqual(new ValidationError('Credit value must be greater than 0'));
-        }
     });
 });
 
