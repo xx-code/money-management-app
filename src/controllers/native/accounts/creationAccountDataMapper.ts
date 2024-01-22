@@ -2,6 +2,7 @@ import { Request } from 'express';
 import { CreationAccountUseCaseRequest } from '../../../interactions/account/creationAccountUseCase';
 import { ValidationError } from '../../../interactions/errors/validationError';
 
+
 export class CreationAccountRequestMapper {
     extract(request: Request): CreationAccountUseCaseRequest {
         let body = request.body;

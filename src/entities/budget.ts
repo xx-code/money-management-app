@@ -5,9 +5,12 @@ export enum Period {
     Year = 'Year'
 } 
 
-export type BudgetWithCategory = {
+type Budget = {
     title: string;
     target: number;
+}
+
+export type BudgetWithCategory = Budget & {
     period: Period;
     period_time: number;
     categories: Array<string>

@@ -3,7 +3,7 @@ import { TransactionDisplay } from "../../entities/transaction";
 import { TransactionRepository, dbFilter } from "../repositories/transactionRepository";
 import { ValidationError } from "../errors/validationError";
 
-export type Request = {
+export type RequestGetPagination = {
     page: number;
     size: number;
     sort_by: string|null;
@@ -19,7 +19,7 @@ export type Response = {
 }
 
 export interface IGetPaginationTransaction {
-    execute(request: Request): Response;
+    execute(request: RequestGetPagination): Response;
 }
 
 export class GetPaginationTransaction implements IGetPaginationTransaction {
@@ -29,7 +29,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
         this.repository = repo;
     }
 
-    execute(request: Request): Response {
+    execute(request: RequestGetPagination): Response {
         try {
             if (request.page <= 0) {
                 throw new ValidationError('Page request must be greather than 0');
