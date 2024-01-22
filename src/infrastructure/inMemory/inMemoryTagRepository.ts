@@ -14,7 +14,7 @@ export class InMemoryTagRepository implements TagRepository {
     }
 
     get_all(): dbTag[] {
-        return Array.from(this.db.values());
+        return this.db;
     }
 
     save(tag: dbTag): string {

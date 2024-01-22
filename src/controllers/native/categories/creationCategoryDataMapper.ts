@@ -11,7 +11,7 @@ export class CreationCategoryUseCaseDataMapper {
             throw new ValidationError('Title field is empty');
         }
 
-        if (body.icon) {
+        if (body.icon == undefined) {
             throw new ValidationError('Icon field is empty');
         }
 

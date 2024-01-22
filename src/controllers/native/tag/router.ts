@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import { categoryRepository, tagRepository } from '../resources/initInMemoryRepository';
+import { tagRepository } from '../resources/initInMemoryRepository';
 import { CreationTagUseCase } from '../../../interactions/tag/creationTagUseCase';
 import { ValidationError } from '../../../interactions/errors/validationError';
 import { GetTagUseCase } from '../../../interactions/tag/getTagUseCase';
@@ -12,7 +12,7 @@ router.post('/', (req: Request, res: Response) => {
     try {
         // data mapper
         
-        if (req.body.title != undefined) {
+        if (req.body.title == undefined) {
             throw new ValidationError('Title field is empty');
         }
         let titleTag = req.body.title;
@@ -29,7 +29,7 @@ router.post('/', (req: Request, res: Response) => {
 
 router.get('/:title', (req: Request, res: Response) => {
     try {
-        let usecase = new GetTagUseCase(categoryRepository);
+        let usecase = new GetTagUseCase(tagRepository);
         
         let response = usecase.execute(req.params.title);
 
@@ -41,7 +41,7 @@ router.get('/:title', (req: Request, res: Response) => {
 
 router.get('/', (req: Request, res: Response) => { 
     try {
-        let usecase = new GetAllTagUseCase(categoryRepository);
+        let usecase = new GetAllTagUseCase(tagRepository);
         let response = usecase.execute();
         res.status(201).send(response);   
     } catch (error: any) {
@@ -52,7 +52,7 @@ router.get('/', (req: Request, res: Response) => {
 
 router.delete('/:title', (req: Request, res: Response) => {
     try {
-        let usecase = new DeleteTagUseCase(categoryRepository);
+        let usecase = new DeleteTagUseCase(tagRepository);
         let response = usecase.execute(req.params.title);
         res.status(201).send(response);   
     } catch (error: any) {
