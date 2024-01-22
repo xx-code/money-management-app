@@ -16,27 +16,20 @@ export type BudgetWithCategory = Budget & {
     categories: Array<string>
 }
 
-export type BudgetWithTag = {
-    title: string;
-    target: number;
+export type BudgetWithTag = Budget & {
     date_start: Date;
     date_end: Date;
     tags: Array<string>;
 }
 
-export type BudgetWithCategoryDisplay = {
-    id: string;
-    title: string;
-    target: number;
+export type BudgetWithCategoryDisplay = Budget & {
     current: number;
     period: string;
     period_time: number;
     categories: Array<string>
 }
 
-export type BudgetWithTagDisplay = {
-    title: string;
-    target: number;
+export type BudgetWithTagDisplay = Budget & {
     current: number;
     date_start: Date;
     date_end: Date;
