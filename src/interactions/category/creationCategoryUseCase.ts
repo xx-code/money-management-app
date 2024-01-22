@@ -2,13 +2,13 @@ import { ValidationError } from "../errors/validationError";
 import { CategoryRepository } from "../repositories/categoryRepository";
 import { is_empty } from "../utils/verify_empty_value";
 
-export type Request = {
+export type RequestCreationCategoryUseCase = {
     title: string,
     icon: string
 } 
 
 export interface ICreationCategoryUseCase {
-    execute(request: Request): string;
+    execute(request: RequestCreationCategoryUseCase): string;
 }
 
 export class CreationCategoryUseCase implements ICreationCategoryUseCase {
@@ -18,7 +18,7 @@ export class CreationCategoryUseCase implements ICreationCategoryUseCase {
         this.repository = repo;
     }
 
-    execute(request: Request): string {
+    execute(request: RequestCreationCategoryUseCase): string {
         try {
 
             if (is_empty(request.title)) {
