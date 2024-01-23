@@ -62,7 +62,7 @@ export class AddTransactionRequestDataMapper {
 
         return {
             account_ref: body.account_id,
-            price: body.price,
+            price: Number(body.price),
             description: body.description,
             date: new Date(body.date),
             category_ref: body.category_id,

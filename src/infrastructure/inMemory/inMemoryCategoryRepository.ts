@@ -1,5 +1,5 @@
 import { dbCategory } from "../../interactions/repositories/categoryRepository";
-import { TagRepository, dbTag } from "../../interactions/repositories/tagRepository";
+import { TagRepository } from "../../interactions/repositories/tagRepository";
 
 export class InMemoryCategoryRepository implements TagRepository {
     private db: Map<string, dbCategory> = new Map();

@@ -8,12 +8,33 @@ import { NotFoundError } from '../../../interactions/errors/notFoundError';
 import { CreationTagUseCase } from '../../../interactions/tag/creationTagUseCase';
 import { GetAccountUseCase } from '../../../interactions/account/getAccountUseCase';
 import { GetTransactionUseCase } from '../../../interactions/transaction/getTransactionUseCase';
-import { DeleteAccountUseCase } from '../../../interactions/account/deleteAccountUseCase';
 import { GetCategoryUseCase } from '../../../interactions/category/getCategoryUseCase';
-import { GetPaginationTransaction, RequestGetPagination } from '../../../interactions/transaction/getPaginationTransactionUseCase';
+import { GetPaginationTransaction } from '../../../interactions/transaction/getPaginationTransactionUseCase';
 import { GetPaginationTransactionUseCaseDataMapper } from './getPaginationTransacationDataMapper';
+import { UpdateTransactionUseCaseDataMapper } from './updateTransactionDataMapper';
+import { UpdateTransactionUseCase } from '../../../interactions/transaction/updateTransactionUseCase';
+import { DeleteTransactionUseCase } from '../../../interactions/transaction/deleteTransactionUseCase';
 
 const router = Router();
+
+function verifyIfCategoryExist(category_ref: string): void {
+    let category = new GetCategoryUseCase(categoryRepository);
+    category.execute(category_ref);
+}
+
+function verifyIfTagExist(tag_ref: string, res: Response): void {
+    try {
+        let getTag = new GetTagUseCase(tagRepository);
+        getTag.execute(tag_ref);
+    } catch(error: any) {
+        if (error instanceof NotFoundError) {
+            let creationNewTag = new CreationTagUseCase(tagRepository);
+            creationNewTag.execute(tag_ref);
+        } else {
+            res.status(400).send(error.message);
+        }
+    }
+}
 
 router.post('/', (req: Request, res: Response) => {
     try {
@@ -27,22 +48,11 @@ router.post('/', (req: Request, res: Response) => {
         getAccount.execute(data.account_ref);
 
         // verify category exist
-        let category = new GetCategoryUseCase(categoryRepository);
-        category.execute(data.category_ref);
+        verifyIfCategoryExist(data.category_ref);
 
         // Creation of new tag if is not exist
         if (data.tag_ref != null) {
-            try {
-                let getTag = new GetTagUseCase(tagRepository);
-                getTag.execute(data.tag_ref);
-            } catch(error: any) {
-                if (error instanceof NotFoundError) {
-                    let creationNewTag = new CreationTagUseCase(tagRepository);
-                    creationNewTag.execute(data.tag_ref);
-                } else {
-                    res.status(400).send(error.message);
-                }
-            }
+            verifyIfTagExist(data.tag_ref, res);
         }
 
         let response = addNewTransaction.execute(data);
@@ -76,9 +86,33 @@ router.get('/', (req: Request, res: Response) => {
     }
 });
 
+router.put('/:id', (req: Request, res: Response) => {
+    try {
+        let dataMapper = new UpdateTransactionUseCaseDataMapper();
+        let usecase = new UpdateTransactionUseCase(transactionRepository);
+        let data = dataMapper.extract(req);
+
+        // verify category exist
+        if (data.category_ref != null) {
+            verifyIfCategoryExist(data.category_ref);
+        }
+
+        // Creation of new tag if is not exist
+        if (data.tag_ref != null) {
+            verifyIfTagExist(data.tag_ref, res);
+        }
+
+        let response = usecase.execute(data);
+
+        res.status(201).send(response);
+    } catch (error: any) {
+        res.status(400).send(error.message);
+    }
+});
+
 router.delete('/:id', (req: Request, res: Response) => {
     try {
-        let usecase = new DeleteAccountUseCase(accountRepository);
+        let usecase = new DeleteTransactionUseCase(transactionRepository);
         let response = usecase.execute(req.params.id);  
         
         res.status(201).send(response);

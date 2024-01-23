@@ -29,8 +29,8 @@ export class CreationAccountRequestMapper {
 
         return {
             title: body.title,
-            credit_limit: body.credit_limit,
-            credit_value: body.credit_value
+            credit_limit: Number(body.credit_limit),
+            credit_value: Number(body.credit_value)
         }
         
     }

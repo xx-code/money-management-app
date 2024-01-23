@@ -23,7 +23,7 @@ export class InMemoryTransactionRepository implements TransactionRepository {
             type: request.type,
             date: request.date,
             description: request.description,
-            price: request.price
+            price: Number(request.price)
         });
 
         return request.id;
@@ -45,7 +45,7 @@ export class InMemoryTransactionRepository implements TransactionRepository {
             category_icon: category!.icon,
             tag: response.tag_ref,
             date: response.date,
-            price: response.price,
+            price: Number(response.price),
             type: response.type
         }
     }
@@ -115,7 +115,7 @@ export class InMemoryTransactionRepository implements TransactionRepository {
                 category_icon: category!.icon,
                 date: transaction.date,
                 description: transaction.description,
-                price: transaction.price,
+                price: Number(transaction.price),
                 type: transaction.type
             });
         }
@@ -166,7 +166,7 @@ export class InMemoryTransactionRepository implements TransactionRepository {
             category_title: category!.title,
             date: this.db.get(request.id)!.date,
             description: this.db.get(request.id)!.description,
-            price: this.db.get(request.id)!.price,
+            price: Number(this.db.get(request.id)!.price),
             tag: this.db.get(request.id)!.tag_ref,
             type: this.db.get(request.id)!.type
         }
@@ -203,7 +203,7 @@ export class InMemoryTransactionRepository implements TransactionRepository {
 
         let balance_credit = 0;
         for(let trans of transactions) {
-            balance_credit += formatted(trans.type) == 'CREDIT' ? -trans.price : trans.price;
+            balance_credit += formatted(trans.type) == 'CREDIT' ? - Number(trans.price) : Number(trans.price);
         }
 
         return balance_credit;

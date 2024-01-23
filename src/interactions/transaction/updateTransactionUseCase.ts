@@ -40,7 +40,9 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
                 }
             }
 
+            let category = null;
             if (request.category_ref != null) {
+                category = formatted(request.category_ref);
                 if (is_empty(request.category_ref)) {
                     throw new ValidationError('Category ref field is empty');
                 }
@@ -66,11 +68,16 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
                 }
             }
 
+            let date = null;
+            if (request.date != null) {
+                date = new Date(request.date);
+            }
+
             let response = this.repository.update({
                 id: request.id,
                 tag_ref: tag,
-                category_ref: request.category_ref,
-                date: request.date,
+                category_ref: category,
+                date:date,
                 price: request.price,
                 description: request.description,
                 type: request.type
