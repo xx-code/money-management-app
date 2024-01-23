@@ -1,5 +1,6 @@
 import { NotFoundError } from "../errors/notFoundError";
 import { TagRepository } from "../repositories/tagRepository";
+import { formatted } from "../utils/formatted";
 
 export interface IDeleteTagUseCase {
     execute(title: string): boolean;
@@ -14,6 +15,7 @@ export class DeleteTagUseCase implements IDeleteTagUseCase {
 
     execute(title: string): boolean {
         try {
+            title = formatted(title);
             let tag = this.repository.get(title);
 
             if (tag == null) {

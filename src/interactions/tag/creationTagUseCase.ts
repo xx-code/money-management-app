@@ -1,5 +1,6 @@
 import { ValidationError } from "../errors/validationError";
 import { TagRepository } from "../repositories/tagRepository";
+import { formatted } from "../utils/formatted";
 import { is_empty } from "../utils/verify_empty_value";
 
 export interface ICreationTagUseCase {
@@ -19,14 +20,16 @@ export class CreationTagUseCase implements ICreationTagUseCase {
                 throw new ValidationError('Title field empty');
             }
 
-            let category = this.repository.get(title);
+            title = formatted(title);
 
-            if (category != null) {
+            let tag = this.repository.get(title);
+
+            if (tag != null) {
                 throw new ValidationError('This category is already use');
             }
 
             let response = this.repository.save({
-                title: title
+                title: title 
             });
 
             return response;

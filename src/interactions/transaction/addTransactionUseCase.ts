@@ -2,6 +2,7 @@ import { TransactionType } from "../../entities/transaction";
 import { ValidationError } from "../errors/validationError";
 import { TransactionRepository } from "../repositories/transactionRepository";
 import { Crypto } from '../utils/cryto';
+import { formatted } from "../utils/formatted";
 import { is_empty } from "../utils/verify_empty_value";
 
 export type RequestAddTransactionUseCase = {
@@ -39,7 +40,9 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
                 throw new ValidationError('Category ref field is empty');
             }
 
+            let tag = null;
             if (request.tag_ref != null) {
+                tag = formatted(request.tag_ref);
                if (is_empty(request.tag_ref)) {
                     throw new ValidationError('Tag ref field is empty');
                 } 
@@ -53,13 +56,13 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
                 throw new ValidationError('Price must be greather to 0');
             }
 
-            let type: string = TransactionType[request.type] 
+            let type: string = formatted(TransactionType[request.type]); 
             
             let response = this.repository.save({
                 id: new_id,
                 account_ref: request.account_ref,
-                category_ref: request.category_ref,
-                tag_ref: request.tag_ref,
+                category_ref: formatted(request.category_ref),
+                tag_ref: tag,
                 description: request.description,
                 price: request.price,
                 date: request.date,

@@ -1,5 +1,6 @@
 import { NotFoundError } from "../errors/notFoundError";
 import { CategoryRepository } from "../repositories/categoryRepository";
+import { formatted } from "../utils/formatted";
 
 export interface IDeleteCategoryUseCase {
     execute(title: string): boolean;
@@ -14,9 +15,10 @@ export class DeleteCategoryUseCase implements IDeleteCategoryUseCase {
 
     execute(title: string): boolean {
         try {
-            let Category = this.repository.get(title);
+            title = formatted(title);
+            let category = this.repository.get(title);
 
-            if (Category == null) {
+            if (category == null) {
                 throw new NotFoundError('Category not found');
             }
 

@@ -1,5 +1,6 @@
 import { ValidationError } from "../errors/validationError";
 import { CategoryRepository } from "../repositories/categoryRepository";
+import { formatted } from "../utils/formatted";
 import { is_empty } from "../utils/verify_empty_value";
 
 export type RequestCreationCategoryUseCase = {
@@ -29,14 +30,15 @@ export class CreationCategoryUseCase implements ICreationCategoryUseCase {
                 throw new ValidationError('Icon field empty');
             }
 
-            let category = this.repository.get(request.title);
+            let title = formatted(request.title);
+            let category = this.repository.get(title);
 
             if (category != null) {
                 throw new ValidationError('This category is already use');
             }
 
             let response = this.repository.save({
-                title: request.title,
+                title: title,
                 icon: request.icon
             });
 

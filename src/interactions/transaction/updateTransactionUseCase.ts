@@ -2,6 +2,7 @@ import { TransactionDisplay, TransactionType } from "../../entities/transaction"
 import { NotFoundError } from "../errors/notFoundError";
 import { ValidationError } from "../errors/validationError";
 import { TransactionRepository } from "../repositories/transactionRepository";
+import { formatted, reverseFormatted } from "../utils/formatted";
 import { is_empty } from "../utils/verify_empty_value";
 
 export type RequestUpdateTransactionUseCase = {
@@ -45,7 +46,9 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
                 }
             }
 
+            let tag = null;
             if (request.tag_ref != null) {
+                tag = formatted(request.tag_ref);
                 if (is_empty(request.tag_ref)) {
                     throw new ValidationError('Tag ref field is empty');
                 } 
@@ -58,14 +61,14 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
             }
 
             if (request.type != null) {
-                if (request.type != 'Credit' && request.type != 'Debit') {
+                if (formatted(request.type) != 'CREDIT' && formatted(request.type) != 'DEBIT') {
                     throw new ValidationError('Type must be Debit or Credit');
                 }
             }
 
             let response = this.repository.update({
                 id: request.id,
-                tag_ref: request.tag_ref,
+                tag_ref: tag,
                 category_ref: request.category_ref,
                 date: request.date,
                 price: request.price,
@@ -73,10 +76,14 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
                 type: request.type
             });
 
+            let responseTag = null;
+            if (response.tag != null) {
+                responseTag = reverseFormatted(response.tag)
+            }
             return {
                 id: response.id,
-                tag: response.tag,
-                category_title: response.category_title,
+                tag: responseTag,
+                category_title: reverseFormatted(response.category_title),
                 category_icon: response.category_icon,
                 account_ref: response.account_ref,
                 date: response.date,

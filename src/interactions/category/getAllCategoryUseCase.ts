@@ -1,5 +1,6 @@
 import { Category } from "../../entities/category";
 import { CategoryRepository } from "../repositories/categoryRepository";
+import { reverseFormatted } from "../utils/formatted";
 
 export type Request = {
     title: string,
@@ -19,9 +20,13 @@ export class GetAllCategoryUseCase implements IGetAllUseCase {
 
     execute(): Category[] {
         try {
-            let use_case = this.repository.get_all();
+            let results = this.repository.get_all();
 
-            return use_case;
+            for(let i = 0; i < results.length; i++) {
+                results[i].title = reverseFormatted(results[i].title);
+            }
+
+            return results;
         } catch(err) {
             throw err;
         }

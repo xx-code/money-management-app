@@ -2,6 +2,7 @@ import { request } from "http";
 import { TransactionDisplay } from "../../entities/transaction";
 import { TransactionRepository, dbFilter } from "../repositories/transactionRepository";
 import { ValidationError } from "../errors/validationError";
+import { reverseFormatted } from "../utils/formatted";
 
 export type RequestGetPagination = {
     page: number;
@@ -46,6 +47,13 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
             };
 
             let results = this.repository.get_paginations(request.page, request.size, request.sort_by, filters);
+
+            for(let i=0; i < results.transactions.length; i++) {
+                results.transactions[i].category_title = reverseFormatted(results.transactions[i].category_title);
+                if (results.transactions[i].tag != null) {
+                    results.transactions[i].tag = reverseFormatted(results.transactions[i].tag!);
+                }
+            }
 
             return { transactions: results.transactions, current_page: results.current_page, max_pages: results.max_page };
         } catch (err) {
