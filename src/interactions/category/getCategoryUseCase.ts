@@ -1,5 +1,4 @@
 import { Category } from "../../entities/category";
-import { Tag } from "../../entities/tag";
 import { NotFoundError } from "../errors/notFoundError";
 import { CategoryRepository } from "../repositories/categoryRepository";
 import { formatted, reverseFormatted } from "../utils/formatted";

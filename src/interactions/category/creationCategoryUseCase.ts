@@ -30,15 +30,14 @@ export class CreationCategoryUseCase implements ICreationCategoryUseCase {
                 throw new ValidationError('Icon field empty');
             }
 
-            let title = formatted(request.title);
-            let category = this.repository.get(title);
+            let category = this.repository.get(formatted(request.title));
 
             if (category != null) {
                 throw new ValidationError('This category is already use');
             }
 
             let response = this.repository.save({
-                title: title,
+                title: formatted(request.title),
                 icon: request.icon
             });
 

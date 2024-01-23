@@ -1,6 +1,7 @@
 import { CategoryRepository, dbCategory } from "../../interactions/repositories/categoryRepository";
 import { TagRepository, dbTag } from "../../interactions/repositories/tagRepository";
 import { TransactionRepository, dbFilter, dbSortBy, dbTransaction, dbTransactionPaginationResponse, dbTransactionResponse, dbTransactionUpdateRequest } from "../../interactions/repositories/transactionRepository";
+import { formatted } from "../../interactions/utils/formatted";
 import { PaginationError } from "../errors/PaginationError";
 
 export class InMemoryTransactionRepository implements TransactionRepository {
@@ -202,7 +203,7 @@ export class InMemoryTransactionRepository implements TransactionRepository {
 
         let balance_credit = 0;
         for(let trans of transactions) {
-            balance_credit += trans.type == 'Credit' ? -trans.price : trans.price;
+            balance_credit += formatted(trans.type) == 'CREDIT' ? -trans.price : trans.price;
         }
 
         return balance_credit;

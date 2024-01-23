@@ -5,7 +5,10 @@ export class InMemoryCategoryRepository implements TagRepository {
     private db: Array<dbCategory> = [];
 
     get(title: string): dbCategory | null {
+        console.log(this.db)
         let categories = this.db.filter((cat) => cat.title == title);
+        console.log('value')
+        console.log(categories)
 
         if (categories.length <= 0) {
             return null;
@@ -15,7 +18,7 @@ export class InMemoryCategoryRepository implements TagRepository {
     }
 
     get_all(): dbCategory[] {
-        return Array.from(this.db.values());
+        return this.db;
     }
 
     save(category: dbCategory): string {

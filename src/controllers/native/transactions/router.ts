@@ -10,6 +10,8 @@ import { GetAccountUseCase } from '../../../interactions/account/getAccountUseCa
 import { GetTransactionUseCase } from '../../../interactions/transaction/getTransactionUseCase';
 import { DeleteAccountUseCase } from '../../../interactions/account/deleteAccountUseCase';
 import { GetCategoryUseCase } from '../../../interactions/category/getCategoryUseCase';
+import { GetPaginationTransaction, RequestGetPagination } from '../../../interactions/transaction/getPaginationTransactionUseCase';
+import { GetPaginationTransactionUseCaseDataMapper } from './getPaginationTransacationDataMapper';
 
 const router = Router();
 
@@ -60,20 +62,19 @@ router.get('/:id', (req: Request, res: Response) => {
     }
 });
 
-/*router.get('/', (req: Request, res: Response) => {
+router.get('/', (req: Request, res: Response) => {
     try {
+        let dataMapper = new GetPaginationTransactionUseCaseDataMapper();
         let usecase = new GetPaginationTransaction(transactionRepository);
-        let request: RequestGetPagination = {
-            page: req.params.page,
-            size: req.params.size,
-            sort_by: req.params.sort_by,
+        let data = dataMapper.extract(req);
 
-        }
-        usecase.execute();
+        let response = usecase.execute(data);
+
+        res.status(201).send(response);
     } catch (error: any) {
         res.status(400).send(error.message);
     }
-});*/
+});
 
 router.delete('/:id', (req: Request, res: Response) => {
     try {
