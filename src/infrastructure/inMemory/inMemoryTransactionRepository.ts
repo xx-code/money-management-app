@@ -1,6 +1,6 @@
 import { CategoryRepository, dbCategory } from "../../interactions/repositories/categoryRepository";
 import { TagRepository, dbTag } from "../../interactions/repositories/tagRepository";
-import { TransactionRepository, dbFilter, dbTransaction, dbTransactionPaginationResponse, dbTransactionResponse, dbTransactionUpdateRequest } from "../../interactions/repositories/transactionRepository";
+import { TransactionRepository, dbFilter, dbSortBy, dbTransaction, dbTransactionPaginationResponse, dbTransactionResponse, dbTransactionUpdateRequest } from "../../interactions/repositories/transactionRepository";
 import { PaginationError } from "../errors/PaginationError";
 
 export class InMemoryTransactionRepository implements TransactionRepository {
@@ -49,12 +49,18 @@ export class InMemoryTransactionRepository implements TransactionRepository {
         }
     }
 
-    get_paginations(page: number, size: number, sort_by: string | null, filter_by: dbFilter): dbTransactionPaginationResponse {
+    get_paginations(page: number, size: number, sort: dbSortBy|null, filter_by: dbFilter): dbTransactionPaginationResponse {
         let transactions = Array.from(this.db.values());
 
-        if (sort_by != null) {
-            if (sort_by == 'date') {
-                transactions = transactions.sort((a, b) => a.date < b.date ? -1 : 1);
+        if (sort != null) {
+            if (sort.sort_by == 'date') {
+                if (sort.asc) {
+                    transactions = transactions.sort((a, b) => a.date < b.date ? -1 : 1);
+                } else {
+                    if (sort.sort_by == 'date') {
+                        transactions = transactions.sort((a, b) => a.date > b.date ? -1 : 1);
+                    }
+                }
             }
         }
 

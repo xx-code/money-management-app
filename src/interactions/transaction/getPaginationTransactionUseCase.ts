@@ -1,13 +1,15 @@
 import { request } from "http";
 import { TransactionDisplay } from "../../entities/transaction";
-import { TransactionRepository, dbFilter } from "../repositories/transactionRepository";
+import { TransactionRepository, dbFilter, dbSortBy } from "../repositories/transactionRepository";
 import { ValidationError } from "../errors/validationError";
-import { reverseFormatted } from "../utils/formatted";
+import { formatted, reverseFormatted } from "../utils/formatted";
+import { is_empty } from "../utils/verify_empty_value";
 
 export type RequestGetPagination = {
     page: number;
     size: number;
     sort_by: string|null;
+    sort_sense: string|null;
     account_filter: Array<string>;
     category_filter: Array<string>;
     tag_filter: Array<string>;
@@ -46,7 +48,33 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
                 categories: request.category_filter
             };
 
-            let results = this.repository.get_paginations(request.page, request.size, request.sort_by, filters);
+            let sort_by: dbSortBy|null = null;
+
+            if (request.sort_by != null) {
+                if (is_empty(request.sort_by)) {
+                   throw new ValidationError('Sort by is empty field');
+                }
+
+                if (request.sort_sense == null) {
+                    throw new ValidationError('Sort sense field is empty');
+                } else {
+                    if (formatted(request.sort_sense) != 'ASC' || formatted(request.sort_sense) != 'DESC' ) {
+                        throw new ValidationError('The sort sense must be \'asc\' or \'desc\'');
+                    }
+                }
+
+                let asc = false;
+                if (formatted(request.sort_sense) == 'asc') {
+                    asc = true;
+                }
+                sort_by = {
+                    sort_by: request.sort_by,
+                    asc: asc
+                }
+            }
+
+      
+            let results = this.repository.get_paginations(request.page, request.size, sort_by, filters);
 
             for(let i=0; i < results.transactions.length; i++) {
                 results.transactions[i].category_title = reverseFormatted(results.transactions[i].category_title);

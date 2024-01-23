@@ -137,6 +137,7 @@ describe('Get Account Use Case', () => {
                 page: 0,
                 size: 80,
                 sort_by: null,
+                sort_sense: null,
                 account_filter: [],
                 tag_filter: [],
                 category_filter: []
@@ -146,12 +147,61 @@ describe('Get Account Use Case', () => {
         }
     });
 
+    it('Test error ascending null transaction', () => {
+        try {
+            let _ = use_case2.execute({
+                page: 1,
+                size: 80,
+                sort_by: ' ',
+                sort_sense: null,
+                account_filter: [],
+                tag_filter: [],
+                category_filter: []
+            });
+        } catch(err) {
+            expect(err).toStrictEqual(new ValidationError('Sort by is empty field'));
+        }
+    });
+
+    it('Test error ascending null transaction', () => {
+        try {
+            let _ = use_case2.execute({
+                page: 1,
+                size: 80,
+                sort_by: 'date',
+                sort_sense: null,
+                account_filter: [],
+                tag_filter: [],
+                category_filter: []
+            });
+        } catch(err) {
+            expect(err).toStrictEqual(new ValidationError('Sort sense field is empty'));
+        }
+    });
+
+    it('Test error ascending transaction', () => {
+        try {
+            let _ = use_case2.execute({
+                page: 1,
+                size: 80,
+                sort_by: 'date',
+                sort_sense: ' ',
+                account_filter: [],
+                tag_filter: [],
+                category_filter: []
+            });
+        } catch(err) {
+            expect(err).toStrictEqual(new ValidationError('The sort sense must be \'asc\' or \'desc\''));
+        }
+    });
+
     it('Test size error transaction', () => {
         try {
             let _ = use_case2.execute({
                 page: 1,
                 size: 0,
                 sort_by: null,
+                sort_sense: null,
                 account_filter: [],
                 tag_filter: [],
                 category_filter: []
@@ -166,6 +216,7 @@ describe('Get Account Use Case', () => {
             page: 1,
             size: 12,
             sort_by: null,
+            sort_sense: null,
             account_filter: [],
             tag_filter: [],
             category_filter: []

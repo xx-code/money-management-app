@@ -4,6 +4,11 @@ export type dbFilter = {
     tags: Array<string>;
 }
 
+export type dbSortBy = {
+    sort_by: string,
+    asc: boolean
+}
+
 export type dbTransaction = {
     id: string;
     account_ref: string;
@@ -46,7 +51,7 @@ export type dbTransactionPaginationResponse = {
 export interface TransactionRepository {
     save(request: dbTransaction): string;
     get(id: string): dbTransactionResponse|null;
-    get_paginations(page:number, size: number, sort_by: string|null, filter_by: dbFilter): dbTransactionPaginationResponse;
+    get_paginations(page:number, size: number, sort_by: dbSortBy|null, filter_by: dbFilter): dbTransactionPaginationResponse;
     get_balance(filter_by: dbFilter): number;
     delete(id: string): boolean;
     update(request: dbTransactionUpdateRequest): dbTransactionResponse;

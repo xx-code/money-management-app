@@ -9,7 +9,6 @@ import { CreationTagUseCase } from '../../../interactions/tag/creationTagUseCase
 import { GetAccountUseCase } from '../../../interactions/account/getAccountUseCase';
 import { GetTransactionUseCase } from '../../../interactions/transaction/getTransactionUseCase';
 import { DeleteAccountUseCase } from '../../../interactions/account/deleteAccountUseCase';
-import { GetPaginationTransaction, RequestGetPagination } from '../../../interactions/transaction/getPaginationTransactionUseCase';
 import { GetCategoryUseCase } from '../../../interactions/category/getCategoryUseCase';
 
 const router = Router();

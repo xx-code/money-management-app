@@ -137,5 +137,26 @@ describe('Transaction in memory', () => {
         expect(response.transactions.length).toBe(1);
     });
 
+    it('test sort', () => {
+        /*let response = transactions_repository.get_paginations(1, 10, null, {accounts: [], categories: ['Food'], tags: []});
+
+        expect(response.transactions[0].id).toBe('id-transaction-2');*/
+        transactions_repository.save({
+            id: 'id-transaction-4',
+            account_ref: 'id-perso-va',
+            category_ref: 'Food',
+            tag_ref: 'tag',
+            type: TransactionType['Debit'].toString(),
+            date: new Date('2023-02-17'),
+            description: 'Init',
+            price: 2937.16
+        });
+
+        let response = transactions_repository.get_paginations(1, 10, {sort_by: 'date', asc: true}, {accounts: [], categories: ['Food'], tags: ['tag']});
+
+        expect(response.transactions[0].id).toBe('id-transaction-4');
+        expect(response.transactions[0].date).toStrictEqual(new Date('2023-02-17'));
+    });
+
     // Make test 
 });
