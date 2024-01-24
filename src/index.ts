@@ -5,6 +5,7 @@ import AccountRouter from '../src/controllers/native/accounts/router';
 import TransactionRouter from '../src/controllers/native/transactions/router';
 import CategoryRouter from '../src/controllers/native/categories/router';
 import TagRouter from '../src/controllers/native/tag/router';
+import BudgetRouter from '../src/controllers/native/budgets/router';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use('/account', AccountRouter);
 app.use('/transaction', TransactionRouter);
 app.use('/category', CategoryRouter);
 app.use('/tag', TagRouter);
+app.use('/budget', BudgetRouter);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + Typescript ');

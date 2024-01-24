@@ -32,8 +32,8 @@ export class AddTransactionRequestDataMapper {
         }
 
         let tag = null;
-        if (body.tag_id == undefined) {
-            tag = body.tag;
+        if (body.tag_id != undefined) {
+            tag = body.tag_id;
         }
 
         if (isNaN(new Date(body.date).getTime())) {
@@ -46,19 +46,19 @@ export class AddTransactionRequestDataMapper {
 
         let type = body.type;
 
-       switch(body.type) {
-        case 'Credit': {
-            type = TransactionType.Credit;
-            break;
+        switch(body.type.toUpperCase()) {
+            case 'CREDIT': {
+                type = TransactionType.Credit;
+                break;
+            }
+            case 'DEBIT': {
+                type = TransactionType.Debit;
+                break;
+            }
+            default: {
+                throw new ValidationError('Type transacation must be a Credit or Debit');
+            }
         }
-        case 'Debit': {
-            type = TransactionType.Debit;
-            break;
-        }
-        default: {
-            throw new ValidationError('Type transacation must be a Credit or Debit');
-        }
-       }
 
         return {
             account_ref: body.account_id,

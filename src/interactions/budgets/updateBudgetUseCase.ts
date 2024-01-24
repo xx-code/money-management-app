@@ -4,7 +4,7 @@ import { ValidationError } from "../errors/validationError";
 import { BudgetCategoryRepository, BudgetTagRepository } from "../repositories/budgetRepository";
 import { is_empty } from "../utils/verify_empty_value";
 
-export type ReqeustUpdateTagBudget = {
+export type RequestUpdateTagBudget = {
     id: string;
     title: string|null;
     target: number|null;
@@ -23,7 +23,7 @@ export type RequestpdateCategoryBudget = {
 }
 
 export interface IUpdateBudgetUseCase {
-    execute(request: RequestpdateCategoryBudget|ReqeustUpdateTagBudget): BudgetWithCategoryDisplay | BudgetWithTagDisplay
+    execute(request: RequestpdateCategoryBudget|RequestUpdateTagBudget): BudgetWithCategoryDisplay | BudgetWithTagDisplay
 }
 
 export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
@@ -94,7 +94,7 @@ export class UpdateBudgetTagUseCase implements IUpdateBudgetUseCase {
         this.repository = repo;
     }
 
-    execute(request: ReqeustUpdateTagBudget): BudgetWithTagDisplay {
+    execute(request: RequestUpdateTagBudget): BudgetWithTagDisplay {
         try {
             let budget = this.repository.get(request.id);
 

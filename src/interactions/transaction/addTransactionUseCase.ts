@@ -56,7 +56,7 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
                 throw new ValidationError('Price must be greather to 0');
             }
 
-            let type: string = formatted(TransactionType[request.type]); 
+            let type: string = TransactionType[request.type]; 
             
             let response = this.repository.save({
                 id: new_id,
