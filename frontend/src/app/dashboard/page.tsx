@@ -1,14 +1,9 @@
-import Nav from "./nav"
+import Nav from "./nav";
+import TopNav from "./topNav";
+
+import Home from './home/page';
+import Budget from './budget/page'
 
 export default function Dashboard() {
-    return (
-        <div className="flex" style={{height: '100vh', padding: '1.5em 2em'}}>
-            <div>
-                <Nav />
-            </div>
-            <div>
-                <h1>Hello, Next.js!</h1>
-            </div>
-        </div>
-    )
+    return ( <Home /> )
 }

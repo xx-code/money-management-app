@@ -1,0 +1,30 @@
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-nav .title h1 {
+    font-size: 1.7em;
+    font-weight: bold;
+}
+
+.top-nav .icon {
+    height: 25px;
+    width: 25px;
+    background-color: #1E3050;
+}
+
+.top-nav .icon-notification {
+    position: relative;
+}
+
+.top-nav .alert-icon {
+    height: 10px;
+    width: 10px;
+    border-radius: 100%;
+    background-color: #DC4C4C;
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+}
