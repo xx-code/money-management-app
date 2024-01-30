@@ -1,0 +1,35 @@
+.card-resume-home {
+    width: 450px;
+    margin-top: 2em;
+}
+
+.card-resume-home .card-resume-content {
+    margin-top: 1.5em;
+    border-radius: 20px;
+    background: #313343;
+    padding: 1.5em ;
+}
+
+.card-resume-home .card-resume-balance {
+    margin-top: 1em;
+}
+
+.card-resume-home .card-resume-balance h6 {
+    color: white;
+    font-size: 1.4em;
+}
+
+.card-resume-home .card-resume-slider {
+    margin-top: 1.4em;
+}
+
+.card-resume-home .card-resume-slider p {
+    color: white;
+    font-size: small;
+}
+
+.card-resume-home .card-resume-button {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.4em;
+}

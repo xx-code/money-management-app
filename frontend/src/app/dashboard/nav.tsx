@@ -34,7 +34,7 @@ export default function Nav() {
             <div className="nav-content">
                 <LogoTitle title="Agni." />
                 <div className="nav-link">
-                    <NavButton title='Home' onClick={() => {console.log('home')} } />
+                    <NavButton title='Accueil' onClick={() => {console.log('home')} } />
                     <NavButton title='Budget' onClick={() => {console.log('budget')} }/>
                 </div>
             </div>

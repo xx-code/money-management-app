@@ -1,0 +1,25 @@
+.range-slider {
+    width: 100%;
+}
+
+.range-slider .slider {
+    width: 100%;
+    background: #F0F0F0;
+    caret-color: #E6E6E6;
+    
+}
+
+.slider::-webkit-slider-thumb { 
+    height: 25px;
+    width: 25px;
+    background-color: #E6E6E6;
+}
+
+.range-slider .slider-info {
+    display: flex;
+    justify-content: space-between;
+}
+
+.range-slider .slider-info p{
+    font-size: small;
+}

@@ -1,0 +1,12 @@
+.card-stat {
+    width: 450px;
+    margin-top: 2em;
+}
+
+.card-stat .card-stat-content {
+    margin-top: 1.5em;
+    border-radius: 20px;
+    background: #E6E6E6;
+    padding: 1.5em ;
+    height: 200px;
+}
