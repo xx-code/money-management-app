@@ -1,31 +1,49 @@
 .card-resume-spend {
-
+    margin: 0.8rem;
+    width: 350px;
 }
 
 .card-resume-spend .card-resume-spend-content {
-
+    background-color: #313343;
+    border-radius: 1em;
+    color: white;
+    padding: 1em 1.5em;
+    display: flex;
 }
 
 .card-resume-spend .card-resume-spend-content .card-resume-spend-info .card-resume-spend-title h3 {
-
+    font-size: 1.7em;
+    margin-bottom: 0.8rem;
 }
 
 .card-resume-spend .card-resume-spend-content .card-resume-spend-info .card-resume-spend-sub-info {
-
+    display: flex;
 }
 
 .card-resume-spend .card-resume-spend-content .card-resume-spend-info .card-resume-spend-sub-info .card-resume-spend-sub-info-1 {
-
+    margin-right: 0.8rem;
 }
 
 .card-resume-spend .card-resume-spend-content .card-resume-spend-info .card-resume-spend-sub-info .card-resume-spend-sub-info-1 h6{
-    
+    color: #D9D9D9;
+    font-size: 0.6em;
 }
+
+.card-resume-spend .card-resume-spend-content .card-resume-spend-info .card-resume-spend-sub-info .card-resume-spend-sub-info-1 p{
+    font-weight: 500;
+    font-size: 0.8em;
+}
+
+.card-resume-spend .card-resume-spend-content .card-resume-spend-info-percent {
+    margin: auto;
+}
+
 
 .card-resume-spend .card-resume-spend-content .card-resume-spend-info-percent .card-resume-spend-percent {
-    
+    /*padding: 1em 0em 1em 1em;*/
 }
 
-.card-resume-spend .card-resume-spend-content .card-resume-spend-info-percent .card-resume-spend-percent h3{
-    
+.card-resume-spend .card-resume-spend-content .card-resume-spend-info-percent .card-resume-spend-percent h3 {
+    font-weight: 500;
+    font-size: 1.8em;
 }

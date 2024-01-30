@@ -1,27 +1,44 @@
 import Title from "@/app/components/title";
+import './cardResumeSpend.css'
 
-export function CardResumeSpend() {
+export function CardResumeSpend({title, last_month='------', current_month='------'} : {title: string, last_month: string|undefined, current_month: string|undefined}) {
+
+    let percent = '--';
+    let color = 'white';
+
+    if (!isNaN(Number(last_month))) {
+        let diff = (Number(current_month) - Number(last_month)) * 100;
+        let value_percent = diff/Number(last_month);
+        percent = (Math.round(value_percent * 100)/100).toString();
+
+        if (Number(last_month) > Number(current_month)) {
+            color = '#4FDC4C';
+        } else if (Number(last_month) < Number(current_month)) {
+            color = '#DC4C4C';
+        }
+    }
+
     return (
         <div className="card-resume-spend">
             <div className="card-resume-spend-content">
                 <div className="card-resume-spend-info"> 
                     <div className="card-resume-spend-title">
-                        <h3>blaba</h3>
+                        <h3>{title}</h3>
                     </div>
                     <div className="card-resume-spend-sub-info">
                         <div className="card-resume-spend-sub-info-1">
-                            <h6>Mois passe</h6>
-                            <p>$----</p>
+                            <h6>Dernier mois</h6>
+                            <p>${last_month}</p>
                         </div>
                         <div className="card-resume-spend-sub-info-1">
                             <h6>Mois actuelle</h6>
-                            <p>$000</p>
+                            <p>${current_month}</p>
                         </div>
                     </div>
                 </div>
                 <div className="card-resume-spend-info-percent">
                     <div className="card-resume-spend-percent">
-                        <h3>12%</h3>
+                        <h3 style={{color: color}}>{percent}%</h3>
                     </div>
                 </div>
             </div>
