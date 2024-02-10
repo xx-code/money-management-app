@@ -1,0 +1,65 @@
+.transactions {
+    margin-top: 2rem;
+}
+
+.transactions-content {
+    display: flex;
+}
+
+.transactions .top-info .dropdown-account{
+    border-radius: 0.5em;
+    /*add a transaction effect with width fit-content*/
+    width:  30%;
+}
+
+.transactions-content .left-content {
+    flex:3;
+}
+
+.transactions-content .right-content {
+    flex: 1;
+}
+
+.transactions-content .left-content .list .list-button{
+    display: flex;
+    justify-content: space-between;
+}
+
+
+.transactions  .top-info .list-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem 0rem;
+}
+
+.transactions .right-content .filter-part {
+    margin-left: 2rem;
+}
+
+.transactions .right-content .filter-part .filter-part-content {
+    background-color: #F5F6F8;
+    padding: 1em;
+    border-radius: 1em;
+}
+
+.transactions .right-content .filter-part .filter-part-content .filter-title-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.transactions .right-content .filter-part .filter-dropdown-content {
+    margin-bottom: 1rem;
+}
+
+.transactions .right-content .filter-part .filter-dropdown-content .tags{
+    padding: 1em 0.3em;
+}
+
+.transactions .right-content .filter-part .filter-dropdown-content span {
+    color: white;
+    background-color: #6755D7;
+    padding: 0.4em;
+    border-radius: 0.4em;
+}

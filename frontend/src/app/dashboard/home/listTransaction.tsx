@@ -5,7 +5,7 @@ export default function ListTransaction({transactions} : {transactions: Array<an
     return (
         <div>
             {
-                transactions.map((key, transaction) => <CardTransaction />)
+                transactions.map((transaction, key) => <CardTransaction key={key} />)
             }
         </div>
     )

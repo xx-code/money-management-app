@@ -1,0 +1,61 @@
+.card-budget {
+    margin: 1rem;
+}
+
+.card-budget .card-budget-content {
+    display: flex;
+    background-color: #F5F6F8;
+    justify-content: space-between;
+    border-radius: 1em;
+    padding: 1em;
+}
+
+.card-budget .card-budget-content .card-budget-info {
+    display: flex;
+    align-items: center;
+}
+
+.card-budget .card-budget-content .card-budget-info .card-budget-subtitle {
+    display: flex;
+}
+
+.card-budget .card-budget-content .card-budget-info .card-budget-title {
+    margin-left: 1rem;
+}
+
+.card-budget .card-budget-content .card-budget-info .card-budget-title h3 {
+    font-weight: 600;
+}
+
+.card-budget .card-budget-content .card-budget-info .card-budget-title .target {
+    margin-right: 1rem;
+}
+
+.card-budget .card-budget-content .card-budget-info .card-budget-title .money-info h6 {
+    color: #7E7E7E;
+    font-size: 0.7em;
+}
+
+.card-budget .card-budget-content .card-budget-info .card-budget-title .money-info p {
+    color: #313343;
+    font-weight: 500;
+    font-size: 1em;
+}
+
+.card-budget .card-budget-content .card-budget-edit-button {
+    display: flex;
+    align-items: center;
+}
+
+.card-budget .card-budget-content .card-budget-edit-button .icon-modif {
+    width: 40px;
+    height: 40px;
+    background-color: #313343;
+    margin-right: 1rem;
+}
+
+.card-budget .card-budget-content .card-budget-edit-button .icon-delete {
+    width: 40px;
+    height: 40px;
+    background-color: #DC4C4C;
+}

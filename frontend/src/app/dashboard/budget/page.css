@@ -1,0 +1,8 @@
+.budgets {
+    margin-top: 4rem;
+}
+
+.budgets .list .list-button {
+    display: flex;
+    justify-content: space-between;
+}

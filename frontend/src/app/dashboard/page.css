@@ -2,3 +2,36 @@
     width: 100%;
     margin-left: 1.5em;
 }
+
+::backdrop {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal {
+    width: 80%;
+    max-width: 500px;
+    height: auto;
+    max-height: 500px;
+    border: none;
+    border-radius: 12px;
+    background-color: white;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 48px;
+    font-weight: 500;
+  }
