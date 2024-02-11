@@ -1,4 +1,3 @@
-import Title from "@/app/components/title";
 import './cardResumeSpend.css'
 
 export function CardResumeSpend({title, last_month='------', current_month='------'} : {title: string, last_month: string|undefined, current_month: string|undefined}) {

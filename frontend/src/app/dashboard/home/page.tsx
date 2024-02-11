@@ -1,8 +1,8 @@
-import Title from "@/app/components/title";
+import Title from "../../components/title";
 import CardResumeHome from "./cardResumeHome";
 import { CardResumeSpend } from "./cardResumeSpend";
 import CardStat from "./cardStats";
-import Button from "@/app/components/button";
+import Button from "../../components/button";
 import ListTransaction from "./listTransaction";
 
 export default function Home() {
@@ -17,7 +17,7 @@ export default function Home() {
                     <Title value="Resume" />
                     <div className="flex">
                         <CardResumeSpend title="Total depense" last_month="885.00" current_month="885.12"/>
-                        <CardResumeSpend title="Total gains"/>
+                        <CardResumeSpend title="Total gains" last_month={undefined} current_month={undefined} />
                     </div> 
 
                     <div style={{marginTop: '2em'}}>

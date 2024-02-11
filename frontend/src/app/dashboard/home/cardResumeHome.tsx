@@ -1,9 +1,9 @@
 'use client'
 
-import RangeSlider from "@/app/components/rangeSlider";
+import RangeSlider from "../../components/rangeSlider";
 import Title from "../../components/title";
-import Dropdown from "@/app/components/dropdown";
-import Button from "@/app/components/button";
+import Dropdown from "../../components/dropdown";
+import Button from "../../components/button";
 
 import './cardResumeHome.css';
 import { useState } from "react";

@@ -1,4 +1,4 @@
-import Title from "@/app/components/title";
+import Title from "../../components/title";
 
 import './cardStat.css';
 

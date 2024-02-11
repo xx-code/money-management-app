@@ -1,4 +1,5 @@
-import CardTransaction from '@/app/components/cardTransaction';
+
+import CardTransaction from '../../components/cardTransaction';
 import './listTransaction.css';
 
 export default function ListTransaction({transactions} : {transactions: Array<any>}) {
