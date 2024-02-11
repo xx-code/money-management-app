@@ -1,0 +1,33 @@
+.card-info-resume {
+    margin: 0.8rem 0;
+}
+
+.card-info-resume .card-info-resume-content {
+    background-color: #313343;
+    border-radius: 1em;
+    display: flex;
+    padding: 0.8em 1em;
+    width: fit-content;
+}
+
+.card-info-resume .card-info-resume-content .card {
+    margin: 0rem 1rem;
+}
+
+.card-info-resume .card-info-resume-content .card h3{
+    font-size: small; 
+    color: white; 
+    font-weight: 200;
+}
+
+.card-info-resume .card-info-resume-content .card p {
+    font-size: 1em;
+}
+
+.card-info-resume .card-info-resume-content .card .card-spend {
+    color: #DC4C4C;
+}
+
+.card-info-resume .card-info-resume-content .card .card-earning {
+    color: #4FDC4C;
+}

@@ -9,7 +9,7 @@ import './cardResumeHome.css';
 import { useState } from "react";
 
 
-export default function CardResumeHome() {
+export default function CardResumeHome({ onClickAddAccount }: { onClickAddAccount: any }) {
     const [range, setRange ] = useState(0);
     
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +31,7 @@ export default function CardResumeHome() {
                     <RangeSlider min={0} max={6600} value={range} onChange={handleInputChange}/>
                 </div>
                 <div className="card-resume-button">
-                    <Button backgroundColor="#6755D7" colorText="white" title="Ajouter compte"/>
+                    <Button backgroundColor="#6755D7" onClick={onClickAddAccount} colorText="white" title="Ajouter compte"/>
                 </div>
             </div>
         </div>
