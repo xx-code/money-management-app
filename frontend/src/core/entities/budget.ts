@@ -1,3 +1,5 @@
+import { Category } from "./category";
+
 export type Period = 'Day' | 'Week' | 'Month' | 'Year';
 
 type Budget = {
@@ -29,4 +31,8 @@ export type BudgetWithTagDisplay = Budget & {
     date_start: Date;
     date_end: Date;
     tags: Array<string>;
+}
+
+export function createBudgetWithCategory(budget: Budget, categories: Category[]) {
+    return 
 }
