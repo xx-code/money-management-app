@@ -26,7 +26,7 @@ export class CreationCategoryUseCase implements ICreationCategoryUseCase {
         this.presenter = presenter;
     }
 
-    execute(request: RequestCreationCategoryUseCase): void {
+    async execute(request: RequestCreationCategoryUseCase): Promise<void> {
         try {
             if (is_empty(request.title)) {
                 throw new ValidationError('Title field empty');
@@ -36,18 +36,22 @@ export class CreationCategoryUseCase implements ICreationCategoryUseCase {
                 throw new ValidationError('Icon field empty');
             }
 
-            let category = this.repository.get(formatted(request.title));
+            let category = await this.repository.get(formatted(request.title));
 
             if (category != null) {
                 throw new ValidationError('This category is already use');
             }
 
-            let response = this.repository.save({
+            let is_saved = await this.repository.save({
                 title: formatted(request.title),
                 icon: request.icon
             });
 
-            this.presenter.success(response);
+            if (is_saved) {
+                throw new Error('Category not save');
+            }
+
+            this.presenter.success(request.title);
         } catch (err) {
             this.presenter.fail(err as Error);
         }

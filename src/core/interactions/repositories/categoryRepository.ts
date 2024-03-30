@@ -6,7 +6,7 @@ export type dbCategory = {
 } 
 
 export interface CategoryRepository {
-    save(dbCategory: dbCategory): string;
+    save(dbCategory: dbCategory): Promise<boolean>;
     delete(title: string): string;
     get(title: string): Category|null;
     get_all(): Array<Category>;
