@@ -1,0 +1,68 @@
+import { AccountRepository } from "../repositories/accountRepository";
+import { Account } from "../../entities/account";
+import { NotFoundError } from "../../errors/notFoundError";
+import { ValidationError } from "../../errors/validationError";
+import { is_empty } from '../../entities/verify_empty_value';
+
+export type RequestUpdateAccountUseCase = {
+    id: string;
+    title: string|null;
+    credit_value: number|null;
+    credit_limit: number|null;
+}
+
+interface IUpdateAccountUseCase {
+    execute(request: RequestUpdateAccountUseCase): void
+}
+
+export interface IUpdateAccountUseCaseResponse {
+    success(account_updated: Account): void
+    fail(err: Error): void
+}
+
+export class UpdateAccountUseCase implements IUpdateAccountUseCase {
+    private repository: AccountRepository;
+    private presenter: IUpdateAccountUseCaseResponse;
+    
+    constructor(repo: AccountRepository, presenter: IUpdateAccountUseCaseResponse) {
+        this.repository = repo;
+        this.presenter = presenter;
+    }
+
+    execute(request: RequestUpdateAccountUseCase) {
+        try {
+            let account = this.repository.get(request.id);
+
+            if (account == null) {
+                throw new NotFoundError('Account No Found');
+            }
+
+            if (request.title != null) {
+                if (is_empty(request.title)) {
+                    throw new ValidationError('Title of account is empty');
+                }
+                account.title = request.title;
+            }
+
+            if (request.credit_limit != null) {
+                if (request.credit_limit < 0) {
+                    throw new ValidationError('Credit limit must be greater than 0');
+                }
+                account.credit_limit = request.credit_limit;
+            } 
+
+            if (request.credit_value != null) {
+                if (request.credit_value < 0) {
+                    throw new ValidationError('Credit value must be greater than 0')
+                }
+                account.credit_value = request.credit_value;
+            }
+
+            let account_updated = this.repository.updated(account);
+
+            this.presenter.success(account_updated);
+        } catch(err) {
+            this.presenter.fail(err as Error);
+        }
+    }
+}
