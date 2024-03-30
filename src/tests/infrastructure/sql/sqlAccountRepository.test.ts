@@ -140,4 +140,25 @@ describe('Account sql repository', () => {
         expect(account_updated.credit_value).toBe(200);
     });
 
+    test('Delete account', async () => {
+        let account_repo = new SqlAccountRepository(db, table_account_name);
+        await account_repo.create_table();
+
+        let new_account: Account = {
+            id: '1-id',
+            title: 'title',
+            credit_limit: 0,
+            credit_value: 200
+        };
+
+        await account_repo.save(new_account);
+
+        let id_account_delete = await account_repo.delete('1-id');
+
+        expect(id_account_delete).toBe(true);
+
+        let res = await account_repo.get('1-id');
+        
+        expect(res).toBeNull();
+    });
 });

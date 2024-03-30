@@ -47,7 +47,7 @@ export class SqlAccountRepository implements AccountRepository {
         return new Promise(async (resolve, reject) => {
             let result = await this.db.get(`SELECT id, title, credit_value, credit_limit FROM ${this.table_account_name} WHERE id = ?`, id);
 
-            if (result != undefined || result != null) {
+            if (result != undefined) {
                 resolve({
                     id: result['id'],
                     title: result['title'],
@@ -76,8 +76,16 @@ export class SqlAccountRepository implements AccountRepository {
             resolve(all_accounts);
         });
     }
-    delete(id: string): boolean {
-        throw new Error("Method not implemented.");
+    async delete(id: string): Promise<boolean> {
+        return new Promise(async (resolve, reject) => {
+            let result = await this.db.run(`DELETE FROM ${this.table_account_name} WHERE id = ?`, id);
+
+            if (result['changes'] == 0) {
+                resolve(false);
+            } else {
+                resolve(true)
+            }
+        });
     }
     async update(account: dbAccount): Promise<Account> {
         return new Promise(async (resolve, reject) => {

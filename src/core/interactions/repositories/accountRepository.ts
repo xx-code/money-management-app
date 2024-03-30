@@ -13,6 +13,6 @@ export interface AccountRepository {
     exist(title: string): boolean;
     get(id: string): Promise<Account | null>;
     get_all(): Promise<Account[]>; 
-    delete(id: string): boolean;
+    delete(id: string): Promise<boolean>;
     update(account: dbAccount): Promise<Account>;
 }

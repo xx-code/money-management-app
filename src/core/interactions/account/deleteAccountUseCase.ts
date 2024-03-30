@@ -6,7 +6,7 @@ interface IDeleteAccountUseCase {
 }
 
 export interface IDeleteAccountUseCaseResponse {
-    success(id_delete: string): void;
+    success(is_deleted: boolean): void;
     fail(err: Error): void;
 }
 
@@ -25,7 +25,9 @@ export class DeleteAccountUseCase implements IDeleteAccountUseCase {
                 throw new NotFoundError('Account Not Found');
             }
 
-            this.presenter.success(id);
+            let is_deleted = await this.repository.delete(id);
+
+            this.presenter.success(is_deleted);
         } catch(err) {
             this.presenter.fail(err as Error);
         }

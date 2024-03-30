@@ -28,10 +28,10 @@ export class UpdateAccountUseCase implements IUpdateAccountUseCase {
         this.repository = repo;
         this.presenter = presenter;
     }
-
-    execute(request: RequestUpdateAccountUseCase) {
+    
+    async execute(request: RequestUpdateAccountUseCase): Promise<void> {
         try {
-            let account = this.repository.get(request.id);
+            let account = await this.repository.get(request.id);
 
             if (account == null) {
                 throw new NotFoundError('Account No Found');
@@ -58,7 +58,7 @@ export class UpdateAccountUseCase implements IUpdateAccountUseCase {
                 account.credit_value = request.credit_value;
             }
 
-            let account_updated = this.repository.updated(account);
+            let account_updated = await this.repository.update(account);
 
             this.presenter.success(account_updated);
         } catch(err) {

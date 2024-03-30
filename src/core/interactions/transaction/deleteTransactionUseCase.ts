@@ -5,16 +5,16 @@ interface IDeleteTransactionUseCase {
     execute(id: string): void;
 }
 
-interface IDeleteAccountUseCaseResponse {
+export interface IDeleteTransactoinUseCaseResponse {
     success(id: string): void;
     fail(err: Error): void
 }
 
 export class DeleteTransactionUseCase implements IDeleteTransactionUseCase {
     private repository: TransactionRepository;
-    private presenter: IDeleteAccountUseCaseResponse;
+    private presenter: IDeleteTransactoinUseCaseResponse;
 
-    constructor(repo: TransactionRepository, presenter: IDeleteAccountUseCaseResponse) {
+    constructor(repo: TransactionRepository, presenter: IDeleteTransactoinUseCaseResponse) {
         this.repository = repo;
         this.presenter = presenter;
     }

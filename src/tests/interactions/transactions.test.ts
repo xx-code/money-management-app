@@ -9,7 +9,7 @@ import { NotFoundError } from '../../core/errors/notFoundError';
 import { Transaction } from '../../core/entities/transaction';
 import { GetTransactionUseCase, IGetTransactionUseCase, IGetTransactionUseCaseResponse } from '../../core/interactions/transaction/getTransactionUseCase';
 import { GetPaginationTransaction, IGetPaginationTransactionResponse } from '../../core/interactions/transaction/getPaginationTransactionUseCase';
-import { DeleteTransactionUseCase } from '../../core/interactions/transaction/deleteTransactionUseCase';
+import { DeleteTransactionUseCase, IDeleteTransactoinUseCaseResponse } from '../../core/interactions/transaction/deleteTransactionUseCase';
 import { UpdateTransactionUseCase, IUpdateTransactionUseCaseResponse } from '../../core/interactions/transaction/updateTransactionUseCase';
 import { AccountRepository } from '@/core/interactions/repositories/accountRepository';
 import { IDeleteAccountUseCaseResponse } from '@/core/interactions/account/deleteAccountUseCase';
@@ -614,7 +614,7 @@ describe('Delete Transaction Use case', () => {
         update: jest.fn()
     };
 
-    let presenter: IDeleteAccountUseCaseResponse = {
+    let presenter: IDeleteTransactoinUseCaseResponse = {
         success: jest.fn(),
         fail: jest.fn()
     };
