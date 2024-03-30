@@ -1,7 +1,5 @@
 import { Account } from "@/core/entities/account";
 import { AccountRepository, dbAccount } from "../../core/interactions/repositories/accountRepository";
-import { Database } from "sqlite3";
-import { title } from "process";
 
 export class SqlAccountRepository implements AccountRepository {
     private db: any;
@@ -25,19 +23,22 @@ export class SqlAccountRepository implements AccountRepository {
         this.is_table_exist = true;
     }
 
-    async save(account: dbAccount): Promise<string> {
+    async save(account: dbAccount): Promise<boolean> {
         return new Promise( async (resolve, reject) => {
             if (!this.is_table_exist) {
                 throw Error("Table account not created");
             }
     
-            let _ = await this.db.run(`
+            let result = await this.db.run(`
                 INSERT INTO ${this.table_account_name} (id, title, credit_value, credit_limit) VALUES (?, ?, ?, ?)`,
                 account.id, account.title, account.credit_value, account.credit_limit
             );
 
-
-            resolve(account.id);
+            if (result['changes'] == 0) {
+                resolve(false);
+            } else {
+                resolve(true);
+            }
         })
     }
     exist(title: string): boolean {

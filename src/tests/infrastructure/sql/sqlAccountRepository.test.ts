@@ -34,9 +34,9 @@ describe('Account sql repository', () => {
             credit_value: 6600
         };
 
-        let new_id = await account_repo.save(new_account);
+        let is_saved = await account_repo.save(new_account);
 
-        expect(new_id).toBe(true_response);
+        expect(is_saved).toBe(true);
     });
     
     test('Get account', async () => {

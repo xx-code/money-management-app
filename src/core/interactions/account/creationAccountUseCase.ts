@@ -49,14 +49,17 @@ export class CreationAccountUseCase implements ICreationAccountUseCase {
                 throw new ValidationError('Credit limit must be greater than 0');
             }
 
-            let response = await this.repository.save({
+            let is_saved = await this.repository.save({
                 id: id,
                 title: request.title,
                 credit_limit: request.credit_limit,
                 credit_value: request.credit_value
             });
             
-            this.presenter.success(response);
+            if (!is_saved) {
+                throw new Error('Account not saved');
+            }
+            this.presenter.success(id);
         } catch (err) {
             this.presenter.fail(err as Error);
         }

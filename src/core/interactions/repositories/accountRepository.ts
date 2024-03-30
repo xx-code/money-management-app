@@ -9,7 +9,7 @@ export type dbAccount = {
 
 
 export interface AccountRepository {
-    save(account: dbAccount): Promise<string>;
+    save(account: dbAccount): Promise<boolean>;
     exist(title: string): boolean;
     get(id: string): Promise<Account | null>;
     get_all(): Promise<Account[]>; 
