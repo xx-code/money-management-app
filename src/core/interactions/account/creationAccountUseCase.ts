@@ -29,7 +29,7 @@ export class CreationAccountUseCase implements ICreationAccountUseCase {
         this.presenter = presenter;
     }
 
-    execute(request: CreationAccountUseCaseRequest): void {
+    async execute(request: CreationAccountUseCaseRequest): Promise<void> {
         try {
             let id = this.crypto.generate_uuid_to_string();
 
@@ -49,7 +49,7 @@ export class CreationAccountUseCase implements ICreationAccountUseCase {
                 throw new ValidationError('Credit limit must be greater than 0');
             }
 
-            let response = this.repository.save({
+            let response = await this.repository.save({
                 id: id,
                 title: request.title,
                 credit_limit: request.credit_limit,

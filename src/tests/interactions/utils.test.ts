@@ -1,5 +1,5 @@
-import { formatted, reverseFormatted } from '../../interactions/utils/formatted';
-import { is_empty } from '../../interactions/utils/verify_empty_value';
+import { formatted, reverseFormatted } from '../../core/entities/formatted';
+import { is_empty } from '../../core/entities/verify_empty_value';
 
 test('Verify empty value', () => {
     let result = is_empty('   ');
