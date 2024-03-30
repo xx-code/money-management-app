@@ -36,7 +36,7 @@ const replyRepositoryMock: AccountRepository = {
         ]
     ),
     delete: jest.fn().mockReturnValue(true),
-    updated: jest.fn().mockReturnValue({
+    update: jest.fn().mockReturnValue({
         id: 'new id',
         title: 'titre value',
         credit_value: 6600,
@@ -59,7 +59,7 @@ describe('Creation Account Use Case', () => {
         get:jest.fn().mockReturnValue(Promise.resolve(null)),
         get_all:jest.fn(),
         delete: jest.fn(),
-        updated: jest.fn()
+        update: jest.fn()
     };
     
     let crypto = new MockCrypto();
@@ -134,7 +134,7 @@ describe('Get Account Use Case', () => {
         get:jest.fn().mockReturnValue(new Promise((resolve, reject) => {resolve(null)}) ),
         get_all:jest.fn().mockReturnValue([mock_rest]),
         delete: jest.fn(),
-        updated: jest.fn()
+        update: jest.fn()
     };
 
     let presenter: IGetAccountUseCaseResponse = {
@@ -172,7 +172,7 @@ describe('Delete Account Use case', () => {
         get:jest.fn().mockReturnValue(Promise.resolve(null)),
         get_all: jest.fn().mockReturnValue([]),
         delete: jest.fn(),
-        updated: jest.fn()
+        update: jest.fn()
     };
 
     let presenter: IDeleteAccountUseCaseResponse = {

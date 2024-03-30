@@ -79,7 +79,15 @@ export class SqlAccountRepository implements AccountRepository {
     delete(id: string): boolean {
         throw new Error("Method not implemented.");
     }
-    updated(account: dbAccount): Account {
-        throw new Error("Method not implemented.");
+    async update(account: dbAccount): Promise<Account> {
+        return new Promise(async (resolve, reject) => {
+            await this.db.run(`
+                UPDATE ${this.table_account_name} SET title = ?, credit_value = ?, credit_limit = ? WHERE id = ? 
+            `, account.title, account.credit_value, account.credit_limit, account.id);
+
+            let account_updated = await this.get(account.id);
+
+            resolve(account_updated!);
+        });
     }
 }

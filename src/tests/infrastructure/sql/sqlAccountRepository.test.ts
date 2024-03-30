@@ -79,4 +79,65 @@ describe('Account sql repository', () => {
         expect(all_account.length).toBe(1);
         expect(all_account[0]).toStrictEqual(new_account);
     });
+
+    test('Update title of account', async () => {
+        let account_repo = new SqlAccountRepository(db, table_account_name);
+        await account_repo.create_table();
+
+        let new_account: Account = {
+            id: '1-id',
+            title: 'title',
+            credit_limit: 1250,
+            credit_value: 6600
+        };
+
+        await account_repo.save(new_account);
+
+        new_account.title = 'new_title';
+
+        let account_updated = await account_repo.update(new_account);
+
+        expect(account_updated.title).toBe('new_title');
+    });
+
+    test('Update credit limit of account', async () => {
+        let account_repo = new SqlAccountRepository(db, table_account_name);
+        await account_repo.create_table();
+
+        let new_account: Account = {
+            id: '1-id',
+            title: 'title',
+            credit_limit: 1250,
+            credit_value: 6600
+        };
+
+        await account_repo.save(new_account);
+
+        new_account.credit_limit = 500;
+
+        let account_updated = await account_repo.update(new_account);
+
+        expect(account_updated.credit_limit).toBe(500);
+    });
+
+    test('Update credit value of account', async () => {
+        let account_repo = new SqlAccountRepository(db, table_account_name);
+        await account_repo.create_table();
+
+        let new_account: Account = {
+            id: '1-id',
+            title: 'title',
+            credit_limit: 0,
+            credit_value: 200
+        };
+
+        await account_repo.save(new_account);
+
+        new_account.credit_value = 200;
+
+        let account_updated = await account_repo.update(new_account);
+
+        expect(account_updated.credit_value).toBe(200);
+    });
+
 });

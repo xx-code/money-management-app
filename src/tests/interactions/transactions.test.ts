@@ -38,7 +38,7 @@ describe('Creation transaction Use Case', () => {
         get:jest.fn().mockReturnValue(Promise.resolve(null) ),
         get_all: jest.fn(),
         save: jest.fn(),
-        updated: jest.fn()
+        update: jest.fn()
     };
     let category_repo: CategoryRepository = {
         delete: jest.fn(),
@@ -219,7 +219,7 @@ describe('Get transaction Use Case', () => {
         get:jest.fn().mockReturnValue(Promise.resolve(null) ),
         get_all: jest.fn(),
         save: jest.fn(),
-        updated: jest.fn()
+        update: jest.fn()
     };
     let category_repo: CategoryRepository = {
         delete: jest.fn(),
@@ -436,7 +436,7 @@ describe('Update transaction use case', () => {
         get:jest.fn().mockReturnValue(Promise.resolve(null) ),
         get_all: jest.fn(),
         save: jest.fn(),
-        updated: jest.fn()
+        update: jest.fn()
     };
     let category_repo: CategoryRepository = {
         delete: jest.fn(),

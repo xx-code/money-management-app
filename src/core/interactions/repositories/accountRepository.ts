@@ -14,5 +14,5 @@ export interface AccountRepository {
     get(id: string): Promise<Account | null>;
     get_all(): Promise<Account[]>; 
     delete(id: string): boolean;
-    updated(account: dbAccount): Account;
+    update(account: dbAccount): Promise<Account>;
 }
