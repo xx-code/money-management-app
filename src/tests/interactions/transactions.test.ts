@@ -35,7 +35,7 @@ describe('Creation transaction Use Case', () => {
     let account_repo: AccountRepository = {
         delete: jest.fn(),
         exist: jest.fn(),
-        get: jest.fn(),
+        get:jest.fn().mockReturnValue(Promise.resolve(null) ),
         get_all: jest.fn(),
         save: jest.fn(),
         updated: jest.fn()
@@ -216,7 +216,7 @@ describe('Get transaction Use Case', () => {
     let account_repo: AccountRepository = {
         delete: jest.fn(),
         exist: jest.fn(),
-        get: jest.fn(),
+        get:jest.fn().mockReturnValue(Promise.resolve(null) ),
         get_all: jest.fn(),
         save: jest.fn(),
         updated: jest.fn()
@@ -433,7 +433,7 @@ describe('Update transaction use case', () => {
     let account_repo: AccountRepository = {
         delete: jest.fn(),
         exist: jest.fn(),
-        get: jest.fn(),
+        get:jest.fn().mockReturnValue(Promise.resolve(null) ),
         get_all: jest.fn(),
         save: jest.fn(),
         updated: jest.fn()

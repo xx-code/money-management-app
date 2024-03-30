@@ -11,7 +11,7 @@ export type dbAccount = {
 export interface AccountRepository {
     save(account: dbAccount): Promise<string>;
     exist(title: string): boolean;
-    get(id: string): Account | null;
+    get(id: string): Promise<Account | null>;
     get_all(): Array<Account>; 
     delete(id: string): boolean;
     updated(account: dbAccount): Account;

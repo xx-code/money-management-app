@@ -42,8 +42,23 @@ export class SqlAccountRepository implements AccountRepository {
     exist(title: string): boolean {
         throw new Error("Method not implemented.");
     }
-    get(id: string): Account | null {
-        throw new Error("Method not implemented.");
+    async get(id: string): Promise<Account | null> {
+        return new Promise(async (resolve, reject) => {
+            let result = await this.db.get(`SELECT id, title, credit_value, credit_limit FROM ${this.table_account_name} WHERE id = ?`, id);
+
+            console.log(result)
+
+            if (result != undefined || result != null) {
+                resolve({
+                    id: result['id'],
+                    title: result['title'],
+                    credit_limit: result['credit_limit'],
+                    credit_value: result['credit_value']
+                });
+            } else {
+                resolve(null);
+            }
+        });
     }
     get_all(): Account[] {
         throw new Error("Method not implemented.");

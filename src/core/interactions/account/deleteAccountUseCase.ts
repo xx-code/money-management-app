@@ -19,15 +19,15 @@ export class DeleteAccountUseCase implements IDeleteAccountUseCase {
         this.presenter = presenter;
     }
 
-    execute(id: string): void {
+    async execute(id: string): Promise<void> {
         try {
-            if (this.repository.get(id) == null) {
+            if (await this.repository.get(id) == null) {
                 throw new NotFoundError('Account Not Found');
             }
 
-            this.presenter.success(id)
+            this.presenter.success(id);
         } catch(err) {
-            this.presenter.fail(err as Error)
+            this.presenter.fail(err as Error);
         }
     }
 }

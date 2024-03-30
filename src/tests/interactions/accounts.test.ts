@@ -56,7 +56,7 @@ describe('Creation Account Use Case', () => {
     let repo: AccountRepository = {
         save: jest.fn().mockReturnValue('new id'),
         exist: jest.fn().mockReturnValue(false),
-        get:jest.fn(),
+        get:jest.fn().mockReturnValue(Promise.resolve(null)),
         get_all:jest.fn(),
         delete: jest.fn(),
         updated: jest.fn()
@@ -131,7 +131,7 @@ describe('Get Account Use Case', () => {
     let repo: AccountRepository = {
         save: jest.fn(),
         exist: jest.fn().mockReturnValue(false),
-        get:jest.fn().mockReturnValue(null),
+        get:jest.fn().mockReturnValue(new Promise((resolve, reject) => {resolve(null)}) ),
         get_all:jest.fn().mockReturnValue([mock_rest]),
         delete: jest.fn(),
         updated: jest.fn()
@@ -143,8 +143,8 @@ describe('Get Account Use Case', () => {
     }
     
     let use_case = new GetAccountUseCase(repo, presenter);
-    it('Test not found account', () => {
-        use_case.execute("Dvvd");
+    it('Test not found account', async () => {
+        await use_case.execute("Dvvd");
         expect(presenter.fail).toHaveBeenCalled();
         /*try {
             use_case.execute('8');
@@ -169,7 +169,7 @@ describe('Delete Account Use case', () => {
     let repo: AccountRepository = {
         save: jest.fn(),
         exist: jest.fn().mockReturnValue(false),
-        get: jest.fn().mockReturnValue(null),
+        get:jest.fn().mockReturnValue(Promise.resolve(null)),
         get_all: jest.fn().mockReturnValue([]),
         delete: jest.fn(),
         updated: jest.fn()
@@ -181,8 +181,8 @@ describe('Delete Account Use case', () => {
     }
 
     let use_case = new DeleteAccountUseCase(repo, presenter);
-    it('Test not found account', () => {
-        use_case.execute("Dvvd");
+    it('Test not found account', async () => {
+        await use_case.execute("Dvvd");
         expect(presenter.fail).toHaveBeenCalled()
     });
 });

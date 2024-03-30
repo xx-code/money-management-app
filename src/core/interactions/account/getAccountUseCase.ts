@@ -20,9 +20,9 @@ export class GetAccountUseCase implements IGetAccountUseCase {
         this.presenter = presenter;
     }
     
-    execute(id: string) {
+    async execute(id: string): Promise<void> {
         try {
-            let account = this.repository.get(id);
+            let account = await this.repository.get(id);
 
             if (account == null) {
                 throw new NotFoundError('Account Not Found');

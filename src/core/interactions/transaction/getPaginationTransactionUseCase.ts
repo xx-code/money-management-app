@@ -50,7 +50,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
         this.presenter = presenter;
     }
 
-    execute(request: RequestGetPagination): void {
+    async execute(request: RequestGetPagination): Promise<void> {
         try {
             if (request.page <= 0) {
                 throw new ValidationError('Page request must be greather than 0');
@@ -65,7 +65,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
             let tags_to_filter = []
             
             for (let i = 0; i < request.account_filter.length; i++) {
-                let account = this.account_repository.get(request.account_filter[i]);
+                let account = await this.account_repository.get(request.account_filter[i]);
 
                 if (account == null) {
                     throw new ValidationError('Account ' + request.account_filter[i] + ' in filter not exist');
