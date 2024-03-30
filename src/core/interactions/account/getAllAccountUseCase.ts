@@ -19,10 +19,9 @@ export class GetAllAccountUseCase implements IGetAllAccountUseCase{
         this.presenter = presenter;
     }
 
-    execute(): void {
+    async execute(): Promise<void> {
         try {
-            let accounts = this.repository.get_all();
-
+            let accounts = await this.repository.get_all();
             this.presenter.success(accounts);
         } catch(err) {
             this.presenter.fail(err as Error);

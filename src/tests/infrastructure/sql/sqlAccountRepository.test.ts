@@ -58,4 +58,25 @@ describe('Account sql repository', () => {
 
         expect(account).toStrictEqual(new_account);
     });
+
+    test('Get all account', async () => {
+        let account_repo = new SqlAccountRepository(db, table_account_name);
+        await account_repo.create_table();
+
+        let true_response = '1-id';
+
+        let new_account: Account = {
+            id: true_response,
+            title: 'title',
+            credit_limit: 1250,
+            credit_value: 6600
+        };
+
+        await account_repo.save(new_account);
+
+        let all_account = await account_repo.get_all();
+
+        expect(all_account.length).toBe(1);
+        expect(all_account[0]).toStrictEqual(new_account);
+    });
 });

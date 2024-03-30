@@ -12,7 +12,7 @@ export interface AccountRepository {
     save(account: dbAccount): Promise<string>;
     exist(title: string): boolean;
     get(id: string): Promise<Account | null>;
-    get_all(): Array<Account>; 
+    get_all(): Promise<Account[]>; 
     delete(id: string): boolean;
     updated(account: dbAccount): Account;
 }

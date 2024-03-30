@@ -159,8 +159,8 @@ describe('Get Account Use Case', () => {
     }
 
     let use_case2 = new GetAllAccountUseCase(repo, presenter2);
-    it('Test get all account', () => {
-        use_case2.execute() ;
+    it('Test get all account', async () => {
+        await use_case2.execute() ;
         expect(presenter2.success).toHaveBeenCalled()
     });
 });

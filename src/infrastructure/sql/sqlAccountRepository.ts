@@ -1,6 +1,7 @@
 import { Account } from "@/core/entities/account";
 import { AccountRepository, dbAccount } from "../../core/interactions/repositories/accountRepository";
 import { Database } from "sqlite3";
+import { title } from "process";
 
 export class SqlAccountRepository implements AccountRepository {
     private db: any;
@@ -46,8 +47,6 @@ export class SqlAccountRepository implements AccountRepository {
         return new Promise(async (resolve, reject) => {
             let result = await this.db.get(`SELECT id, title, credit_value, credit_limit FROM ${this.table_account_name} WHERE id = ?`, id);
 
-            console.log(result)
-
             if (result != undefined || result != null) {
                 resolve({
                     id: result['id'],
@@ -60,8 +59,22 @@ export class SqlAccountRepository implements AccountRepository {
             }
         });
     }
-    get_all(): Account[] {
-        throw new Error("Method not implemented.");
+    get_all(): Promise<Account[]> {
+        return new Promise(async (resolve, reject) => {
+            let results = await this.db.all(`SELECT id, title, credit_value, credit_limit FROM ${this.table_account_name}`);
+            let all_accounts: Account[] = [];
+
+            for (let result of results) {
+                all_accounts.push({
+                    id: result['id'],
+                    title: result['title'],
+                    credit_limit: result['credit_limit'],
+                    credit_value: result['credit_value']
+                })
+            } 
+            
+            resolve(all_accounts);
+        });
     }
     delete(id: string): boolean {
         throw new Error("Method not implemented.");
