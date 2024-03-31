@@ -60,7 +60,7 @@ describe('Test tag sql repository', () => {
         expect(categories[0]).toStrictEqual(new_tag);
     });
 
-    /*test('delete tag', async () => {
+    test('delete tag', async () => {
         let tag_repo = new SqlTagRepository(db, table_tag_name);
         await tag_repo.create_table();
         
@@ -68,12 +68,12 @@ describe('Test tag sql repository', () => {
 
         await tag_repo.save({title: new_tag});
 
-        let is_deleted = await tag_repo.delete('cat');
+        let is_deleted = await tag_repo.delete('tag');
 
         expect(is_deleted).toBe(true);
 
         let categories = await tag_repo.get_all();
 
         expect(categories.length).toBe(0);
-    })*/
+    })
 });
