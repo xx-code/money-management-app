@@ -42,7 +42,15 @@ export class SqlCategoryRepository implements CategoryRepository {
         })
     }
     delete(title: string): Promise<boolean> {
-        throw new Error("Method not implemented.");
+        return new Promise(async (resolve, reject) => {
+            let result = await this.db.run(`DELETE FROM ${this.table_category_name} WHERE title = ?`, title);
+
+            if (result['changes'] == 0) {
+                resolve(false);
+            } else {
+                resolve(true)
+            }
+        });
     }
     get(title: string): Promise<Category | null> {
         return new Promise( async (resolve, reject) => {
