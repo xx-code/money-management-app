@@ -44,7 +44,7 @@ describe('Test Category sql repository', () => {
 
         let new_record: Record = {
             id: 'record_1',
-            date: new Date(new Date().toDateString()),
+            date: new Date('2024-01-31'),
             description: 'un blabla',
             price: 15,
             type: 'Credit'
@@ -55,5 +55,25 @@ describe('Test Category sql repository', () => {
         let record = await record_repo.get('record_1');
 
         expect(record).toStrictEqual(new_record)
+    });
+
+    test('Get all records', async () => {
+        let record_repo = new SqlRecordRepository(db, table_name);
+        await record_repo.create_table();
+        let new_record: Record = {
+            id: 'record_1',
+            date: new Date('2024-01-31'),
+            description: 'un blabla',
+            price: 15,
+            type: 'Credit'
+        };
+
+        await record_repo.save(new_record);
+
+        let records = await record_repo.get_all();
+
+        expect(records.length).toBe(1);
+
+        expect(records[0]).toStrictEqual(new_record);
     });
 });

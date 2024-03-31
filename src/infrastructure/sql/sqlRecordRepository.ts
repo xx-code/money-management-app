@@ -62,7 +62,26 @@ export class SqlRecordRepository implements RecordRepository {
         });  
     }
     get_all(): Promise<Record[]> {
-        throw new Error("Method not implemented.");
+        return new Promise(async (resolve, rejects) => {
+            if (!this.is_table_exist) {
+                throw Error("Table category not created");
+            }
+
+            let results = await this.db.all(`SELECT id, price, date, description, type FROM ${this.table_record_name}`);
+            
+            let records: Record[] = [];
+            for (let result of results) {
+                records.push({
+                    id: result['id'],
+                    date: new Date(result['date']),
+                    description: result['description'],
+                    price: result['price'],
+                    type: result['type']
+                });  
+            }
+
+            resolve(records);
+        });  
     }
     get_many_by_id(ids: string[]): Promise<Record[]> {
         throw new Error("Method not implemented.");
