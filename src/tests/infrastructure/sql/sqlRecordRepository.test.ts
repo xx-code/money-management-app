@@ -119,4 +119,85 @@ describe('Test Category sql repository', () => {
 
         expect(records_id).toStrictEqual(['record_1', 'record_2']);
     });
+
+    test('Update description', async () => {
+        let record_repo = new SqlRecordRepository(db, table_name);
+        await record_repo.create_table();
+        let new_record: Record = {
+            id: 'record_1',
+            date: new Date('2024-01-31'),
+            description: 'un blabla',
+            price: 15,
+            type: 'Credit'
+        };
+
+        await record_repo.save(new_record);
+
+        new_record.description = 'new description';
+
+        let record_updated = await record_repo.update(new_record);
+
+        expect(record_updated.description).toBe('new description');
+    });
+
+    test('Update price', async () => {
+        let record_repo = new SqlRecordRepository(db, table_name);
+        await record_repo.create_table();
+        let new_record: Record = {
+            id: 'record_1',
+            date: new Date('2024-01-31'),
+            description: 'un blabla',
+            price: 15,
+            type: 'Credit'
+        };
+
+        await record_repo.save(new_record);
+
+        new_record.price = 20;
+
+        let record_updated = await record_repo.update(new_record);
+
+        expect(record_updated.price).toBe(20);
+    });
+
+
+    test('Update type', async () => {
+        let record_repo = new SqlRecordRepository(db, table_name);
+        await record_repo.create_table();
+        let new_record: Record = {
+            id: 'record_1',
+            date: new Date('2024-01-31'),
+            description: 'un blabla',
+            price: 15,
+            type: 'Credit'
+        };
+
+        await record_repo.save(new_record);
+
+        new_record.type = 'Debit';
+
+        let record_updated = await record_repo.update(new_record);
+
+        expect(record_updated.type).toBe('Debit');
+    });
+
+    test('Update date', async () => {
+        let record_repo = new SqlRecordRepository(db, table_name);
+        await record_repo.create_table();
+        let new_record: Record = {
+            id: 'record_1',
+            date: new Date('2024-01-31'),
+            description: 'un blabla',
+            price: 15,
+            type: 'Credit'
+        };
+
+        await record_repo.save(new_record);
+
+        new_record.date = new Date(2024, 1, 22);
+
+        let record_updated = await record_repo.update(new_record);
+
+        expect(record_updated.date).toStrictEqual(new Date(2024, 1, 22));
+    });
 });

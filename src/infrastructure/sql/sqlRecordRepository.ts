@@ -88,7 +88,7 @@ export class SqlRecordRepository implements RecordRepository {
             if (!this.is_table_exist) {
                 throw Error("Table record not created");
             }
-            
+
             let records: Record[] = [];
             for (let id of ids) {
                 let record = await this.get(id);
@@ -103,8 +103,16 @@ export class SqlRecordRepository implements RecordRepository {
     delete(id: string): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
-    update(request: Record): Promise<Record> {
-        throw new Error("Method not implemented.");
+    update(record: Record): Promise<Record> {
+        return new Promise(async (resolve, reject) => {
+            await this.db.run(`
+                UPDATE ${this.table_record_name} SET price = ?, date = ?, description = ?, type = ? WHERE id = ? 
+            `, record.price, record.date.toDateString(), record.description, record.type, record.id);
+
+            let record_updated = await this.get(record.id);
+
+            resolve(record_updated!);
+        });
     }
     
 }
