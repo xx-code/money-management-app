@@ -21,10 +21,10 @@ export class GetCategoryUseCase implements IGetCategoryUseCase {
         this.presenter = presenter;
     }
 
-    execute(title: string): void {
+    async execute(title: string): Promise<void> {
         try {
             title = formatted(title);
-            let category = this.repository.get(title);
+            let category = await this.repository.get(title);
             if (category == null) {
                 throw new NotFoundError('Category no found');
             }

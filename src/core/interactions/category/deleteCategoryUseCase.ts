@@ -7,7 +7,7 @@ export interface IDeleteCategoryUseCase {
 }
 
 export interface IDeleteCategoryUseCaseResponse {
-    success(title: string): void;
+    success(is_deleted: boolean): void;
     fail(err: Error): void;
 }
 
@@ -20,17 +20,18 @@ export class DeleteCategoryUseCase implements IDeleteCategoryUseCase {
         this.presenter = presenter;
     }
 
-    execute(title: string): void {
+    async execute(title: string): Promise<void> {
         try {
             title = formatted(title);
-            let category = this.repository.get(title);
-
+            let category = await this.repository.get(title);
+            
             if (category == null) {
                 throw new NotFoundError('Category not found');
             }
 
-            let response = this.repository.delete(title);
-            this.presenter.success(response);
+            let is_deleted = await this.repository.delete(title);
+     
+            this.presenter.success(is_deleted);
         } catch(err) {
             this.presenter.fail(err as Error);
         }

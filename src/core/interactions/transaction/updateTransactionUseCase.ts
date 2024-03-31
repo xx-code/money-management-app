@@ -46,7 +46,7 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
         this.presenter = presenter;
     }
 
-    execute(request: RequestUpdateTransactionUseCase): void {
+    async execute(request: RequestUpdateTransactionUseCase): Promise<void> {
         try {
             let transaction = this.transaction_repository.get(request.id);
             
@@ -92,7 +92,7 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
                     throw new ValidationError('Category ref field is empty');
                 }
 
-                let new_category = this.category_repository.get(request.category_ref);
+                let new_category = await this.category_repository.get(request.category_ref);
                 if (new_category == null) {
                     throw new ValidationError('Category not exist');
                 }

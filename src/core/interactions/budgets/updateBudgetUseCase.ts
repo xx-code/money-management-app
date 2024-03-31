@@ -47,9 +47,9 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
         this.presenter = presenter;
     }
 
-    execute(request: RequestpdateCategoryBudget): void {
+    async execute(request: RequestpdateCategoryBudget): Promise<void> {
         try { 
-            let budget = this.budget_repository.get(request.id);
+            let budget = await this.budget_repository.get(request.id);
 
             if (budget == null) {
                 throw new NotFoundError('Budget not found');
@@ -81,7 +81,7 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                     throw new ValidationError('Budget categories must have at least 1 value');
                 }
                 for (let i = 0; request.categories.length; i++) {
-                    let category = this.category_repository.get(request.categories[i]);
+                    let category = await this.category_repository.get(request.categories[i]);
                     if (category == null) {
                         throw new ValidationError('This category is already use');
                     }

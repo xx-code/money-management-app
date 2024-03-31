@@ -75,7 +75,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
             }
 
             for (let i = 0; i < request.category_filter.length; i++) {
-                let category = this.category_repository.get(request.category_filter[i]);
+                let category = await this.category_repository.get(request.category_filter[i]);
 
                 if (category == null) {
                     throw new ValidationError('Category ' + request.category_filter[i] + ' in filter not exist');

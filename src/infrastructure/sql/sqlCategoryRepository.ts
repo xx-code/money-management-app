@@ -41,13 +41,31 @@ export class SqlCategoryRepository implements CategoryRepository {
             }
         })
     }
-    delete(title: string): string {
+    delete(title: string): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
-    get(title: string): Category | null {
-        throw new Error("Method not implemented.");
+    get(title: string): Promise<Category | null> {
+        return new Promise( async (resolve, reject) => {
+            if (!this.is_table_exist) {
+                throw Error("Table account not created");
+            }
+    
+            let result = await this.db.get(`
+                SELECT title, icon FROM ${this.table_category_name} WHERE title = ?`,
+                title
+            );
+
+            if (result != undefined) {
+                resolve({
+                    title: result['title'], 
+                    icon: result['icon']
+                });
+            } else {
+                resolve(null);
+            }
+        });
     }
-    get_all(): Category[] {
+    get_all(): Promise<Category[]> {
         throw new Error("Method not implemented.");
     }
     

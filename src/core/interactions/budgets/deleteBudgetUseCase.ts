@@ -19,10 +19,10 @@ export class DeleteBudgetCategoryUseCase implements IDeleteBudgetUseCase {
         this.presenter = presenter;
     }
 
-    execute(id: string): void {
+    async execute(id: string): Promise<void> {
         try {
 
-            let budget = this.repository.get(id);
+            let budget = await this.repository.get(id);
 
             if (budget == null) {
                 throw new NotFoundError('Budget not found');

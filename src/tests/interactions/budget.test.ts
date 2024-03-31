@@ -48,7 +48,7 @@ describe('Creation Budget Test', () => {
     let cat_repo: CategoryRepository = {
         save: jest.fn(),
         delete: jest.fn(),
-        get: jest.fn(),
+        get: jest.fn().mockReturnValue(Promise.resolve(null)),
         get_all: jest.fn(),
     }
 
@@ -310,7 +310,7 @@ describe('Delete budget test cat', ( ) => {
     let repo_cat: BudgetCategoryRepository = {
         save: jest.fn(),
         delete: jest.fn().mockReturnValue(""),
-        get: jest.fn().mockReturnValue(null),
+        get: jest.fn().mockReturnValue(Promise.resolve(null)),
         get_all: jest.fn(),
         update: jest.fn()
     }
@@ -330,8 +330,8 @@ describe('Delete budget test cat', ( ) => {
 
     let use_case = new DeleteBudgetCategoryUseCase(repo_cat, presenter);
 
-    test('test delete category', () => {
-        use_case.execute('ff');
+    test('test delete budget category', async () => {
+        await use_case.execute('ff');
         expect(presenter.fail).toHaveBeenCalled();
         /*try {
             use_case.execute('ff');
@@ -371,7 +371,7 @@ describe('Update Budget test', () => {
     let budget_cat_repo: BudgetCategoryRepository = {
         save: jest.fn(),
         delete: jest.fn().mockReturnValue(false),
-        get: jest.fn().mockReturnValue(null),
+        get: jest.fn().mockReturnValue(Promise.resolve(null)),
         get_all: jest.fn(),
         update: jest.fn()
     };
@@ -398,8 +398,8 @@ describe('Update Budget test', () => {
     let cat_repo: CategoryRepository = {
         save: jest.fn(),
         delete: jest.fn(),
-        get: jest.fn(),
-        get_all: jest.fn(),
+        get: jest.fn().mockReturnValue(Promise.resolve(null)),
+        get_all: jest.fn().mockReturnValue(Promise.resolve([])),
     }
   
     let presenter: IUpdateBudgetUseCaseResponse = {
@@ -531,8 +531,8 @@ describe('Update Budget test', () => {
     });
 
     let use_case3 = new UpdateBudgetCategoryUseCase(budget_cat_repo, trans_repo, cat_repo, presenter);
-    test('Verify update categories', () => {
-        use_case3.execute({
+    test('Verify update categories', async () => {
+        await use_case3.execute({
             id: 'df',
             title: null,
             target: null,
@@ -555,8 +555,8 @@ describe('Update Budget test', () => {
         }*/
     });
     
-    test('Verify update period time', () => {
-        use_case3.execute({
+    test('Verify update period time', async () => {
+        await use_case3.execute({
             id: 'df',
             title: null,
             target: null,

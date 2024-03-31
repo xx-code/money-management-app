@@ -9,7 +9,7 @@ import { CategoryRepository, dbCategory } from "../../core/interactions/reposito
 describe('Add category', () => {
     let repo: CategoryRepository = {
         save: jest.fn().mockReturnValue('new id'),
-        get:jest.fn(),
+        get:jest.fn().mockRejectedValue(Promise.resolve(null)),
         get_all:jest.fn(),
         delete: jest.fn(),
     };
@@ -65,8 +65,8 @@ describe('Get Category', () => {
     let val: dbCategory = {title: 'df', icon: 'df'};
     let repo: CategoryRepository = {
         save: jest.fn().mockReturnValue('new id'),
-        get:jest.fn().mockReturnValue(null),
-        get_all:jest.fn().mockReturnValue([val]),
+        get:jest.fn().mockReturnValue(Promise.resolve(null)),
+        get_all:jest.fn().mockReturnValue(Promise.resolve(["", ""])),
         delete: jest.fn(),
     };
 
@@ -76,8 +76,8 @@ describe('Get Category', () => {
     }
 
     let use_case = new GetCategoryUseCase(repo, presenter);
-    test('Not found category', () => {
-        use_case.execute('dfg');
+    test('Not found category', async () => {
+        await use_case.execute('dfg');
         expect(presenter.fail).toHaveBeenCalled();
         /*try {
             use_case.execute('dfg');
@@ -92,8 +92,8 @@ describe('Get Category', () => {
     }
 
     let use_case2 = new GetAllCategoryUseCase(repo, presenter2);
-    test('all categories', () => {
-        use_case2.execute();
+    test('all categories', async () => {
+        await use_case2.execute();
         expect(presenter2.success).toHaveBeenCalled();
 
         //expect(response.length).toBe(1);
@@ -103,9 +103,9 @@ describe('Get Category', () => {
 describe('Delete Category', () => {
     let repo: CategoryRepository = {
         save: jest.fn().mockReturnValue('new id'),
-        get:jest.fn().mockReturnValue(null),
+        get:jest.fn().mockReturnValue(Promise.resolve(null)),
         get_all:jest.fn(),
-        delete: jest.fn(),
+        delete: jest.fn().mockReturnValue(Promise.resolve(false)),
     };
 
     let presenter: IDeleteCategoryUseCaseResponse = {
@@ -115,8 +115,8 @@ describe('Delete Category', () => {
 
     let use_case = new DeleteCategoryUseCase(repo, presenter);
 
-    test('Test no found', () => {
-        use_case.execute('df');
+    test('Test no found', async () => {
+        await use_case.execute('df');
         expect(presenter.fail).toHaveBeenCalled();
         /*try {
             use_case.execute('df');
