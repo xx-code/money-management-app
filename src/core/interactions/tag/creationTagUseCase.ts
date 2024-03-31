@@ -21,7 +21,7 @@ export class CreationTagUseCase implements ICreationTagUseCase {
         this.presenter = presenter;
     }
 
-    execute(title: string): void {
+    async execute(title: string): Promise<void> {
         try {
             if (is_empty(title)) {
                 throw new ValidationError('Title field empty');
@@ -29,17 +29,21 @@ export class CreationTagUseCase implements ICreationTagUseCase {
 
             title = formatted(title);
 
-            let tag = this.repository.get(title);
+            let tag = await this.repository.get(title);
 
             if (tag != null) {
-                throw new ValidationError('This category is already use');
+                throw new ValidationError('This tag is already use');
             }
 
-            let response = this.repository.save({
+            let is_saved = await this.repository.save({
                 title: title 
             });
 
-            this.presenter.success(response);
+            if (!is_saved) {
+                throw new Error('Tag is not saved')
+            }
+
+            this.presenter.success(title);
         } catch (err) {
             this.presenter.fail(err as Error);
         }

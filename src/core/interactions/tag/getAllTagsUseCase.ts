@@ -20,9 +20,9 @@ export class GetAllTagUseCase implements IGetAllTagUseCase {
         this.presenter = presenter;
     }
 
-    execute(): void{
+    async execute(): Promise<void> {
         try {
-            let results = this.repository.get_all();
+            let results = await this.repository.get_all();
 
             this.presenter.success(results);
         } catch(err) {

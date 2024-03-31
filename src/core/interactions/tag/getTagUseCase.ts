@@ -21,9 +21,9 @@ export class GetTagUseCase implements IGetTagUseCase {
         this.presenter = presenter;
     }
 
-    execute(title: string): void {
+    async execute(title: string): Promise<void> {
         try {
-            let tag = this.repository.get(formatted(title));
+            let tag = await this.repository.get(formatted(title));
             if (tag == null) {
                 throw new NotFoundError('Tag no found');
             }

@@ -41,8 +41,7 @@ describe('Creation Budget Test', () => {
         save: jest.fn(),
         delete: jest.fn(),
         get: jest.fn(),
-        get_all: jest.fn(),
-        save_multiple: jest.fn()
+        get_all: jest.fn()
     }
 
     let cat_repo: CategoryRepository = {
@@ -391,8 +390,7 @@ describe('Update Budget test', () => {
         save: jest.fn(),
         delete: jest.fn(),
         get: jest.fn(),
-        get_all: jest.fn(),
-        save_multiple: jest.fn()
+        get_all: jest.fn()
     }
 
     let cat_repo: CategoryRepository = {

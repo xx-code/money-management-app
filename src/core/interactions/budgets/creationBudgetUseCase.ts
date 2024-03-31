@@ -5,6 +5,7 @@ import { CryptoService } from "../../adapter/libs";
 import { is_empty } from "../../entities/verify_empty_value";
 import { CategoryRepository } from "../repositories/categoryRepository";
 import { TagRepository } from "../repositories/tagRepository";
+import { formatted } from "../../../core/entities/formatted";
 
 export type CreationBudgetCategoryUseCaseRequest = {
     title: string;
@@ -44,7 +45,7 @@ export class CreationBudgetCategoryUseCase implements ICreationBudgetUseCase {
         this.crypto = crypto;
     }
 
-    execute(request: CreationBudgetCategoryUseCaseRequest): void {
+    async execute(request: CreationBudgetCategoryUseCaseRequest): Promise<void> {
         try {
             
             if (is_empty(request.title)) {
@@ -119,7 +120,7 @@ export class CreationBudgetTagUseCase implements ICreationBudgetUseCase {
             for (let i = 0; i < request.tags.length; i++) {
                 let tag = this.tag_repository.get(request.tags[i]);
                 if (tag != null) {
-                    this.tag_repository.save({title: request.tags[i]});
+                    this.tag_repository.save({title: formatted(request.tags[i]) });
                 }
             }
 

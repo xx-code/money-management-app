@@ -7,7 +7,7 @@ export interface IDeleteTagUseCase {
 }
 
 export interface IDeleteTagUseCaseResponse {
-    success(title: string): void;
+    success(is_deleted: boolean): void;
     fail(err: Error): void;
 }
 
@@ -20,17 +20,17 @@ export class DeleteTagUseCase implements IDeleteTagUseCase {
         this.presenter = presenter;
     }
 
-    execute(title: string): void {
+    async execute(title: string): Promise<void> {
         try {
             title = formatted(title);
-            let tag = this.repository.get(title);
+            let tag = await this.repository.get(title);
 
             if (tag == null) {
                 throw new NotFoundError('Tag not found');
             }
 
-            let response = this.repository.delete(title);
-            this.presenter.success(response);
+            let is_deleted = await this.repository.delete(title);
+            this.presenter.success(is_deleted);
         } catch(err) {
             this.presenter.fail(err as Error);
         }

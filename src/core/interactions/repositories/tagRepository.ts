@@ -5,9 +5,8 @@ export type dbTag = {
 } 
 
 export interface TagRepository {
-    save(tag: dbTag): string;
-    save_multiple(tags: dbTag[]): string;
-    delete(title: string): string;
-    get(title: string): Tag|null;
-    get_all(): Array<Tag>;
+    save(tag: dbTag): Promise<boolean>;
+    delete(title: string): Promise<boolean>;
+    get(title: string): Promise<Tag|null>;
+    get_all(): Promise<Tag[]>;
 }

@@ -104,11 +104,11 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
                     if (is_empty(request.tag_ref[i])) {
                         throw new ValidationError('Tag a position ' + i + ' ref field is empty');
                     } 
-                    let tag = this.tag_repository.get(request.tag_ref[i]);
+                    let tag = await this.tag_repository.get(request.tag_ref[i]);
 
                     if (tag == null) {
-                        let new_tag = this.tag_repository.save({ title: request.tag_ref[i] });
-                        tags.push(new_tag);
+                        await this.tag_repository.save({ title: formatted(request.tag_ref[i]) });
+                        tags.push(request.tag_ref[i]);
                     } else {
                         if (tags.includes(tag)) {
                             tags.push(tag)

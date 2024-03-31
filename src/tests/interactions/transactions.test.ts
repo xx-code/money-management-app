@@ -58,8 +58,7 @@ describe('Creation transaction Use Case', () => {
         delete: jest.fn(),
         get: jest.fn(),
         get_all: jest.fn(),
-        save: jest.fn(),
-        save_multiple: jest.fn()
+        save: jest.fn()
     };
     
     let crypto = new MockCrypto();
@@ -239,8 +238,7 @@ describe('Get transaction Use Case', () => {
         delete: jest.fn(),
         get: jest.fn(),
         get_all: jest.fn(),
-        save: jest.fn(),
-        save_multiple: jest.fn()
+        save: jest.fn()
     };
 
     let presenter: IGetTransactionUseCaseResponse = {
@@ -456,8 +454,7 @@ describe('Update transaction use case', () => {
         delete: jest.fn(),
         get: jest.fn(),
         get_all: jest.fn(),
-        save: jest.fn(),
-        save_multiple: jest.fn()
+        save: jest.fn()
     };
 
     let presenter: IUpdateTransactionUseCaseResponse = {

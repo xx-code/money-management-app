@@ -6,6 +6,7 @@ import { is_empty } from "../../entities/verify_empty_value";
 import { TransactionRepository } from "../repositories/transactionRepository";
 import { TagRepository } from "../repositories/tagRepository";
 import { CategoryRepository } from "../repositories/categoryRepository";
+import { formatted } from "../../../core/entities/formatted";
 
 export type RequestUpdateTagBudget = {
     id: string;
@@ -140,7 +141,8 @@ export class UpdateBudgetTagUseCase implements IUpdateBudgetUseCase {
         this.presenter = presenter;
     }
 
-    execute(request: RequestUpdateTagBudget): void {
+    //TODO: check tag creation 
+    async execute(request: RequestUpdateTagBudget): Promise<void> {
         try {
             let budget = this.budget_repository.get(request.id);
 
@@ -175,10 +177,10 @@ export class UpdateBudgetTagUseCase implements IUpdateBudgetUseCase {
                     throw new ValidationError('Tags must have at least 1 value');
                 } 
                 for (let i = 0; i < request.tags.length; i++) {
-                    let tag = this.tag_repository.get(request.tags[i]);
+                    let tag = await this.tag_repository.get(request.tags[i]);
                     if (tag == null) {
-                        let new_tag = this.tag_repository.save({title: request.tags[i]});
-                        budget.tags.push(new_tag);
+                        await this.tag_repository.save({title: formatted(request.tags[i]) });
+                        budget.tags.push(request.tags[i]);
                     }
                 }
             }
