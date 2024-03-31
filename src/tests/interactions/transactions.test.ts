@@ -69,8 +69,8 @@ describe('Creation transaction Use Case', () => {
     }
     let use_case = new AddTransactionUseCase(trans_repo, record_repo, category_repo, tag_repo, account_repo, crypto, presenter);
     
-    it('Test error description empty', () => {
-        use_case.execute({
+    it('Test error description empty', async () => {
+        await use_case.execute({
             description: ' ',
             date: new Date("vot, tot"),
             category_ref: ' d',
@@ -95,8 +95,8 @@ describe('Creation transaction Use Case', () => {
         }*/
     });
 
-    it('Test error category empty', () => {
-        use_case.execute({
+    it('Test error category empty', async () => {
+        await use_case.execute({
             description: 'df',
             date: new Date("vot, tot"),
             category_ref: '  ',
@@ -121,8 +121,8 @@ describe('Creation transaction Use Case', () => {
         }*/
     });
 
-    it('Test error category empty', () => {
-        use_case.execute({
+    it('Test error category empty', async () => {
+        await use_case.execute({
             description: 'df',
             date: new Date("vot, tot"),
             category_ref: 'dsfd',
@@ -147,8 +147,8 @@ describe('Creation transaction Use Case', () => {
         }*/
     });
 
-    it('Test error price', () => {
-        use_case.execute({
+    it('Test error price', async () => {
+        await use_case.execute({
             description: 'df',
             date: new Date("vot, tot"),
             category_ref: 'Price must be greather or equal to 0',

@@ -47,7 +47,7 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
         this.presenter = presenter;
     }
 
-    execute(request: RequestAddTransactionUseCase): void {
+    async execute(request: RequestAddTransactionUseCase): Promise<void> {
         try {
             let new_id = this.crypto.generate_uuid_to_string();
 
@@ -55,7 +55,7 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
                 throw new ValidationError('Account ref field is empty');
             }
 
-            let account = this.account_repository.get(request.account_ref);
+            let account = await this.account_repository.get(request.account_ref);
 
             if (account == null) {
                 throw new ValidationError('Account not exist');
@@ -65,7 +65,7 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
                 throw new ValidationError('Category ref field is empty');
             }
 
-            let category = this.category_repository.get(request.category_ref);
+            let category = await this.category_repository.get(request.category_ref);
 
             if (category == null) {
                 throw new ValidationError('Category not exist');
@@ -82,8 +82,12 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
             }
 
             for(let i = 0; i < tags.length; i++) {
-                if (this.tag_repository.get(tags[i]) == null) {
-                    this.tag_repository.save({title: tags[i]})
+                if (await this.tag_repository.get(tags[i]) == null) {
+                    let is_saved = await this.tag_repository.save({title: tags[i]});
+
+                    if (!is_saved) {
+                        throw new Error(`Tag ${tags[i]}not saved`)
+                    }
                 }
             }
 
@@ -95,20 +99,25 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
                 throw new ValidationError('Price must be greather to 0');
             }
 
-            let record_ref = this.record_repository.save({
-                id: this.crypto.generate_uuid_to_string(),
+            let record_id = this.crypto.generate_uuid_to_string();
+            let is_record_saved = await this.record_repository.save({
+                id: record_id,
                 price: request.price,
                 date: request.date,
                 description: request.description,
                 type: request.type
             });
+
+            if (!is_record_saved) {
+                throw new Error('New record not created');
+            }
             
-            this.transaction_repository.save({
+            await this.transaction_repository.save({
                 id: new_id,
                 account_ref: request.account_ref,
                 category_ref: formatted(request.category_ref),
                 tag_ref: tags,
-                record_ref: record_ref
+                record_ref: record_id
             });
 
            this.presenter.success(new_id);
