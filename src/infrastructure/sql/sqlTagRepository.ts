@@ -60,7 +60,7 @@ export class SqlTagRepository implements TagRepository {
             }
     
             let result = await this.db.get(`
-                SELECT title, icon FROM ${this.table_tage_name} WHERE title = ?`,
+                SELECT title FROM ${this.table_tage_name} WHERE title = ?`,
                 title
             );
 

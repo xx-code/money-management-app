@@ -32,32 +32,26 @@ describe('Test tag sql repository', () => {
         expect(is_save).toBe(true);
     });
 
-    /*test('Get tag', async () => {
+    test('Get tag', async () => {
         let tag_repo = new SqlTagRepository(db, table_tag_name);
         await tag_repo.create_table();
         
-        let new_tag: tag = {
-            title: 'cat',
-            icon: 'ico-cat'
-        }
+        let new_tag: Tag = 'tag';
 
-        await tag_repo.save(new_tag);
+        await tag_repo.save({title: new_tag});
 
-        let tag = await tag_repo.get('cat');
+        let tag = await tag_repo.get('tag');
 
         expect(tag).toStrictEqual(new_tag);
     });
 
-    test('Get all tag', async () => {
+    /*test('Get all tag', async () => {
         let tag_repo = new SqlTagRepository(db, table_tag_name);
         await tag_repo.create_table();
         
-        let new_tag: tag = {
-            title: 'cat',
-            icon: 'ico-cat'
-        }
+        let new_tag: Tag = 'tag';
 
-        await tag_repo.save(new_tag);
+        await tag_repo.save({title: new_tag});
 
         let categories = await tag_repo.get_all();
 
@@ -70,12 +64,9 @@ describe('Test tag sql repository', () => {
         let tag_repo = new SqlTagRepository(db, table_tag_name);
         await tag_repo.create_table();
         
-        let new_tag: tag = {
-            title: 'cat',
-            icon: 'ico-cat'
-        }
+        let new_tag: Tag = 'tag';
 
-        await tag_repo.save(new_tag);
+        await tag_repo.save({title: new_tag});
 
         let is_deleted = await tag_repo.delete('cat');
 
