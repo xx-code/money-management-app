@@ -45,7 +45,7 @@ describe('Test tag sql repository', () => {
         expect(tag).toStrictEqual(new_tag);
     });
 
-    /*test('Get all tag', async () => {
+    test('Get all tag', async () => {
         let tag_repo = new SqlTagRepository(db, table_tag_name);
         await tag_repo.create_table();
         
@@ -60,7 +60,7 @@ describe('Test tag sql repository', () => {
         expect(categories[0]).toStrictEqual(new_tag);
     });
 
-    test('delete tag', async () => {
+    /*test('delete tag', async () => {
         let tag_repo = new SqlTagRepository(db, table_tag_name);
         await tag_repo.create_table();
         
