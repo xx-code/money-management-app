@@ -3,7 +3,7 @@ import { open } from "sqlite";
 import { SqlRecordRepository } from "../../../infrastructure/sql/sqlRecordRepository";
 import { Record } from "@/core/entities/transaction";
 
-describe('Test Category sql repository', () => {
+describe('Test Record sql repository', () => {
     sqlite3.verbose();
     let db: any | null = null;
     let table_name = 'records';
@@ -199,5 +199,27 @@ describe('Test Category sql repository', () => {
         let record_updated = await record_repo.update(new_record);
 
         expect(record_updated.date).toStrictEqual(new Date(2024, 1, 22));
+    });
+
+    test('delete record', async () => {
+        let record_repo = new SqlRecordRepository(db, table_name);
+        await record_repo.create_table();
+        let new_record: Record = {
+            id: 'record_1',
+            date: new Date('2024-01-31'),
+            description: 'un blabla',
+            price: 15,
+            type: 'Credit'
+        };
+
+        await record_repo.save(new_record);
+
+        let is_deleted = await record_repo.delete('record_1');
+
+        expect(is_deleted).toBe(true);
+
+        let records = await record_repo.get_all();
+
+        expect(records.length).toBe(0);
     });
 });

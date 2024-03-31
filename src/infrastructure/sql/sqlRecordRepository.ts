@@ -101,7 +101,15 @@ export class SqlRecordRepository implements RecordRepository {
         });
     }
     delete(id: string): Promise<boolean> {
-        throw new Error("Method not implemented.");
+        return new Promise(async (resolve, reject) => {
+            let result = await this.db.run(`DELETE FROM ${this.table_record_name} WHERE id = ?`, id);
+
+            if (result['changes'] == 0) {
+                resolve(false);
+            } else {
+                resolve(true)
+            }
+        });
     }
     update(record: Record): Promise<Record> {
         return new Promise(async (resolve, reject) => {
