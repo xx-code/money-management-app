@@ -50,4 +50,22 @@ describe('Test Category sql repository', () => {
 
         expect(category).toStrictEqual(new_category);
     });
+
+    test('Get all category', async () => {
+        let category_repo = new SqlCategoryRepository(db, table_category_name);
+        await category_repo.create_table();
+        
+        let new_category: Category = {
+            title: 'cat',
+            icon: 'ico-cat'
+        }
+
+        await category_repo.save(new_category);
+
+        let categories = await category_repo.get_all();
+
+        expect(categories.length).toBe(1);
+
+        expect(categories[0]).toStrictEqual(new_category);
+    });
 });

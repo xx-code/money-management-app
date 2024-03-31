@@ -26,7 +26,7 @@ export class SqlCategoryRepository implements CategoryRepository {
     save(dbCategory: dbCategory): Promise<boolean> {
         return new Promise( async (resolve, reject) => {
             if (!this.is_table_exist) {
-                throw Error("Table account not created");
+                throw Error("Table category not created");
             }
     
             let result = await this.db.run(`
@@ -47,7 +47,7 @@ export class SqlCategoryRepository implements CategoryRepository {
     get(title: string): Promise<Category | null> {
         return new Promise( async (resolve, reject) => {
             if (!this.is_table_exist) {
-                throw Error("Table account not created");
+                throw Error("Table category not created");
             }
     
             let result = await this.db.get(`
@@ -66,7 +66,24 @@ export class SqlCategoryRepository implements CategoryRepository {
         });
     }
     get_all(): Promise<Category[]> {
-        throw new Error("Method not implemented.");
+        return new Promise( async (resolve, reject) => {
+            if (!this.is_table_exist) {
+                throw Error("Table category not created");
+            }
+    
+            let results = await this.db.all(`SELECT title, icon FROM ${this.table_category_name} `);
+
+            let categories = [];
+
+            for (let result of results) {
+                categories.push({
+                    title: result['title'], 
+                    icon: result['icon']
+                });
+            }
+
+            resolve(categories);
+        });
     }
     
 }
