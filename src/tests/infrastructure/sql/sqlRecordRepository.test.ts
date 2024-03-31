@@ -76,4 +76,47 @@ describe('Test Category sql repository', () => {
 
         expect(records[0]).toStrictEqual(new_record);
     });
+
+    test('Get many by id records', async () => {
+        let record_repo = new SqlRecordRepository(db, table_name);
+        await record_repo.create_table();
+        let new_record: Record = {
+            id: 'record_1',
+            date: new Date('2024-01-31'),
+            description: 'un blabla',
+            price: 15,
+            type: 'Credit'
+        };
+
+        await record_repo.save(new_record);
+
+        let new_record2: Record = {
+            id: 'record_2',
+            date: new Date('2024-01-31'),
+            description: 'un blabla',
+            price: 15,
+            type: 'Credit'
+        };
+
+        await record_repo.save(new_record2);
+
+        let new_record3: Record = {
+            id: 'record_3',
+            date: new Date('2024-01-31'),
+            description: 'un blabla',
+            price: 15,
+            type: 'Credit'
+        };
+
+        await record_repo.save(new_record3);
+
+        let results = await record_repo.get_many_by_id(['record_1', 'record_2']);
+
+        let records_id = [];
+        for (let result of results) {
+            records_id.push(result.id);
+        }
+
+        expect(records_id).toStrictEqual(['record_1', 'record_2']);
+    });
 });

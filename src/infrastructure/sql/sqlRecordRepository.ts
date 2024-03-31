@@ -26,7 +26,7 @@ export class SqlRecordRepository implements RecordRepository {
     save(request: Record): Promise<boolean> {
         return new Promise(async (resolve, rejects) => {
             if (!this.is_table_exist) {
-                throw Error("Table category not created");
+                throw Error("Table record not created");
             }
 
             let result = await this.db.run(`
@@ -44,7 +44,7 @@ export class SqlRecordRepository implements RecordRepository {
     get(id: string): Promise<Record | null> {
         return new Promise(async (resolve, rejects) => {
             if (!this.is_table_exist) {
-                throw Error("Table category not created");
+                throw Error("Table record not created");
             }
 
             let result = await this.db.get(`SELECT id, price, date, description, type FROM ${this.table_record_name} WHERE id = ?`, id);
@@ -64,7 +64,7 @@ export class SqlRecordRepository implements RecordRepository {
     get_all(): Promise<Record[]> {
         return new Promise(async (resolve, rejects) => {
             if (!this.is_table_exist) {
-                throw Error("Table category not created");
+                throw Error("Table record not created");
             }
 
             let results = await this.db.all(`SELECT id, price, date, description, type FROM ${this.table_record_name}`);
@@ -84,7 +84,21 @@ export class SqlRecordRepository implements RecordRepository {
         });  
     }
     get_many_by_id(ids: string[]): Promise<Record[]> {
-        throw new Error("Method not implemented.");
+        return new Promise(async (resolve, rejects) => {
+            if (!this.is_table_exist) {
+                throw Error("Table record not created");
+            }
+            
+            let records: Record[] = [];
+            for (let id of ids) {
+                let record = await this.get(id);
+                if (record != null) {
+                    records.push(record);
+                }
+            }
+
+            resolve(records);
+        });
     }
     delete(id: string): Promise<boolean> {
         throw new Error("Method not implemented.");
