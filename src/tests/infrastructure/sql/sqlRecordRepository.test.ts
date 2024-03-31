@@ -37,4 +37,23 @@ describe('Test Category sql repository', () => {
 
         expect(is_saved).toBe(true);
     });
+
+    test('Get record', async () => {
+        let record_repo = new SqlRecordRepository(db, table_name);
+        await record_repo.create_table();
+
+        let new_record: Record = {
+            id: 'record_1',
+            date: new Date(new Date().toDateString()),
+            description: 'un blabla',
+            price: 15,
+            type: 'Credit'
+        };
+
+        await record_repo.save(new_record);
+
+        let record = await record_repo.get('record_1');
+
+        expect(record).toStrictEqual(new_record)
+    });
 });
