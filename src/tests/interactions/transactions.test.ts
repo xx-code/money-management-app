@@ -246,8 +246,8 @@ describe('Get transaction Use Case', () => {
         fail: jest.fn().mockReturnValue(new ValidationError('validation'))
     }
     let use_case = new GetTransactionUseCase(trans_repo, presenter);
-    it('Test not found transaction', () => {
-        use_case.execute('8');
+    it('Test not found transaction', async () => {
+        await use_case.execute('8');
         expect(presenter.fail).toHaveBeenCalled();
         /*try {
             use_case.execute('8');
@@ -391,8 +391,8 @@ describe('Get transaction Use Case', () => {
         }*/
     });
 
-    it('Test pagination', () => {
-        use_case2.execute({
+    it('Test pagination', async () => {
+        await use_case2.execute({
             page: 1,
             size: 12,
             sort_by: null,
@@ -462,8 +462,8 @@ describe('Update transaction use case', () => {
         fail: jest.fn().mockReturnValue(new ValidationError('validation'))
     }
     let use_case = new UpdateTransactionUseCase(trans_repo, presenter, account_repo, category_repo, tag_repo, record_repo);
-    it('test no found transaction', () => {
-        use_case.execute({
+    it('test no found transaction', async () => {
+        await use_case.execute({
             id: 'df',
             tag_ref: null,
             category_ref: null,
@@ -494,8 +494,8 @@ describe('Update transaction use case', () => {
     }
 
     let use_case2 = new UpdateTransactionUseCase(trans_repo, presenter2, account_repo, category_repo, tag_repo, record_repo);
-    it('Test description', () => {
-        use_case2.execute({
+    it('Test description',async () => {
+        await use_case2.execute({
             id: 'df',
             tag_ref: null,
             category_ref: null,
@@ -520,8 +520,8 @@ describe('Update transaction use case', () => {
         }*/
     });
 
-    it('test price error', () => {
-        use_case2.execute({
+    it('test price error', async () => {
+        await use_case2.execute({
             id: 'df',
             tag_ref: null,
             category_ref: null,
@@ -546,8 +546,8 @@ describe('Update transaction use case', () => {
         }*/
     });
 
-    it('category ref error', () => {
-        use_case2.execute({
+    it('category ref error', async () => {
+        await use_case2.execute({
             id: 'df',
             tag_ref: null,
             category_ref: ' ',
@@ -572,8 +572,8 @@ describe('Update transaction use case', () => {
         }*/
     });
 
-    it('tag ref error', () => {
-        use_case2.execute({
+    it('tag ref error',async () => {
+        await use_case2.execute({
             id: 'df',
             tag_ref: ' ',
             category_ref: null,

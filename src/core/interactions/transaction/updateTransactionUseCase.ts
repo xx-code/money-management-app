@@ -48,7 +48,7 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
 
     async execute(request: RequestUpdateTransactionUseCase): Promise<void> {
         try {
-            let transaction = this.transaction_repository.get(request.id);
+            let transaction = await this.transaction_repository.get(request.id);
             
             if (transaction == null) {
                 throw new NotFoundError('Transaction not found');
@@ -127,7 +127,7 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
             });
 
 
-            let response = this.transaction_repository.update({
+            let response = await this.transaction_repository.update({
                 id: transaction.id,
                 account_ref: transaction.account.id,
                 category_ref: category_ref,

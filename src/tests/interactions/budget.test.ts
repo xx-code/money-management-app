@@ -249,8 +249,8 @@ describe('Get budget test tag', () => {
     }
 
     let use_case2 = new GetAllBudgetTagUseCase(repo, trans_repo, presenter_2);
-    test('get All budget', () => {
-        use_case2.execute();
+    test('get All budget', async () => {
+        await use_case2.execute();
         
         expect(presenter_2.success).toHaveBeenCalled();
     });
@@ -299,8 +299,8 @@ describe('Get budget test category', () => {
     }
 
     let use_case2 = new GetAllBudgetCategoryUseCase(budget_repo, trans_repo, presenter_2);
-    test('get All budget', () => {
-        use_case2.execute();
+    test('get All budget', async () => {
+        await use_case2.execute();
         expect(presenter_2.success).toHaveBeenCalled();
     });
 });
@@ -347,8 +347,8 @@ describe('Delete budget test cat', ( ) => {
 
     let use_case2 = new DeleteBudgetTagUseCase(repo_tag, presenter2);
 
-    test('test delete tag', () => {
-        use_case2.execute('ff');
+    test('test delete tag', async () => {
+        await use_case2.execute('ff');
         expect(presenter2.fail).toHaveBeenCalled();
         /*try {
             use_case2.execute('ff');

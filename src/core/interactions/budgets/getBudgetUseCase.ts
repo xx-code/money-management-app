@@ -24,7 +24,7 @@ export class GetBudgetCategoryUseCase implements IGetBudgetUseCase {
         this.transaction_repository = transaction_repository;
     }
 
-    execute(id: string): void {
+    async execute(id: string): Promise<void> {
         try {
             let budget = this.budget_repository.get(id);
 
@@ -37,7 +37,7 @@ export class GetBudgetCategoryUseCase implements IGetBudgetUseCase {
             let start_date = current_date_budget.start_date;
             let end_date = current_date_budget.end_date;
 
-            let transactions = this.transaction_repository.get_transactions_by_categories(budget.categories.map(cat => cat.title), start_date, end_date);
+            let transactions = await this.transaction_repository.get_transactions_by_categories(budget.categories.map(cat => cat.title), start_date, end_date);
             
             let budget_display: BudgetWithCategoryDisplay = {
                 id: budget.id,
@@ -67,7 +67,7 @@ export class GetBudgetTagUseCase implements IGetBudgetUseCase {
         this.presenter = presenter;
     }
 
-    execute(id: string): void {
+    async execute(id: string): Promise<void> {
         try {
             let budget = this.budget_repository.get(id);
 
@@ -75,7 +75,7 @@ export class GetBudgetTagUseCase implements IGetBudgetUseCase {
                 throw new NotFoundError('Budget not found');
             }
 
-            let transactions = this.transaction_repository.get_transactions_by_tags(budget.tags, budget.date_start, budget.date_end);
+            let transactions = await this.transaction_repository.get_transactions_by_tags(budget.tags, budget.date_start, budget.date_end);
 
             let budget_display: BudgetWithTagDisplay = {
                 id: budget.id,

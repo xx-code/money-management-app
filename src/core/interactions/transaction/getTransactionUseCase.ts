@@ -20,9 +20,9 @@ export class GetTransactionUseCase implements IGetTransactionUseCase {
         this.presenter = presenter;
     }
 
-    execute(id: string): void {
+    async execute(id: string): Promise<void> {
         try {
-            let transaction = this.transaction_repository.get(id);
+            let transaction = await this.transaction_repository.get(id);
 
             if (transaction == null) {
                 throw new NotFoundError('Transaction not found');

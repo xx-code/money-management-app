@@ -125,7 +125,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
                 }
             }
       
-            let response = this.transaction_repository.get_paginations(request.page, request.size, sort_by, filters);
+            let response = await this.transaction_repository.get_paginations(request.page, request.size, sort_by, filters);
 
             this.presenter.success({ transactions: response.transactions, current_page: response.current_page, max_pages: response.max_page });
         } catch (err) {

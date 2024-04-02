@@ -23,9 +23,9 @@ export class GetAllBudgetCategoryUseCase implements IGetAllBudgetUseCase {
         this.presenter = presenter;
     }
 
-    execute(): void {
+    async execute(): Promise<void> {
         try {
-            let budgets = this.budget_repository.get_all();
+            let budgets = await this.budget_repository.get_all();
             
             let budgets_display = [];
             for (let i = 0; i < budgets.length; i++) {
@@ -36,7 +36,7 @@ export class GetAllBudgetCategoryUseCase implements IGetAllBudgetUseCase {
                 let start_date = current_date_budget.start_date;
                 let end_date = current_date_budget.end_date;
 
-                let transactions = this.transaction_repository.get_transactions_by_categories(budget.categories.map(cat => cat.title), start_date, end_date);
+                let transactions = await this.transaction_repository.get_transactions_by_categories(budget.categories.map(cat => cat.title), start_date, end_date);
                 
                 let budget_display: BudgetWithCategoryDisplay = {
                     id: budget.id,
@@ -69,15 +69,15 @@ export class GetAllBudgetTagUseCase implements IGetAllBudgetUseCase {
         this.presenter = presenter;
     }
 
-    execute(): void {
+    async execute(): Promise<void> {
         try {
-            let budgets = this.budget_repository.get_all();
+            let budgets = await this.budget_repository.get_all();
 
             let budgets_display = [];
             for (let i = 0; i < budgets.length; i++) {
                 let budget = budgets[i];
 
-                let transactions = this.transaction_repository.get_transactions_by_tags(budget.tags, budget.date_start, budget.date_end);4
+                let transactions = await this.transaction_repository.get_transactions_by_tags(budget.tags, budget.date_start, budget.date_end);4
 
                 let budget_display: BudgetWithTagDisplay = {
                     id: budget.id,

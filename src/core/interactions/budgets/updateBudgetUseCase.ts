@@ -108,7 +108,7 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
             let start_date = current_date_budget.start_date;
             let end_date = current_date_budget.end_date;
 
-            let transactions = this.transaction_repository.get_transactions_by_categories(categories_ref, start_date, end_date);
+            let transactions = await this.transaction_repository.get_transactions_by_categories(categories_ref, start_date, end_date);
 
             let budget_display: BudgetWithCategoryDisplay = {
                 id: budget_updated.id,
@@ -185,8 +185,8 @@ export class UpdateBudgetTagUseCase implements IUpdateBudgetUseCase {
                 }
             }
 
-            let transactions = this.transaction_repository.get_transactions_by_tags(budget.tags, budget.date_start, budget.date_end);
-            let budget_updated = this.budget_repository.update(budget);
+            let transactions = await this.transaction_repository.get_transactions_by_tags(budget.tags, budget.date_start, budget.date_end);
+            let budget_updated = await this.budget_repository.update(budget);
 
             let budget_display: BudgetWithTagDisplay = {
                 id: budget_updated.id,

@@ -30,12 +30,12 @@ export type dbTransactionPaginationResponse = {
 }
 
 export interface TransactionRepository {
-    save(request: dbTransaction): string;
-    get(id: string): Transaction|null;
-    get_transactions_by_categories(category_ref: string[], start_date: Date, end_date: Date): Transaction[];
-    get_transactions_by_tags(tags_ref: string[], start_date: Date, end_date: Date): Transaction[];
-    get_paginations(page:number, size: number, sort_by: dbSortBy|null, filter_by: dbFilter): dbTransactionPaginationResponse;
-    get_account_balance(id: string): number;
-    delete(id: string): boolean;
-    update(request: dbTransaction): Transaction;
+    save(request: dbTransaction): Promise<boolean>;
+    get(id: string): Promise<Transaction|null>;
+    get_transactions_by_categories(category_ref: string[], start_date: Date, end_date: Date): Promise<Transaction[]>;
+    get_transactions_by_tags(tags_ref: string[], start_date: Date, end_date: Date): Promise<Transaction[]>;
+    get_paginations(page:number, size: number, sort_by: dbSortBy|null, filter_by: dbFilter): Promise<dbTransactionPaginationResponse>;
+    get_account_balance(id: string): Promise<number>;
+    delete(id: string): Promise<boolean>;
+    update(request: dbTransaction): Promise<Transaction>;
 }
