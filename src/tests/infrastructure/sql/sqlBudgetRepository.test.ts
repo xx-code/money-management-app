@@ -143,4 +143,35 @@ describe('Budget sql repository', () => {
         expect(budgets[0].title).toBe('title');
         expect(budgets[1].title).toBe('title2');
     });
+    
+    test('delete budget category', async () => {
+        let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
+        await budget_category_repo.create_table(table_category_name);
+
+        let category_repo = new SqlCategoryRepository(db, table_category_name);
+        await category_repo.create_table();
+        let new_category: Category = {
+            title: 'cat',
+            icon: 'ico-cat'
+        }
+        await category_repo.save(new_category);
+
+        let true_response = '1-id';
+
+        let budget: dbBudgetCategory = {
+            id: true_response,
+            title: 'title',
+            target: 1500,
+            period: 'Week',
+            period_time: 1,
+            categories: [new_category.title]
+        };
+
+        await budget_category_repo.save(budget);
+
+        let is_deleted = await budget_category_repo.delete(true_response);
+
+        expect(is_deleted).toBe(true);
+        expect((await budget_category_repo.get(true_response))).toBeNull();
+    });
 })

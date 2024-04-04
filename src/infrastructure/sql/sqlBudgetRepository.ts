@@ -144,7 +144,19 @@ export class SqlBudgetCategoryRepository implements BudgetCategoryRepository {
         });
     }
     delete(id: string): Promise<boolean> {
-        throw new Error('Method not implemented.');
+        return new Promise(async (resolve, reject) => {
+            if (!this.is_table_exist) {
+                throw Error("Table budget not created");
+            }
+
+            let result = await this.db.run(`DELETE FROM ${this.table_name} WHERE id = ?`, id);
+
+            if (result['changes'] == 0) {
+                resolve(false);
+            } else {
+                resolve(true)
+            } 
+        });
     }
     update(request: dbBudgetCategory): Promise<BudgetWithCategory> {
         throw new Error('Method not implemented.');
