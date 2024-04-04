@@ -66,7 +66,7 @@ describe('Budget sql repository', () => {
         expect(is_saved).toBe(true);
     });
 
-    test('Create Budget category', async () => {
+    test('get Budget category', async () => {
         let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
         await budget_category_repo.create_table(table_category_name);
 
@@ -101,5 +101,46 @@ describe('Budget sql repository', () => {
         expect(budget_got?.period_time).toBe(1);
     });
 
-    
+    test('get all Budget category', async () => {
+        let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
+        await budget_category_repo.create_table(table_category_name);
+
+        let category_repo = new SqlCategoryRepository(db, table_category_name);
+        await category_repo.create_table();
+        let new_category: Category = {
+            title: 'cat',
+            icon: 'ico-cat'
+        }
+        await category_repo.save(new_category);
+
+        let true_response = '1-id';
+
+        let budget: dbBudgetCategory = {
+            id: true_response,
+            title: 'title',
+            target: 1500,
+            period: 'Week',
+            period_time: 1,
+            categories: [new_category.title]
+        };
+
+        await budget_category_repo.save(budget);
+
+        budget = {
+            id: '2',
+            title: 'title2',
+            target: 150,
+            period: 'Week',
+            period_time: 1,
+            categories: [new_category.title]
+        };
+
+        await budget_category_repo.save(budget);
+
+        let budgets = await budget_category_repo.get_all();
+
+        expect(budgets.length).toBe(2);
+        expect(budgets[0].title).toBe('title');
+        expect(budgets[1].title).toBe('title2');
+    });
 })

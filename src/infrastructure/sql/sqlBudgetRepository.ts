@@ -121,7 +121,27 @@ export class SqlBudgetCategoryRepository implements BudgetCategoryRepository {
         });
     }
     get_all(): Promise<BudgetWithCategory[]> {
-        throw new Error('Method not implemented.');
+        return new Promise(async (resolve, reject) => {
+            if (!this.is_table_exist) {
+                throw Error("Table budget not created");
+            }
+
+            let results = await this.db.all(`SELECT id, title, target, period, period_time FROM ${this.table_name}`);
+
+            let budgets: BudgetWithCategory[] = [];
+
+            for (let result of results) {
+                budgets.push({
+                    id: result['id'],
+                    target: result['target'],
+                    title: result['title'],
+                    period: result['period'],
+                    period_time: result['period_time'],
+                    categories: await this.get_all_categories(result['id'])
+                });
+            }
+            resolve(budgets);
+        });
     }
     delete(id: string): Promise<boolean> {
         throw new Error('Method not implemented.');
