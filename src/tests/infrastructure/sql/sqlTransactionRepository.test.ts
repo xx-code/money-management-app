@@ -777,4 +777,102 @@ describe('Test transaction sql repository', () => {
 
         expect(await record_repo.get('1')).toBeNull();
     });
+
+    test('Update transaction', async () => {
+        let account_repo = new SqlAccountRepository(db, 'accounts');
+        await account_repo.create_table();
+
+        let new_account: Account = {
+            id: '1',
+            title: 'title',
+            credit_limit: 1250,
+            credit_value: 6600
+        };
+        await account_repo.save(new_account);
+
+        let tag_repo = new SqlTagRepository(db, 'tags');
+        await tag_repo.create_table();
+
+        let new_tag: Tag = 'tag';
+        await tag_repo.save({title: new_tag});
+
+        new_tag = 'tag2';
+        await tag_repo.save({title: new_tag});
+
+        let category_repo = new SqlCategoryRepository(db, 'categories');
+        await category_repo.create_table();
+        let new_category: Category = {
+            title: 'cat',
+            icon: 'ico-cat'
+        }
+        await category_repo.save(new_category);
+
+        new_category = {
+            title: 'cat2',
+            icon: 'ico-cat'
+        }
+        await category_repo.save(new_category);
+
+        let transaction_repo = new SqlTransactionRepository(db, table_name);
+        await transaction_repo.create_table('accounts', 'categories', 'tags', 'records');
+
+        let record_repo = new SqlRecordRepository(db, 'records');
+        await record_repo.create_table();
+
+        let tag1 = await tag_repo.get('tag')
+        let tag2 = await tag_repo.get('tag2') 
+
+        let new_record: Record = {
+            id: 'record_1',
+            date: new DateParser(2024, 4, 4),
+            description: 'un blabla',
+            price: 100,
+            type: 'Debit'
+        };
+        await record_repo.save(new_record);
+
+        let new_transaction: dbTransaction = {
+            id: '1',
+            account_ref: '1',
+            tag_ref: [],
+            category_ref: 'cat',
+            record_ref: 'record_1'
+        }
+        await transaction_repo.save(new_transaction);
+
+        await transaction_repo.update({id: '1', account_ref: '1', record_ref: '1', tag_ref: [], category_ref: 'cat2'});
+        
+
+        expect((await transaction_repo.get('1'))?.category.title).toBe('cat2');
+
+        new_record = {
+            id: 'record_2',
+            date: new DateParser(2024, 4, 4),
+            description: 'un blabla',
+            price: 100,
+            type: 'Debit'
+        };
+        await record_repo.save(new_record);
+
+        new_transaction = {
+            id: '2',
+            account_ref: '1',
+            tag_ref: [tag1!],
+            category_ref: 'cat',
+            record_ref: 'record_2'
+        }
+        await transaction_repo.save(new_transaction);
+
+        await transaction_repo.update({id: '2', account_ref: '1', record_ref: '1', tag_ref: [tag1!, tag2!], category_ref: 'cat2'});
+
+        expect((await transaction_repo.get('2'))?.tags.length).toBe(2);
+        expect((await transaction_repo.get('2'))?.tags[1]).toBe(tag2);
+
+        await transaction_repo.update({id: '2', account_ref: '1', record_ref: '1', tag_ref: [tag2!], category_ref: 'cat2'});
+
+        expect((await transaction_repo.get('2'))?.tags.length).toBe(1);
+        expect((await transaction_repo.get('2'))?.tags[0]).toBe(tag2);
+    });
+
+    
 });

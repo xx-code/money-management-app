@@ -415,6 +415,55 @@ export class SqlTransactionRepository implements TransactionRepository {
         });
     }
     update(request: dbTransaction): Promise<Transaction> {
-        throw new Error("Method not implemented.");
+        return new Promise(async (resolve, reject) => {
+            await this.db.run(`
+                UPDATE ${this.table_name} SET id_category = ? WHERE id = ? 
+            `, request.category_ref, request.id);
+
+            let result_filter_by_tag = await this.db.all(`
+                SELECT id_transaction, id_tag
+                FROM 
+                    ${this.table_name}_tags
+                JOIN ${this.table_tag_name}
+                    ON ${this.table_tag_name}.title = ${this.table_name}_tags.id_tag
+                WHERE id_transaction = ?
+                `,
+                request.id
+            ); 
+
+            let tag_to_remove = [];
+            let tag_to_add = [];
+
+            let tags = [];
+            for(let result of result_filter_by_tag) {
+                if (!request.tag_ref.includes(result['id_tag'])) {
+                    tag_to_remove.push(result['id_tag']);
+                }
+                tags.push(result['id_tag']);
+            }
+
+            for (let tag of request.tag_ref) {
+                if (!tags.includes(tag)) {
+                    tag_to_add.push(tag);
+                }
+            }
+
+            if (tag_to_remove.length > 0) {
+                await this.db.run(`DELETE FROM ${this.table_name}_tags WHERE id_tag in (?)`, tag_to_remove.toString());
+            }
+
+            if (tag_to_add.length > 0) {
+                for (let tag of tag_to_add) {
+                    await this.db.run(`
+                        INSERT INTO ${this.table_name}_tags (id_transaction, id_tag) VALUES (?, ?)`,
+                        request.id, tag
+                    );
+                }
+            }
+
+            let transaction = await this.get('1');
+
+            resolve(transaction!);
+        });
     }
 }
