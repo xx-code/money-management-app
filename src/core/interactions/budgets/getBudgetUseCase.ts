@@ -26,7 +26,7 @@ export class GetBudgetCategoryUseCase implements IGetBudgetUseCase {
 
     async execute(id: string): Promise<void> {
         try {
-            let budget = this.budget_repository.get(id);
+            let budget = await this.budget_repository.get(id);
 
             if (budget == null) {
                 throw new NotFoundError('Budget not found');
@@ -69,7 +69,7 @@ export class GetBudgetTagUseCase implements IGetBudgetUseCase {
 
     async execute(id: string): Promise<void> {
         try {
-            let budget = this.budget_repository.get(id);
+            let budget = await this.budget_repository.get(id);
 
             if (budget == null) {
                 throw new NotFoundError('Budget not found');

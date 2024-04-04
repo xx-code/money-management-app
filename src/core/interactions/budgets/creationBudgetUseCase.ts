@@ -29,7 +29,7 @@ export interface ICreationBudgetUseCase {
 }
 
 export interface ICreationBudgetUseCaseResponse {
-    success(id: string): void;
+    success(is_save: boolean): void;
     fail(err: Error): void;
 }
 
@@ -58,7 +58,7 @@ export class CreationBudgetCategoryUseCase implements ICreationBudgetUseCase {
             }
 
             for (let i = 0; i < request.categories.length; i++) {
-                let category = this.category_repository.get(request.categories[i]);
+                let category = await this.category_repository.get(request.categories[i]);
                 if (category != null) {
                     throw new ValidationError('Category ' + request.categories[i] + ' not exist')
                 }
@@ -75,7 +75,7 @@ export class CreationBudgetCategoryUseCase implements ICreationBudgetUseCase {
             let new_id = this.crypto.generate_uuid_to_string();
 
 
-            let response = this.budget_repository.save({
+            let response = await this.budget_repository.save({
                 id: new_id,
                 title: request.title,
                 target: request.target,
@@ -104,7 +104,7 @@ export class CreationBudgetTagUseCase implements ICreationBudgetUseCase {
         this.crypto = crypto;
     }
 
-    execute(request:CreationBudgetTagUseCaseRequest): void {
+    async execute(request:CreationBudgetTagUseCaseRequest): Promise<void> {
         try {
             if (is_empty(request.title)) {
                 throw new ValidationError('Title field is empty');
@@ -119,7 +119,7 @@ export class CreationBudgetTagUseCase implements ICreationBudgetUseCase {
             }
 
             for (let i = 0; i < request.tags.length; i++) {
-                let tag = this.tag_repository.get(request.tags[i]);
+                let tag = await this.tag_repository.get(request.tags[i]);
                 if (tag != null) {
                     this.tag_repository.save({title: formatted(request.tags[i]) });
                 }
@@ -129,9 +129,9 @@ export class CreationBudgetTagUseCase implements ICreationBudgetUseCase {
                 throw new ValidationError('Date start must be inferiour at Date of end');
             }
 
-            let new_id = this.crypto.generate_uuid_to_string()
+            let new_id = await this.crypto.generate_uuid_to_string()
 
-            let response = this.budget_repository.save({
+            let response = await this.budget_repository.save({
                 id: new_id,
                 title: request.title,
                 target: request.target,

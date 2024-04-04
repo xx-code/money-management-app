@@ -64,8 +64,8 @@ describe('Creation Budget Test', () => {
     };
 
     let use_case = new CreationBudgetTagUseCase(budget_tag_repo, tag_repo, presenter_tag, new MockCrypto())
-    test('Error title', () => {
-        use_case.execute({
+    test('Error title', async () => {
+        await use_case.execute({
             title: '  ',
             target: 1533,
             date_start: new DateParser(2022, 2, 1),
@@ -87,8 +87,8 @@ describe('Creation Budget Test', () => {
         }*/
     });
 
-    test('Error target', () => {
-        use_case.execute({
+    test('Error target', async () => {
+        await use_case.execute({
             title: 'dffg',
             target: -45,
             date_start: new DateParser(2022, 2, 1),
@@ -111,8 +111,8 @@ describe('Creation Budget Test', () => {
         }*/
     });
 
-    test('Error tags', () => {
-        use_case.execute({
+    test('Error tags', async () => {
+        await use_case.execute({
             title: 'df',
             target: 1533,
             date_start: new DateParser(2022, 2, 1),
@@ -135,8 +135,8 @@ describe('Creation Budget Test', () => {
     });
 
     let use_case2 = new CreationBudgetCategoryUseCase(budget_cat_repo, cat_repo, presenter_cat, new MockCrypto());
-    test('Error categories', () => {
-        use_case2.execute({
+    test('Error categories', async () => {
+        await use_case2.execute({
             title: 'dfs',
             target: 1533,
             period: 'Month',
@@ -158,8 +158,8 @@ describe('Creation Budget Test', () => {
         }*/
     });
 
-    test('Error period time', () => {
-        use_case2.execute({
+    test('Error period time', async () => {
+        await use_case2.execute({
             title: 'dfd',
             target: 1533,
             period: "Month",
@@ -182,8 +182,8 @@ describe('Creation Budget Test', () => {
     });
 
 
-    test('Error date', () => {
-        use_case.execute({
+    test('Error date', async () => {
+        await use_case.execute({
             title: 'dfd',
             target: 1533,
             date_start: new DateParser(2022, 4, 2),
@@ -234,8 +234,8 @@ describe('Get budget test tag', () => {
 
     let use_case = new GetBudgetTagUseCase(repo, trans_repo, presenter);
 
-    test('error no found', () => {
-        use_case.execute('ff');
+    test('error no found', async () => {
+        await use_case.execute('ff');
         expect(presenter.fail).toHaveBeenCalled();
         /*try {
             use_case.execute('ff');
@@ -284,8 +284,8 @@ describe('Get budget test category', () => {
 
     let use_case = new GetBudgetCategoryUseCase(budget_repo, trans_repo, presenter);
 
-    test('error no found', () => {
-        use_case.execute('ff');
+    test('error no found', async () => {
+        await use_case.execute('ff');
         expect(presenter.fail).toHaveBeenCalled();
         /*try {
             use_case.execute('ff');
@@ -408,8 +408,8 @@ describe('Update Budget test', () => {
 
     let use_case = new UpdateBudgetTagUseCase(budget_tag_repo, trans_repo, presenter, tag_repo);
 
-    test('Error no found budget', () => {
-        use_case.execute({
+    test('Error no found budget', async () => {
+        await use_case.execute({
             id: 'df',
             title: 'dfd',
             target: 1533,
@@ -433,8 +433,8 @@ describe('Update Budget test', () => {
     });
 
     let use_case2 = new UpdateBudgetTagUseCase(budget_tag_repo, trans_repo, presenter, tag_repo);
-    test('Verify Update title', () => {
-        use_case2.execute({
+    test('Verify Update title', async () => {
+        await use_case2.execute({
             id: 'df',
             title: '   ',
             target: null,
@@ -457,8 +457,8 @@ describe('Update Budget test', () => {
         }*/
     });
 
-    test('Verify update target', () => {
-        use_case2.execute({
+    test('Verify update target', async () => {
+        await use_case2.execute({
             id: 'df',
             title: null,
             target: -45,
@@ -481,8 +481,8 @@ describe('Update Budget test', () => {
         }*/
     });
 
-    test('Verify update date', () => {
-        use_case2.execute({
+    test('Verify update date', async () => {
+        await use_case2.execute({
             id: 'df',
             title: null,
             target: null,
@@ -505,8 +505,8 @@ describe('Update Budget test', () => {
         }*/
     });
 
-    test('Verify update tags', () => {
-        use_case2.execute({
+    test('Verify update tags', async () => {
+        await use_case2.execute({
             id: 'df',
             title: null,
             target: null,

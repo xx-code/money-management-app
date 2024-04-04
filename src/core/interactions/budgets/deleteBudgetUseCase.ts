@@ -6,7 +6,7 @@ export interface IDeleteBudgetUseCase {
 };
 
 export interface IDeleteBudgetUseCaseResponse {
-    success(id_deleted: string): void;
+    success(is_deleted: boolean): void;
     fail(err: Error): void;
 }
 
@@ -28,9 +28,9 @@ export class DeleteBudgetCategoryUseCase implements IDeleteBudgetUseCase {
                 throw new NotFoundError('Budget not found');
             }
 
-            let response = this.repository.delete(id);
+            let is_deleted = await this.repository.delete(id);
 
-            this.presenter.success(response);
+            this.presenter.success(is_deleted);
         } catch(err) {
             this.presenter.fail(err as Error);
         }
@@ -46,17 +46,17 @@ export class DeleteBudgetTagUseCase implements IDeleteBudgetUseCase {
         this.presenter = presenter;
     }
 
-    execute(id: string): void {
+    async execute(id: string): Promise<void> {
         try {
-            let budget = this.repository.get(id);
+            let budget = await this.repository.get(id);
 
             if (budget == null) {
                 throw new NotFoundError('Budget not found');
             }
 
-            let response = this.repository.delete(id);
+            let is_deleted = await this.repository.delete(id);
 
-            this.presenter.success(response);
+            this.presenter.success(is_deleted);
         } catch(err) {
             this.presenter.fail(err as Error);
         }

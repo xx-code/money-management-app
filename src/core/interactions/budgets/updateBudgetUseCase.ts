@@ -95,7 +95,7 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
             }
 
             let categories_ref = budget.categories.map(cat => cat.title);
-            let budget_updated = this.budget_repository.update({
+            let budget_updated = await this.budget_repository.update({
                 id: budget.id,
                 title: budget.title,
                 target: budget.target,
@@ -145,7 +145,7 @@ export class UpdateBudgetTagUseCase implements IUpdateBudgetUseCase {
     //TODO: check tag creation 
     async execute(request: RequestUpdateTagBudget): Promise<void> {
         try {
-            let budget = this.budget_repository.get(request.id);
+            let budget = await this.budget_repository.get(request.id);
 
             if (budget == null) {
                 throw new NotFoundError('Budget not found');

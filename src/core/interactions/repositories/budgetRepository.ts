@@ -21,18 +21,18 @@ export type dbBudgetTag = {
 
 
 export interface BudgetTagRepository {
-    save(request: dbBudgetTag): string;
-    get(id: string): BudgetWithTag | null;
-    get_all(): Array<BudgetWithTag>;
-    delete(id: string): string;
-    update(request: dbBudgetTag): BudgetWithTag;
+    save(request: dbBudgetTag): Promise<boolean>;
+    get(id: string): Promise<BudgetWithTag | null>;
+    get_all(): Promise<BudgetWithTag[]>;
+    delete(id: string): Promise<boolean>;
+    update(request: dbBudgetTag): Promise<BudgetWithTag>;
 }
 
 
 export interface BudgetCategoryRepository {
-    save(request: dbBudgetCategory): string;
-    get(id: string): BudgetWithCategory | null;
-    get_all(): Array<BudgetWithCategory>;
-    delete(id: string): string;
-    update(request: dbBudgetCategory): BudgetWithCategory;
+    save(request: dbBudgetCategory): Promise<boolean>;
+    get(id: string): Promise<BudgetWithCategory | null>;
+    get_all(): Promise<BudgetWithCategory[]>;
+    delete(id: string): Promise<boolean>;
+    update(request: dbBudgetCategory): Promise<BudgetWithCategory>;
 }
