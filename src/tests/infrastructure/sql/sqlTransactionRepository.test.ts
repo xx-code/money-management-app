@@ -617,7 +617,7 @@ describe('Test transaction sql repository', () => {
         expect(transactions[0].tags[0]).toBe('tag2');
     });
 
-    /*test('Balance of transaction', async () => {
+    test('Balance of transaction', async () => {
         let account_repo = new SqlAccountRepository(db, 'accounts');
         await account_repo.create_table();
 
@@ -713,5 +713,5 @@ describe('Test transaction sql repository', () => {
         let balance = await transaction_repo.get_account_balance('1');
 
         expect(balance).toBe(55);
-    });*/
+    });
 });

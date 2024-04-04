@@ -3,7 +3,7 @@ import { TransactionRepository, dbTransaction, dbTransactionPaginationResponse, 
 import { Transaction, Record } from "@/core/entities/transaction";
 import { Category } from "@/core/entities/category";
 import { Tag } from "@/core/entities/tag";
-import { Waiting_for_the_Sunrise } from "next/font/google";
+import { Ballet, Waiting_for_the_Sunrise } from "next/font/google";
 import DateParser from "../../core/entities/date_parser";
 
 export class SqlTransactionRepository implements TransactionRepository {
@@ -371,7 +371,37 @@ export class SqlTransactionRepository implements TransactionRepository {
         });
     }
     get_account_balance(id: string): Promise<number> {
-        throw new Error("Method not implemented.");
+        return new Promise(async (resolve, reject) => {
+            if (!this.is_table_exist) {
+                throw Error("Table transaction not created");
+            }
+
+            let result_credit = await this.db.get(`
+                    SELECT id_account, SUM(${this.table_record_name}.price) as total_price 
+                    FROM ${this.table_name}
+                    JOIN ${this.table_record_name}
+                        ON ${this.table_record_name}.id = ${this.table_name}.id_record
+                    WHERE id_account = ? AND LOWER(type) = 'credit'
+                `, 
+            id);
+
+            let credit = result_credit['total_price'];
+
+            let result_debit = await this.db.get(`
+                    SELECT id_account, SUM(${this.table_record_name}.price) as total_price 
+                    FROM ${this.table_name}
+                    JOIN ${this.table_record_name}
+                        ON ${this.table_record_name}.id = ${this.table_name}.id_record
+                    WHERE id_account = ? AND LOWER(type) = 'debit'
+                `, 
+            id);
+
+            let debit = result_debit['total_price'];
+
+            let balance_account = debit - credit;
+
+            resolve(balance_account);
+        });
     }
     delete(id: string): Promise<boolean> {
         throw new Error("Method not implemented.");
