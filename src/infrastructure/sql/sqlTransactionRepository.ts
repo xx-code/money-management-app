@@ -198,8 +198,6 @@ export class SqlTransactionRepository implements TransactionRepository {
             );
             //AND date >= datetime(${start_date.toDateString()}) AND date <= datetime(${end_date.toDateString()})
 
-            console.log(results)
-
             let transactions = [];
 
             for (let result of results) {
@@ -216,7 +214,57 @@ export class SqlTransactionRepository implements TransactionRepository {
         
     }
     get_transactions_by_tags(tags_ref: string[], start_date: DateParser, end_date: DateParser): Promise<Transaction[]> {
-        throw new Error("Method not implemented.");
+        return new Promise(async (resolve, reject) => {
+            if (!this.is_table_exist) {
+                throw Error("Table transaction not created");
+            }
+
+            let result_filter_by_tag = await this.db.all(`
+                SELECT id_transaction
+                FROM 
+                    ${this.table_name}_tags
+                JOIN ${this.table_tag_name}
+                    ON ${this.table_tag_name}.title = ${this.table_name}_tags.id_tag
+                WHERE ${this.table_name}_tags.id_tag in (?)
+                `,
+                tags_ref.toString()
+            ); 
+
+            let filter_id_transaction_tag: string[] = [];
+            for(let result of result_filter_by_tag) {
+                filter_id_transaction_tag.push(result['id_transaction']);
+            }
+
+            let results = await this.db.all(`
+                SELECT 
+                    ${this.table_name}.id, 
+                    ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                    ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
+                    ${this.table_category_name}.title  as category_title, ${this.table_category_name}.icon
+                FROM 
+                    ${this.table_name} 
+                JOIN ${this.table_account_name}
+                    ON ${this.table_account_name}.id = ${this.table_name}.id_account
+                JOIN ${this.table_record_name}
+                    ON ${this.table_record_name}.id = ${this.table_name}.id_record
+                JOIN ${this.table_category_name}
+                    ON ${this.table_category_name}.title = ${this.table_name}.id_category
+                WHERE ${this.table_name}.id in (${filter_id_transaction_tag}) AND date >= '${start_date.toString()}' AND  date <= '${end_date.toString()}'
+                `,
+            );
+
+            let transactions = [];
+
+            for (let result of results) {
+                let id_transaction = result['id'];
+                let tags = await this.get_all_tags(id_transaction);
+                let transaction = this.create_transaction(id_transaction, result, tags);
+
+                transactions.push(transaction);
+            }
+
+            resolve(transactions);
+        });
     }
     get_paginations(page: number, size: number, sort_by: dbSortBy | null, filter_by: dbFilter): Promise<dbTransactionPaginationResponse> {
         return new Promise(async (resolve, reject) => {
