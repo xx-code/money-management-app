@@ -3,7 +3,6 @@ import { TransactionRepository, dbTransaction, dbTransactionPaginationResponse, 
 import { Transaction, Record } from "@/core/entities/transaction";
 import { Category } from "@/core/entities/category";
 import { Tag } from "@/core/entities/tag";
-import { Ballet, Waiting_for_the_Sunrise } from "next/font/google";
 import DateParser from "../../core/entities/date_parser";
 
 export class SqlTransactionRepository implements TransactionRepository {
@@ -30,6 +29,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                 FOREIGN KEY (id_account) REFERENCES ${table_account_name}(id),
                 FOREIGN KEY (id_category) REFERENCES ${table_category_name}(title),
                 FOREIGN KEY (id_record) REFERENCES ${table_record_name}(id)
+                    ON DELETE CASCADE
             )
         `);
 
@@ -404,7 +404,15 @@ export class SqlTransactionRepository implements TransactionRepository {
         });
     }
     delete(id: string): Promise<boolean> {
-        throw new Error("Method not implemented.");
+        return new Promise(async (resolve, reject) => {
+            let result = await this.db.run(`DELETE FROM ${this.table_name} WHERE id = ?`, id);
+
+            if (result['changes'] == 0) {
+                resolve(false);
+            } else {
+                resolve(true)
+            }
+        });
     }
     update(request: dbTransaction): Promise<Transaction> {
         throw new Error("Method not implemented.");

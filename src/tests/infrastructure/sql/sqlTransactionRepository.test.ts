@@ -714,4 +714,67 @@ describe('Test transaction sql repository', () => {
 
         expect(balance).toBe(55);
     });
+
+    test('Delete Transacation', async () => {
+        let account_repo = new SqlAccountRepository(db, 'accounts');
+        await account_repo.create_table();
+
+        let new_account: Account = {
+            id: '1',
+            title: 'title',
+            credit_limit: 1250,
+            credit_value: 6600
+        };
+        await account_repo.save(new_account);
+
+        let tag_repo = new SqlTagRepository(db, 'tags');
+        await tag_repo.create_table();
+
+        let new_tag: Tag = 'tag';
+        await tag_repo.save({title: new_tag});
+
+        new_tag = 'tag2';
+        await tag_repo.save({title: new_tag});
+
+        let category_repo = new SqlCategoryRepository(db, 'categories');
+        await category_repo.create_table();
+        let new_category: Category = {
+            title: 'cat',
+            icon: 'ico-cat'
+        }
+        await category_repo.save(new_category);
+
+        let transaction_repo = new SqlTransactionRepository(db, table_name);
+        await transaction_repo.create_table('accounts', 'categories', 'tags', 'records');
+
+        let record_repo = new SqlRecordRepository(db, 'records');
+        await record_repo.create_table();
+
+        let tag1 = await tag_repo.get('tag') 
+
+        let new_record: Record = {
+            id: 'record_1',
+            date: new DateParser(2024, 4, 4),
+            description: 'un blabla',
+            price: 100,
+            type: 'Debit'
+        };
+        await record_repo.save(new_record);
+
+        let new_transaction: dbTransaction = {
+            id: '1',
+            account_ref: '1',
+            tag_ref: [tag1!],
+            category_ref: 'cat',
+            record_ref: 'record_1'
+        }
+        await transaction_repo.save(new_transaction);
+
+        let is_delete = await transaction_repo.delete('1');
+
+        expect(is_delete).toBe(true);
+        expect(await transaction_repo.get('1')).toBeNull();
+
+        expect(await record_repo.get('1')).toBeNull();
+    });
 });
