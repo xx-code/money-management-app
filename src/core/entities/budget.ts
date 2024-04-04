@@ -1,5 +1,6 @@
 import { ValidationError } from "../errors/validationError";
 import { Category } from "./category";
+import DateParser from "./date_parser";
 import { Tag } from "./tag";
 import { Transaction } from "./transaction";
 
@@ -18,8 +19,8 @@ export type BudgetWithCategory = Budget & {
 }
 
 export type BudgetWithTag = Budget & {
-    date_start: Date;
-    date_end: Date;
+    date_start: DateParser;
+    date_end: DateParser;
     tags: Array<Tag>;
 }
 
@@ -32,14 +33,14 @@ export type BudgetWithCategoryDisplay = Budget & {
 
 export type BudgetWithTagDisplay = Budget & {
     current: number;
-    date_start: Date;
-    date_end: Date;
+    date_start: DateParser;
+    date_end: DateParser;
     tags: Array<Tag>;
 }
 
 export type CurrentDateBudget = {
-    start_date: Date,
-    end_date: Date
+    start_date: DateParser,
+    end_date: DateParser
 }
 
 export function determined_start_end_date_budget(budget: BudgetWithCategory): CurrentDateBudget {
@@ -71,8 +72,8 @@ export function determined_start_end_date_budget(budget: BudgetWithCategory): Cu
     }
 
     return {
-        start_date: start_date,
-        end_date: end_date
+        start_date: new DateParser(start_date.getFullYear(), start_date.getMonth() + 1, start_date.getDate()),
+        end_date: new DateParser(end_date.getFullYear(), end_date.getMonth() + 1, end_date.getDate())
     };
 }
 

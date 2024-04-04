@@ -11,6 +11,7 @@ import { CryptoService } from "../../core/adapter/libs";
 import { TagRepository } from "@/core/interactions/repositories/tagRepository";
 import { TransactionRepository } from "@/core/interactions/repositories/transactionRepository";
 import { CategoryRepository } from "@/core/interactions/repositories/categoryRepository";
+import DateParser from "../../core/entities/date_parser";
 
 class MockCrypto implements CryptoService {
     generate_uuid_to_string(): string {
@@ -67,8 +68,8 @@ describe('Creation Budget Test', () => {
         use_case.execute({
             title: '  ',
             target: 1533,
-            date_start: new Date('01-02-2022'),
-            date_end: new Date('03-02-2022'),
+            date_start: new DateParser(2022, 2, 1),
+            date_end: new DateParser(2022, 2, 2),
             tags: ['df']
         });
         expect(presenter_tag.fail).toHaveBeenCalled();
@@ -90,8 +91,8 @@ describe('Creation Budget Test', () => {
         use_case.execute({
             title: 'dffg',
             target: -45,
-            date_start: new Date('01-02-2022'),
-            date_end: new Date('03-02-2022'),
+            date_start: new DateParser(2022, 2, 1),
+            date_end: new DateParser(2022, 2, 2),
             tags: ['df']
         });
         expect(presenter_tag.fail).toHaveBeenCalled();
@@ -114,8 +115,8 @@ describe('Creation Budget Test', () => {
         use_case.execute({
             title: 'df',
             target: 1533,
-            date_start: new Date('01-02-2022'),
-            date_end: new Date('03-02-2022'),
+            date_start: new DateParser(2022, 2, 1),
+            date_end: new DateParser(2022, 2, 2),
             tags: []
         });
         expect(presenter_tag.fail).toHaveBeenCalled();
@@ -185,8 +186,8 @@ describe('Creation Budget Test', () => {
         use_case.execute({
             title: 'dfd',
             target: 1533,
-            date_start: new Date(2022, 4, 2),
-            date_end: new Date(2022, 3, 2),
+            date_start: new DateParser(2022, 4, 2),
+            date_end: new DateParser(2022, 3, 2),
             tags: ['lgd']
         });
         expect(presenter_tag.fail).toHaveBeenCalled();
@@ -412,8 +413,8 @@ describe('Update Budget test', () => {
             id: 'df',
             title: 'dfd',
             target: 1533,
-            date_start: new Date('01-02-2022'),
-            date_end: new Date('03-02-2022'),
+            date_start: new DateParser(2022, 2, 1),
+            date_end: new DateParser(2022, 2, 2),
             tags: ['lgd']
         });
         expect(presenter.fail).toHaveBeenCalled();
@@ -485,8 +486,8 @@ describe('Update Budget test', () => {
             id: 'df',
             title: null,
             target: null,
-            date_start: new Date('04-02-2022'),
-            date_end: new Date('03-02-2022'),
+            date_start: new DateParser(2022, 2, 1),
+            date_end: new DateParser(2022, 2, 2),
             tags: null
         });
         expect(presenter.fail).toHaveBeenCalled();

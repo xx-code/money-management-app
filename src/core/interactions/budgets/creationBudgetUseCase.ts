@@ -6,6 +6,7 @@ import { is_empty } from "../../entities/verify_empty_value";
 import { CategoryRepository } from "../repositories/categoryRepository";
 import { TagRepository } from "../repositories/tagRepository";
 import { formatted } from "../../../core/entities/formatted";
+import DateParser from "@/core/entities/date_parser";
 
 export type CreationBudgetCategoryUseCaseRequest = {
     title: string;
@@ -18,8 +19,8 @@ export type CreationBudgetCategoryUseCaseRequest = {
 export type CreationBudgetTagUseCaseRequest = {
     title: string;
     target: number;
-    date_start: Date;
-    date_end: Date;
+    date_start: DateParser;
+    date_end: DateParser;
     tags: Array<string>;
 }
 
@@ -124,7 +125,7 @@ export class CreationBudgetTagUseCase implements ICreationBudgetUseCase {
                 }
             }
 
-            if (request.date_start >= request.date_end) {
+            if (new Date(request.date_start.toString())  >= new Date(request.date_end.toString())) {
                 throw new ValidationError('Date start must be inferiour at Date of end');
             }
 

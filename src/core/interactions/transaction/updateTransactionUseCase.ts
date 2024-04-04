@@ -8,6 +8,7 @@ import { CategoryRepository } from "../repositories/categoryRepository";
 import { formatted, reverseFormatted } from "../../entities/formatted";
 import { is_empty } from "../../entities/verify_empty_value";
 import { TransactionRepository } from "../repositories/transactionRepository";
+import DateParser from "@/core/entities/date_parser";
 
 export type RequestUpdateTransactionUseCase = {
     id: string;
@@ -15,7 +16,7 @@ export type RequestUpdateTransactionUseCase = {
     category_ref: string|null;
     type: TransactionType|null;
     description: string|null;
-    date: Date|null;
+    date: DateParser|null;
     price: number|null;
 }
 
@@ -80,11 +81,11 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
                 record.type = request.type;
             }
 
-            let date = null;
+            /*let date = null;
             if (request.date != null) {
                 date = new Date(request.date);
                 record.date = date;
-            }
+            }*/
 
             if (request.category_ref != null) {
                 // category = formatted(request.category_ref);

@@ -8,13 +8,14 @@ import { RecordRepository } from "../repositories/recordRepository";
 import { CryptoService } from '../../adapter/libs';
 import { formatted } from "../../entities/formatted";
 import { is_empty } from "../../entities/verify_empty_value";
+import DateParser from "@/core/entities/date_parser";
 
 export type RequestAddTransactionUseCase = {
     account_ref: string;
     price: number;
     category_ref: string;
     description: string;
-    date: Date;
+    date: DateParser;
     tag_ref: string[];
     type: TransactionType;
 }

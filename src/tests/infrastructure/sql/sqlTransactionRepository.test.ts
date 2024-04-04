@@ -10,6 +10,7 @@ import { Account } from '@/core/entities/account';
 import { Category } from '@/core/entities/category';
 import { Transaction, Record } from '@/core/entities/transaction';
 import { dbTransaction } from '@/core/interactions/repositories/transactionRepository';
+import DateParser from '../../../core/entities/date_parser';
 
 describe('Test transaction sql repository', () => {
     sqlite3.verbose();
@@ -67,7 +68,7 @@ describe('Test transaction sql repository', () => {
 
         let new_record: Record = {
             id: 'record_1',
-            date: new Date(),
+            date: DateParser.now(),
             description: 'un blabla',
             price: 15,
             type: 'Credit'
@@ -120,7 +121,7 @@ describe('Test transaction sql repository', () => {
 
         let new_record: Record = {
             id: 'record_1',
-            date: new Date(),
+            date: DateParser.now(),
             description: 'un blabla',
             price: 15,
             type: 'Credit'
@@ -173,7 +174,7 @@ describe('Test transaction sql repository', () => {
 
         let new_record: Record = {
             id: 'record_1',
-            date: new Date(),
+            date: DateParser.now(),
             description: 'un blabla',
             price: 15,
             type: 'Credit'
@@ -183,7 +184,7 @@ describe('Test transaction sql repository', () => {
 
         let new_record_with_tag: Record = {
             id: 'record_2',
-            date: new Date(),
+            date: DateParser.now(),
             description: 'un blabla 2',
             price: 18,
             type: 'Credit'
@@ -283,7 +284,7 @@ describe('Test transaction sql repository', () => {
 
         let new_record: Record = {
             id: 'record_1',
-            date: new Date(),
+            date: DateParser.now(),
             description: 'un blabla',
             price: 15,
             type: 'Credit'
@@ -301,7 +302,7 @@ describe('Test transaction sql repository', () => {
         
         new_record = {
             id: 'record_2',
-            date: new Date(),
+            date: DateParser.now(),
             description: 'un blabla',
             price: 10,
             type: 'Credit'
@@ -319,7 +320,7 @@ describe('Test transaction sql repository', () => {
 
         new_record = {
             id: 'record_3',
-            date: new Date(),
+            date: DateParser.now(),
             description: 'un blabla',
             price: 2,
             type: 'Credit'
@@ -359,7 +360,7 @@ describe('Test transaction sql repository', () => {
 
         new_record = {
             id: 'record_4',
-            date: new Date(),
+            date: DateParser.now(),
             description: 'un blabla',
             price: 100,
             type: 'Debit'
@@ -383,7 +384,7 @@ describe('Test transaction sql repository', () => {
 
         new_record = {
             id: 'record_5',
-            date: new Date(),
+            date: DateParser.now(),
             description: 'un blabla',
             price: 5,
             type: 'Credit'
@@ -412,4 +413,102 @@ describe('Test transaction sql repository', () => {
         expect(pagination.transactions[1].category.title).toBe('cat2');
         expect(pagination.transactions[2].category.title).toBe('cat2');
     });
+
+    test('Get transaction by categeory with range date', async () => {
+        let account_repo = new SqlAccountRepository(db, 'accounts');
+        await account_repo.create_table();
+
+        let new_account: Account = {
+            id: '1',
+            title: 'title',
+            credit_limit: 1250,
+            credit_value: 6600
+        };
+        await account_repo.save(new_account);
+
+        let tag_repo = new SqlTagRepository(db, 'tags');
+        await tag_repo.create_table();
+
+        let category_repo = new SqlCategoryRepository(db, 'categories');
+        await category_repo.create_table();
+        let new_category: Category = {
+            title: 'cat',
+            icon: 'ico-cat'
+        }
+        await category_repo.save(new_category);
+
+        new_category = {
+            title: 'cat2',
+            icon: 'ico-cat'
+        }
+        await category_repo.save(new_category);
+
+        let record_repo = new SqlRecordRepository(db, 'records');
+        await record_repo.create_table();
+
+        let transaction_repo = new SqlTransactionRepository(db, table_name);
+        await transaction_repo.create_table('accounts', 'categories', 'tags', 'records');
+
+        let new_record: Record = {
+            id: 'record_1',
+            date: new DateParser(2024, 4, 4),
+            description: 'un blabla',
+            price: 15,
+            type: 'Credit'
+        };
+        await record_repo.save(new_record);
+
+        let new_transaction: dbTransaction = {
+            id: '1',
+            account_ref: '1',
+            tag_ref: [],
+            category_ref: 'cat',
+            record_ref: 'record_1'
+        }
+        await transaction_repo.save(new_transaction);
+
+        new_record = {
+            id: 'record_2',
+            date: new DateParser(2024, 4, 5),
+            description: 'un blabla',
+            price: 15,
+            type: 'Credit'
+        };
+        await record_repo.save(new_record);
+
+        new_transaction = {
+            id: '2',
+            account_ref: '1',
+            tag_ref: [],
+            category_ref: 'cat',
+            record_ref: 'record_2'
+        }
+        await transaction_repo.save(new_transaction);
+
+        new_record = {
+            id: 'record_3',
+            date: new DateParser(2024, 4, 6),
+            description: 'un blabla',
+            price: 15,
+            type: 'Credit'
+        };
+        await record_repo.save(new_record);
+
+        new_transaction = {
+            id: '3',
+            account_ref: '1',
+            tag_ref: [],
+            category_ref: 'cat2',
+            record_ref: 'record_3'
+        }
+        await transaction_repo.save(new_transaction);
+
+        let transactions = await transaction_repo.get_transactions_by_categories(['cat'], new DateParser(2024, 4, 3), new DateParser(2024, 4, 8));
+
+        expect(transactions.length).toBe(2);
+        expect(transactions[0].category.title).toBe('cat');
+        expect(transactions[0].record.id).toBe('record_1');
+        expect(transactions[1].category.title).toBe('cat');
+        expect(transactions[1].record.id).toBe('record_2');
+    })
 });

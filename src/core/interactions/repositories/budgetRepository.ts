@@ -1,3 +1,4 @@
+import DateParser from "@/core/entities/date_parser";
 import { BudgetWithCategory, BudgetWithTag, Period } from "../../entities/budget";
 
 export type dbBudgetCategory = {
@@ -13,8 +14,8 @@ export type dbBudgetTag = {
     id: string;
     title: string;
     target: number;
-    date_start: Date;
-    date_end: Date;
+    date_start: DateParser;
+    date_end: DateParser;
     tags: Array<string>;
 }
 

@@ -4,6 +4,7 @@ import { Transaction, Record } from "@/core/entities/transaction";
 import { Category } from "@/core/entities/category";
 import { Tag } from "@/core/entities/tag";
 import { Waiting_for_the_Sunrise } from "next/font/google";
+import DateParser from "../../core/entities/date_parser";
 
 export class SqlTransactionRepository implements TransactionRepository {
     private db: any;
@@ -86,10 +87,12 @@ export class SqlTransactionRepository implements TransactionRepository {
             icon: result_db['icon']
         }
 
+        let [year, month, day] = result_db['date'].split('-');
+
         let record: Record = {
             id: result_db['record_id'],
             price: result_db['price'],
-            date: new Date(result_db['date']),
+            date: new DateParser(year, month, day),
             description: result_db['description'],
             type: result_db['type']
         } 
@@ -169,10 +172,50 @@ export class SqlTransactionRepository implements TransactionRepository {
             }
         });
     }
-    get_transactions_by_categories(category_ref: string[], start_date: Date, end_date: Date): Promise<Transaction[]> {
-        throw new Error("Method not implemented.");
+    get_transactions_by_categories(category_ref: string[], start_date: DateParser, end_date: DateParser): Promise<Transaction[]> {
+        return new Promise(async (resolve, reject) => {
+            if (!this.is_table_exist) {
+                throw Error("Table transaction not created");
+            }
+            
+            let results = await this.db.all(`
+                SELECT 
+                    ${this.table_name}.id, 
+                    ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                    ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
+                    ${this.table_category_name}.title  as category_title, ${this.table_category_name}.icon
+                FROM 
+                    ${this.table_name} 
+                JOIN ${this.table_account_name}
+                    ON ${this.table_account_name}.id = ${this.table_name}.id_account
+                JOIN ${this.table_record_name}
+                    ON ${this.table_record_name}.id = ${this.table_name}.id_record
+                JOIN ${this.table_category_name}
+                    ON ${this.table_category_name}.title = ${this.table_name}.id_category
+                WHERE category_title in (?) AND date >= '${start_date.toString()}' AND  date <= '${end_date.toString()}'
+                `,
+                category_ref
+            );
+            //AND date >= datetime(${start_date.toDateString()}) AND date <= datetime(${end_date.toDateString()})
+
+            console.log(results)
+
+            let transactions = [];
+
+            for (let result of results) {
+                let id_transaction = result['id'];
+                let tags = await this.get_all_tags(id_transaction);
+                let transaction = this.create_transaction(id_transaction, result, tags);
+
+                transactions.push(transaction);
+            }
+
+            resolve(transactions);
+        });
+
+        
     }
-    get_transactions_by_tags(tags_ref: string[], start_date: Date, end_date: Date): Promise<Transaction[]> {
+    get_transactions_by_tags(tags_ref: string[], start_date: DateParser, end_date: DateParser): Promise<Transaction[]> {
         throw new Error("Method not implemented.");
     }
     get_paginations(page: number, size: number, sort_by: dbSortBy | null, filter_by: dbFilter): Promise<dbTransactionPaginationResponse> {

@@ -7,13 +7,14 @@ import { TransactionRepository } from "../repositories/transactionRepository";
 import { TagRepository } from "../repositories/tagRepository";
 import { CategoryRepository } from "../repositories/categoryRepository";
 import { formatted } from "../../../core/entities/formatted";
+import DateParser from "@/core/entities/date_parser";
 
 export type RequestUpdateTagBudget = {
     id: string;
     title: string|null;
     target: number|null;
-    date_start: Date|null;
-    date_end: Date|null;
+    date_start: DateParser|null;
+    date_end: DateParser|null;
     tags: Array<string>|null;
 }
 
@@ -164,8 +165,8 @@ export class UpdateBudgetTagUseCase implements IUpdateBudgetUseCase {
                 budget.target = request.target;
             }
 
-            if (request.date_end != null && request.date_start != null) {
-                if (request.date_start >= request.date_end) {
+            if ( request.date_end != null && request.date_start != null) {
+                if (new Date(request.date_start.toString()) >= new Date(request.date_end.toString())) {
                     throw new ValidationError('Date start must be inferiour at Date of end');
                 }
                 budget.date_start = request.date_start;

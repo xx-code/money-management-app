@@ -1,6 +1,7 @@
 import { Tag } from "@/core/entities/tag";
 import { RecordRepository } from "../../core/interactions/repositories/recordRepository";
 import { Record } from "@/core/entities/transaction";
+import DateParser from "../../core/entities/date_parser";
 
 export class SqlRecordRepository implements RecordRepository {
     private db: any;
@@ -29,6 +30,7 @@ export class SqlRecordRepository implements RecordRepository {
                 throw Error("Table record not created");
             }
 
+
             let result = await this.db.run(`
                 INSERT INTO ${this.table_record_name} (id, price, date, description, type) VALUES (?, ?, ?, ?, ?)`,
                 request.id, request.price, request.date.toString(), request.description, request.type
@@ -48,10 +50,13 @@ export class SqlRecordRepository implements RecordRepository {
             }
 
             let result = await this.db.get(`SELECT id, price, date, description, type FROM ${this.table_record_name} WHERE id = ?`, id);
+            
             if (result != undefined) {
+                let [year, month, day] = result['date'].split('-')
+
                 resolve({
                     id: result['id'],
-                    date: new Date(result['date']),
+                    date: new DateParser(Number(year), Number(month), Number(day)),
                     description: result['description'],
                     price: result['price'],
                     type: result['type']
@@ -71,9 +76,10 @@ export class SqlRecordRepository implements RecordRepository {
             
             let records: Record[] = [];
             for (let result of results) {
+                let [year, month, day] = result['date'].split('-')
                 records.push({
                     id: result['id'],
-                    date: new Date(result['date']),
+                    date: new DateParser(Number(year), Number(month), Number(day)),
                     description: result['description'],
                     price: result['price'],
                     type: result['type']
@@ -115,7 +121,7 @@ export class SqlRecordRepository implements RecordRepository {
         return new Promise(async (resolve, reject) => {
             await this.db.run(`
                 UPDATE ${this.table_record_name} SET price = ?, date = ?, description = ?, type = ? WHERE id = ? 
-            `, record.price, record.date.toDateString(), record.description, record.type, record.id);
+            `, record.price, record.date.toString(), record.description, record.type, record.id);
 
             let record_updated = await this.get(record.id);
 

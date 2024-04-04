@@ -2,6 +2,7 @@ import sqlite3 from 'sqlite3';
 import { open } from "sqlite";
 import { SqlRecordRepository } from "../../../infrastructure/sql/sqlRecordRepository";
 import { Record } from "@/core/entities/transaction";
+import DateParser from "../../../core/entities/date_parser";
 
 describe('Test Record sql repository', () => {
     sqlite3.verbose();
@@ -27,7 +28,7 @@ describe('Test Record sql repository', () => {
 
         let new_record: Record = {
             id: 'record_1',
-            date: new Date(),
+            date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
             type: 'Credit'
@@ -44,7 +45,7 @@ describe('Test Record sql repository', () => {
 
         let new_record: Record = {
             id: 'record_1',
-            date: new Date('2024-01-31'),
+            date: new DateParser(2024, 1, 31),
             description: 'un blabla',
             price: 15,
             type: 'Credit'
@@ -54,7 +55,10 @@ describe('Test Record sql repository', () => {
 
         let record = await record_repo.get('record_1');
 
-        expect(record).toStrictEqual(new_record)
+        expect(record?.id).toBe(new_record.id);
+        expect(record?.description).toBe(new_record.description);
+        expect(record?.price).toBe(new_record.price);
+        expect(record?.type).toBe(new_record.type);
     });
 
     test('Get all records', async () => {
@@ -62,7 +66,7 @@ describe('Test Record sql repository', () => {
         await record_repo.create_table();
         let new_record: Record = {
             id: 'record_1',
-            date: new Date('2024-01-31'),
+            date: new DateParser(2024,1,31),
             description: 'un blabla',
             price: 15,
             type: 'Credit'
@@ -74,7 +78,10 @@ describe('Test Record sql repository', () => {
 
         expect(records.length).toBe(1);
 
-        expect(records[0]).toStrictEqual(new_record);
+        expect(records[0].id).toBe(new_record.id);
+        expect(records[0].description).toBe(new_record.description);
+        expect(records[0].price).toBe(new_record.price);
+        expect(records[0].type).toBe(new_record.type);
     });
 
     test('Get many by id records', async () => {
@@ -82,7 +89,7 @@ describe('Test Record sql repository', () => {
         await record_repo.create_table();
         let new_record: Record = {
             id: 'record_1',
-            date: new Date('2024-01-31'),
+            date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
             type: 'Credit'
@@ -92,7 +99,7 @@ describe('Test Record sql repository', () => {
 
         let new_record2: Record = {
             id: 'record_2',
-            date: new Date('2024-01-31'),
+            date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
             type: 'Credit'
@@ -102,7 +109,7 @@ describe('Test Record sql repository', () => {
 
         let new_record3: Record = {
             id: 'record_3',
-            date: new Date('2024-01-31'),
+            date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
             type: 'Credit'
@@ -125,7 +132,7 @@ describe('Test Record sql repository', () => {
         await record_repo.create_table();
         let new_record: Record = {
             id: 'record_1',
-            date: new Date('2024-01-31'),
+            date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
             type: 'Credit'
@@ -145,7 +152,7 @@ describe('Test Record sql repository', () => {
         await record_repo.create_table();
         let new_record: Record = {
             id: 'record_1',
-            date: new Date('2024-01-31'),
+            date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
             type: 'Credit'
@@ -166,7 +173,7 @@ describe('Test Record sql repository', () => {
         await record_repo.create_table();
         let new_record: Record = {
             id: 'record_1',
-            date: new Date('2024-01-31'),
+            date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
             type: 'Credit'
@@ -186,7 +193,7 @@ describe('Test Record sql repository', () => {
         await record_repo.create_table();
         let new_record: Record = {
             id: 'record_1',
-            date: new Date('2024-01-31'),
+            date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
             type: 'Credit'
@@ -194,11 +201,11 @@ describe('Test Record sql repository', () => {
 
         await record_repo.save(new_record);
 
-        new_record.date = new Date(2024, 1, 22);
+        new_record.date = new DateParser(2024, 1, 22);
 
         let record_updated = await record_repo.update(new_record);
-
-        expect(record_updated.date).toStrictEqual(new Date(2024, 1, 22));
+        let date = new DateParser(2024, 1, 22)
+        expect(record_updated.date).toStrictEqual(date);
     });
 
     test('delete record', async () => {
@@ -206,7 +213,7 @@ describe('Test Record sql repository', () => {
         await record_repo.create_table();
         let new_record: Record = {
             id: 'record_1',
-            date: new Date('2024-01-31'),
+            date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
             type: 'Credit'

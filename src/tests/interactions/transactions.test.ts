@@ -13,6 +13,7 @@ import { DeleteTransactionUseCase, IDeleteTransactoinUseCaseResponse } from '../
 import { UpdateTransactionUseCase, IUpdateTransactionUseCaseResponse } from '../../core/interactions/transaction/updateTransactionUseCase';
 import { AccountRepository } from '@/core/interactions/repositories/accountRepository';
 import { IDeleteAccountUseCaseResponse } from '@/core/interactions/account/deleteAccountUseCase';
+import DateParser from '../../core/entities/date_parser';
 
 class MockCrypto implements CryptoService {
     generate_uuid_to_string(): string {
@@ -72,7 +73,7 @@ describe('Creation transaction Use Case', () => {
     it('Test error description empty', async () => {
         await use_case.execute({
             description: ' ',
-            date: new Date("vot, tot"),
+            date: DateParser.now(),
             category_ref: ' d',
             account_ref: 'df',
             tag_ref: ['df'],
@@ -83,7 +84,7 @@ describe('Creation transaction Use Case', () => {
         /*try { 
             use_case.execute({
                 description: ' ',
-                date: new Date("vot, tot"),
+                date: DateParser.now(),
                 category_ref: ' d',
                 account_ref: 'df',
                 tag_ref: ['df'],
@@ -98,7 +99,7 @@ describe('Creation transaction Use Case', () => {
     it('Test error category empty', async () => {
         await use_case.execute({
             description: 'df',
-            date: new Date("vot, tot"),
+            date: DateParser.now(),
             category_ref: '  ',
             account_ref: 'df',
             tag_ref: ['df'],
@@ -109,7 +110,7 @@ describe('Creation transaction Use Case', () => {
         /*try {
             use_case.execute({
                 description: 'df',
-                date: new Date("vot, tot"),
+                date: DateParser.now(),
                 category_ref: '  ',
                 account_ref: 'df',
                 tag_ref: ['df'],
@@ -124,7 +125,7 @@ describe('Creation transaction Use Case', () => {
     it('Test error category empty', async () => {
         await use_case.execute({
             description: 'df',
-            date: new Date("vot, tot"),
+            date: DateParser.now(),
             category_ref: 'dsfd',
             account_ref: 'df',
             tag_ref: [' '],
@@ -135,7 +136,7 @@ describe('Creation transaction Use Case', () => {
         /*try {
             use_case.execute({
                 description: 'df',
-                date: new Date("vot, tot"),
+                date: DateParser.now(),
                 category_ref: 'dsfd',
                 account_ref: 'df',
                 tag_ref: [' '],
@@ -150,7 +151,7 @@ describe('Creation transaction Use Case', () => {
     it('Test error price', async () => {
         await use_case.execute({
             description: 'df',
-            date: new Date("vot, tot"),
+            date: DateParser.now(),
             category_ref: 'Price must be greather or equal to 0',
             account_ref: 'df',
             tag_ref: ['df'],
@@ -161,7 +162,7 @@ describe('Creation transaction Use Case', () => {
         /*try {
             use_case.execute({
                 description: 'df',
-                date: new Date("vot, tot"),
+                date: DateParser.now(),
                 category_ref: 'Price must be greather or equal to 0',
                 account_ref: 'df',
                 tag_ref: ['df'],
@@ -176,7 +177,7 @@ describe('Creation transaction Use Case', () => {
     it('Test error account ref', () => {
         use_case.execute({
             description: 'df',
-            date: new Date("vot, tot"),
+            date: DateParser.now(),
             category_ref: 'Price must be greather or equal to 0',
             account_ref: ' ',
             tag_ref: ['df'],
@@ -187,7 +188,7 @@ describe('Creation transaction Use Case', () => {
         /*try {
             use_case.execute({
                 description: 'df',
-                date: new Date("vot, tot"),
+                date: DateParser.now(),
                 category_ref: 'Price must be greather or equal to 0',
                 account_ref: ' ',
                 tag_ref: ['df'],
