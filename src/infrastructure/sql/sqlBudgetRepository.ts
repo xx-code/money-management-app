@@ -338,7 +338,33 @@ export class SqlBudgetTagRepository implements BudgetTagRepository {
         });
     }
     get_all(): Promise<BudgetWithTag[]> {
-        throw new Error('Method not implemented.');
+        return new Promise(async (resolve, reject) => {
+            if (!this.is_table_exist) {
+                throw Error("Table budget tag not created");
+            }
+
+            let results = await this.db.all(`SELECT id, title, target, date_start, date_end FROM ${this.table_name}`);
+
+            let budgets: BudgetWithTag[] = [];
+
+            for (let result of results) {
+                let [year, month, day] = result['date_start'].split('-')
+                let date_start = new DateParser(Number(year), Number(month), Number(day));
+
+                [year, month, day] = result['date_end'].split('-')
+                let date_end = new DateParser(Number(year), Number(month), Number(day));
+
+                budgets.push({
+                    id: result['id'],
+                    target: result['target'],
+                    title: result['title'],
+                    date_start: date_start,
+                    date_end: date_end,
+                    tags: await this.get_all_tags(result['id'])
+                });
+            }
+            resolve(budgets);
+        });
     }
     delete(id: string): Promise<boolean> {
         throw new Error('Method not implemented.');
