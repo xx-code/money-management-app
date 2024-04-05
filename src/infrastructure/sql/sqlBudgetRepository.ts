@@ -367,7 +367,19 @@ export class SqlBudgetTagRepository implements BudgetTagRepository {
         });
     }
     delete(id: string): Promise<boolean> {
-        throw new Error('Method not implemented.');
+        return new Promise(async (resolve, reject) => {
+            if (!this.is_table_exist) {
+                throw Error("Table budget tag not created");
+            }
+
+            let result = await this.db.run(`DELETE FROM ${this.table_name} WHERE id = ?`, id);
+
+            if (result['changes'] == 0) {
+                resolve(false);
+            } else {
+                resolve(true)
+            } 
+        });
     }
     update(request: dbBudgetTag): Promise<BudgetWithTag> {
         throw new Error('Method not implemented.');

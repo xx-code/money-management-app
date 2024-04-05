@@ -380,4 +380,36 @@ describe('Budget sql repository', () => {
         expect(budgets[0].title).toBe('title');
         expect(budgets[1].title).toBe('title2');
     });
+
+    test('delete budget tag', async () => {
+        let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
+        await budget_category_repo.create_table(table_category_name);
+        let category_repo = new SqlCategoryRepository(db, table_category_name);
+        await category_repo.create_table();
+        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
+        await budget_tag_repo.create_table(table_tag_name);
+
+        let tag_repo = new SqlTagRepository(db, table_tag_name);
+        await tag_repo.create_table();
+        let new_tag: Tag = 'tag';
+        await tag_repo.save({title: new_tag});
+
+        let true_response = '1-id';
+
+        let budget: dbBudgetTag = {
+            id: true_response,
+            title: 'title',
+            target: 1500,
+            date_start: new DateParser(2024, 4, 1),
+            date_end: new DateParser(2024, 4, 7),
+            tags: [new_tag]
+        };
+
+        await budget_tag_repo.save(budget);
+
+        let is_deleted = await budget_tag_repo.delete(true_response);
+
+        expect(is_deleted).toBe(true);
+        expect((await budget_tag_repo.get(true_response))).toBeNull();
+    });
 })
