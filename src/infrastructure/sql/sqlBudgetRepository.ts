@@ -159,7 +159,60 @@ export class SqlBudgetCategoryRepository implements BudgetCategoryRepository {
         });
     }
     update(request: dbBudgetCategory): Promise<BudgetWithCategory> {
-        throw new Error('Method not implemented.');
+        return new Promise(async (resolve, reject) => {
+            if (!this.is_table_exist) {
+                throw Error("Table budget not created");
+            }
+
+            await this.db.run(`UPDATE ${this.table_name} SET title = ?, target = ?, period = ?, period_time = ? WHERE id = ? `, 
+            request.title, request.target, request.period, request.period_time, request.id);
+
+            let result_category = await this.db.all(`
+                SELECT * 
+                FROM 
+                    ${this.table_name}_categories
+                JOIN ${this.table_category_name}
+                    ON ${this.table_category_name}.title = ${this.table_name}_categories.id_category
+                WHERE ${this.table_name}_categories.id_budget = ?
+                `,
+                request.id
+            );
+
+
+            let category_to_remove = [];
+            let category_to_add = [];
+
+            let categories = [];
+            for(let result of result_category) {
+                if (!request.categories.includes(result['id_category'])) {
+                    category_to_remove.push(result['id_category']);
+                }
+                categories.push(result['id_category']);
+            }
+
+            for (let category of request.categories) {
+                if (!categories.includes(category)) {
+                    category_to_add.push(category);
+                }
+            }
+
+            if (category_to_remove.length > 0) {
+                await this.db.run(`DELETE FROM ${this.table_name}_categories WHERE id_category in (?)`, category_to_remove.toString());
+            }
+
+            if (category_to_add.length > 0) {
+                for (let category of category_to_add) {
+                    await this.db.run(`
+                        INSERT INTO ${this.table_name}_categories (id_budget, id_category) VALUES (?, ?)`,
+                        request.id, category
+                    );
+                }
+            }
+
+            let budget = await this.get(request.id);
+
+            resolve(budget!);
+        });
     }
 
 }

@@ -174,4 +174,85 @@ describe('Budget sql repository', () => {
         expect(is_deleted).toBe(true);
         expect((await budget_category_repo.get(true_response))).toBeNull();
     });
+
+    test('update budget category', async () => {
+        let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
+        await budget_category_repo.create_table(table_category_name);
+
+        let category_repo = new SqlCategoryRepository(db, table_category_name);
+        await category_repo.create_table();
+        let new_category: Category = {
+            title: 'cat',
+            icon: 'ico-cat'
+        }
+        await category_repo.save(new_category);
+
+        new_category = {
+            title: 'cat2',
+            icon: 'ico-cat'
+        }
+        await category_repo.save(new_category);
+
+        let true_response = '1-id';
+
+        let budget: dbBudgetCategory = {
+            id: true_response,
+            title: 'title',
+            target: 1500,
+            period: 'Week',
+            period_time: 1,
+            categories: [new_category.title]
+        };
+
+        await budget_category_repo.save(budget);
+
+        let budget_updated = await budget_category_repo.update({
+            id: true_response,
+            title: 'title1',
+            target: 1530,
+            period: 'Month',
+            period_time: 3,
+            categories: [new_category.title]
+        });
+
+        expect(budget_updated.title).toBe('title1');
+        expect(budget_updated.target).toBe(1530);
+        expect(budget_updated.period).toBe('Month');
+        expect(budget_updated.period_time).toBe(3);
+
+        budget = {
+            id: '2',
+            title: 'title',
+            target: 1500,
+            period: 'Week',
+            period_time: 1,
+            categories: ['cat']
+        };
+
+        await budget_category_repo.save(budget);
+
+        budget_updated = await budget_category_repo.update({
+            id: '2',
+            title: 'title',
+            target: 1500,
+            period: 'Month',
+            period_time: 3,
+            categories: ['cat', 'cat2']
+        });
+
+        expect(budget_updated.categories.length).toBe(2);
+        expect(budget_updated.categories[1].title).toBe('cat2');
+
+        budget_updated = await budget_category_repo.update({
+            id: '2',
+            title: 'title',
+            target: 1500,
+            period: 'Month',
+            period_time: 3,
+            categories: ['cat2']
+        });
+
+        expect(budget_updated.categories.length).toBe(1);
+        expect(budget_updated.categories[0].title).toBe('cat2');
+    });
 })
