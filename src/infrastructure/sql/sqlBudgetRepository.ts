@@ -1,6 +1,8 @@
 import { BudgetWithCategory, BudgetWithTag } from '@/core/entities/budget';
 import { BudgetCategoryRepository, BudgetTagRepository, dbBudgetCategory, dbBudgetTag } from '../../core/interactions/repositories/budgetRepository';
 import { Category } from '@/core/entities/category';
+import { Tag } from '@/core/entities/tag';
+import DateParser from '../../core/entities/date_parser';
 
 
 export class SqlBudgetCategoryRepository implements BudgetCategoryRepository {
@@ -253,6 +255,28 @@ export class SqlBudgetTagRepository implements BudgetTagRepository {
         this.is_table_exist = true;
     }
 
+    private async get_all_tags(id_budget: string): Promise<Tag[]> {
+        return new Promise(async (resolve, reject) => {
+            let result_tag = await this.db.all(`
+                SELECT * 
+                FROM 
+                    ${this.table_name}_tags
+                JOIN ${this.table_tag_name}
+                    ON ${this.table_tag_name}.title = ${this.table_name}_tags.id_tag
+                WHERE ${this.table_name}_tags.id_budget = ?
+                `,
+                id_budget
+            );
+
+            let tags: Tag[] = []
+            for (let result of result_tag) {
+                tags.push(result['title']);
+            }
+
+            resolve(tags);
+        });
+    }
+
     save(request: dbBudgetTag): Promise<boolean> {
         return new Promise(async (resolve, reject) => {
             if (!this.is_table_exist) {
@@ -283,7 +307,35 @@ export class SqlBudgetTagRepository implements BudgetTagRepository {
         });
     }
     get(id: string): Promise<BudgetWithTag | null> {
-        throw new Error('Method not implemented.');
+        return new Promise(async (resolve, reject) => {
+            if (!this.is_table_exist) {
+                throw Error("Table budget not created");
+            }
+
+            let result = await this.db.get(`SELECT id, title, target, date_start, date_end FROM ${this.table_name} WHERE id = ?`, id);
+            
+            if (result != undefined) {
+                
+                let tags = await this.get_all_tags(id);
+                
+                let [year, month, day] = result['date_start'].split('-')
+                let date_start = new DateParser(Number(year), Number(month), Number(day));
+
+                [year, month, day] = result['date_end'].split('-')
+                let date_end = new DateParser(Number(year), Number(month), Number(day));
+
+                resolve({
+                    id: result['id'],
+                    title: result['title'],
+                    target: result['target'],
+                    date_start: date_start,
+                    date_end: date_end,
+                    tags: tags
+                });
+            } else {
+                resolve(null);
+            }
+        });
     }
     get_all(): Promise<BudgetWithTag[]> {
         throw new Error('Method not implemented.');
