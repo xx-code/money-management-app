@@ -5,9 +5,9 @@ import { SqlTagRepository } from '../../../infrastructure/sql/sqlTagRepository';
 import { Category } from '@/core/entities/category';
 import { Tag } from '@/core/entities/tag';
 import DateParser from '../../../core/entities/date_parser';
-import { SqlBudgetCategoryRepository } from '../../../infrastructure/sql/sqlBudgetRepository';
+import { SqlBudgetCategoryRepository, SqlBudgetTagRepository } from '../../../infrastructure/sql/sqlBudgetRepository';
 import { BudgetWithCategory } from '../../../core/entities/budget';
-import { dbBudgetCategory } from '../../../core/interactions/repositories/budgetRepository';
+import { dbBudgetCategory, dbBudgetTag } from '../../../core/interactions/repositories/budgetRepository';
 
 describe('Budget sql repository', () => {
     sqlite3.verbose();
@@ -22,25 +22,24 @@ describe('Budget sql repository', () => {
             filename: '',
             driver: sqlite3.Database
         });
-
-        /*let tag_repo = new SqlTagRepository(db, 'tags');
-        await tag_repo.create_table();
-        let new_tag: Tag = 'tag';
-        await tag_repo.save({title: new_tag});*/
     });
 
     afterEach(async () => {
        if (db != null) {
             await db.exec(`DELETE FROM ${table_budget_category_name}`);
-            //await db.exec(`DELETE FROM ${table_budget_tag_name}`);
+            await db.exec(`DELETE FROM ${table_budget_tag_name}`);
             await db.exec(`DELETE FROM ${table_category_name}`);
-            // await db.exec(`DELETE FROM ${table_tag_name}`);
+            await db.exec(`DELETE FROM ${table_tag_name}`);
        }
     });
 
     test('Create Budget category', async () => {
         let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
         await budget_category_repo.create_table(table_category_name);
+        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
+        await budget_tag_repo.create_table(table_tag_name);
+        let tag_repo = new SqlTagRepository(db, 'tags');
+        await tag_repo.create_table();
 
         let category_repo = new SqlCategoryRepository(db, table_category_name);
         await category_repo.create_table();
@@ -69,6 +68,10 @@ describe('Budget sql repository', () => {
     test('get Budget category', async () => {
         let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
         await budget_category_repo.create_table(table_category_name);
+        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
+        await budget_tag_repo.create_table(table_tag_name);
+        let tag_repo = new SqlTagRepository(db, 'tags');
+        await tag_repo.create_table();
 
         let category_repo = new SqlCategoryRepository(db, table_category_name);
         await category_repo.create_table();
@@ -104,6 +107,10 @@ describe('Budget sql repository', () => {
     test('get all Budget category', async () => {
         let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
         await budget_category_repo.create_table(table_category_name);
+        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
+        await budget_tag_repo.create_table(table_tag_name);
+        let tag_repo = new SqlTagRepository(db, 'tags');
+        await tag_repo.create_table();
 
         let category_repo = new SqlCategoryRepository(db, table_category_name);
         await category_repo.create_table();
@@ -147,6 +154,10 @@ describe('Budget sql repository', () => {
     test('delete budget category', async () => {
         let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
         await budget_category_repo.create_table(table_category_name);
+        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
+        await budget_tag_repo.create_table(table_tag_name);
+        let tag_repo = new SqlTagRepository(db, 'tags');
+        await tag_repo.create_table();
 
         let category_repo = new SqlCategoryRepository(db, table_category_name);
         await category_repo.create_table();
@@ -178,6 +189,10 @@ describe('Budget sql repository', () => {
     test('update budget category', async () => {
         let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
         await budget_category_repo.create_table(table_category_name);
+        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
+        await budget_tag_repo.create_table(table_tag_name);
+        let tag_repo = new SqlTagRepository(db, 'tags');
+        await tag_repo.create_table();
 
         let category_repo = new SqlCategoryRepository(db, table_category_name);
         await category_repo.create_table();
@@ -254,5 +269,35 @@ describe('Budget sql repository', () => {
 
         expect(budget_updated.categories.length).toBe(1);
         expect(budget_updated.categories[0].title).toBe('cat2');
+    });
+
+    test('Create Budget tag', async () => {
+        let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
+        await budget_category_repo.create_table(table_category_name);
+        let category_repo = new SqlCategoryRepository(db, table_category_name);
+        await category_repo.create_table();
+        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
+        await budget_tag_repo.create_table(table_tag_name);
+        
+
+        let tag_repo = new SqlTagRepository(db, table_tag_name);
+        await tag_repo.create_table();
+        let new_tag: Tag = 'tag';
+        await tag_repo.save({title: new_tag});
+
+        let true_response = '1-id';
+
+        let budget: dbBudgetTag = {
+            id: true_response,
+            title: 'title',
+            target: 1500,
+            date_start: new DateParser(2024, 4, 1),
+            date_end: new DateParser(2024, 4, 7),
+            tags: [new_tag]
+        };
+
+        let is_saved = await budget_tag_repo.save(budget);
+
+        expect(is_saved).toBe(true);
     });
 })

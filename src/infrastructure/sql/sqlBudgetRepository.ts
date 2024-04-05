@@ -218,8 +218,69 @@ export class SqlBudgetCategoryRepository implements BudgetCategoryRepository {
 }
 
 export class SqlBudgetTagRepository implements BudgetTagRepository {
+    private db: any;
+    private table_name: string;
+    private table_tag_name: string = '';
+    private is_table_exist: boolean = false;
+
+    constructor(db: any, table_name: string) {
+        this.db = db;
+        this.table_name = table_name;
+    }
+
+    async create_table(table_tag_name: string): Promise<void> {
+        await this.db.exec(`
+            CREATE TABLE IF NOT EXISTS ${this.table_name} (
+                id TEXT PRIMARY KEY,
+                title TEXT NOT NULL,
+                target INTEGER NOT NULL,
+                date_start TEXT NOT NULL,
+                date_end TEXT NOT NULL
+            )
+        `);
+
+        await this.db.exec(`
+            CREATE TABLE IF NOT EXISTS ${this.table_name}_tags (
+                id_budget TEXT NOT NULL,
+                id_tag TEXT NOT NULL,
+                FOREIGN KEY (id_budget) REFERENCES ${this.table_name}(id)
+                    ON DELETE CASCADE
+                FOREIGN KEY (id_tag) REFERENCES ${table_tag_name}(title)  
+            )
+        `);
+
+        this.table_tag_name = table_tag_name;
+        this.is_table_exist = true;
+    }
+
     save(request: dbBudgetTag): Promise<boolean> {
-        throw new Error('Method not implemented.');
+        return new Promise(async (resolve, reject) => {
+            if (!this.is_table_exist) {
+                throw Error("Table budget tag not created");
+            }
+
+            let result = await this.db.run(`
+                INSERT INTO ${this.table_name} (id, title, target, date_start, date_end) VALUES (?, ?, ?, ?, ?)`,
+                request.id, request.title, request.target, request.date_start.toString(), request.date_end.toString()
+            );
+
+            let saved_category = true;
+            if (request.tags.length > 0) {
+                for (let tag of request.tags) {
+                    let result = await this.db.run(`
+                        INSERT INTO ${this.table_name}_tags (id_budget, id_tag) VALUES (?, ?)`,
+                        request.id, tag
+                    );
+                    saved_category = result != undefined;
+                }
+            }
+
+            if (result['changes'] == 0 && saved_category) {
+                resolve(false);
+            } else {
+                resolve(true);
+            }
+        });
     }
     get(id: string): Promise<BudgetWithTag | null> {
         throw new Error('Method not implemented.');
