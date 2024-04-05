@@ -382,6 +382,59 @@ export class SqlBudgetTagRepository implements BudgetTagRepository {
         });
     }
     update(request: dbBudgetTag): Promise<BudgetWithTag> {
-        throw new Error('Method not implemented.');
+        return new Promise(async (resolve, reject) => {
+            if (!this.is_table_exist) {
+                throw Error("Table budget not created");
+            }
+
+            await this.db.run(`UPDATE ${this.table_name} SET title = ?, target = ?, date_start = ?, date_end = ? WHERE id = ? `, 
+            request.title, request.target, request.date_start.toString(), request.date_end.toString(), request.id);
+
+            let result_tag = await this.db.all(`
+                SELECT * 
+                FROM 
+                    ${this.table_name}_tags
+                JOIN ${this.table_tag_name}
+                    ON ${this.table_tag_name}.title = ${this.table_name}_tags.id_tag
+                WHERE ${this.table_name}_tags.id_budget = ?
+                `,
+                request.id
+            );
+
+
+            let tag_to_remove = [];
+            let tag_to_add = [];
+
+            let tags = [];
+            for(let result of result_tag) {
+                if (!request.tags.includes(result['id_tag'])) {
+                    tag_to_remove.push(result['id_tag']);
+                }
+                tags.push(result['id_tag']);
+            }
+
+            for (let tag of request.tags) {
+                if (!tags.includes(tag)) {
+                    tag_to_add.push(tag);
+                }
+            }
+
+            if (tag_to_remove.length > 0) {
+                await this.db.run(`DELETE FROM ${this.table_name}_tags WHERE id_tag in (?)`, tag_to_remove.toString());
+            }
+
+            if (tag_to_add.length > 0) {
+                for (let tag of tag_to_add) {
+                    await this.db.run(`
+                        INSERT INTO ${this.table_name}_tags (id_budget, id_tag) VALUES (?, ?)`,
+                        request.id, tag
+                    );
+                }
+            }
+
+            let budget = await this.get(request.id);
+
+            resolve(budget!);
+        });
     }
 }

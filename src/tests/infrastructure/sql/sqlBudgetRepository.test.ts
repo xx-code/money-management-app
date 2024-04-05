@@ -412,4 +412,84 @@ describe('Budget sql repository', () => {
         expect(is_deleted).toBe(true);
         expect((await budget_tag_repo.get(true_response))).toBeNull();
     });
+
+    test('update budget tag', async () => {
+        let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
+        await budget_category_repo.create_table(table_category_name);
+        let category_repo = new SqlCategoryRepository(db, table_category_name);
+        await category_repo.create_table();
+        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
+        await budget_tag_repo.create_table(table_tag_name);
+
+        let tag_repo = new SqlTagRepository(db, table_tag_name);
+        await tag_repo.create_table();
+        let new_tag: Tag = 'tag';
+        await tag_repo.save({title: new_tag});
+
+        new_tag = 'tag2';
+        await tag_repo.save({title: new_tag});
+
+
+        let true_response = '1-id';
+
+        let budget: dbBudgetTag = {
+            id: true_response,
+            title: 'title',
+            target: 1500,
+            date_start: new DateParser(2024, 4, 1),
+            date_end: new DateParser(2024, 4, 7),
+            tags: [new_tag]
+        };
+
+        await budget_tag_repo.save(budget);
+
+        let budget_updated = await budget_tag_repo.update({
+            id: true_response,
+            title: 'title1',
+            target: 1530,
+            date_start: new DateParser(2024, 4, 2),
+            date_end: new DateParser(2024, 4, 3),
+            tags: [new_tag]
+        });
+
+        expect(budget_updated.title).toBe('title1');
+        expect(budget_updated.target).toBe(1530);
+        expect(budget_updated.date_start).toStrictEqual(new DateParser(2024, 4, 2));
+        expect(budget_updated.date_end).toStrictEqual(new DateParser(2024, 4, 3));
+
+        budget = {
+            id: '2',
+            title: 'title',
+            target: 1500,
+            date_start: new DateParser(2024, 4, 2),
+            date_end: new DateParser(2024, 4, 3),
+            tags: ['tag']
+        };
+
+        await budget_tag_repo.save(budget);
+
+        budget_updated = await budget_tag_repo.update({
+            id: '2',
+            title: 'title',
+            target: 1500,
+            date_start: new DateParser(2024, 4, 2),
+            date_end: new DateParser(2024, 4, 3),
+            tags: ['tag', 'tag2']
+        });
+
+        expect(budget_updated.tags.length).toBe(2);
+        expect(budget_updated.tags[1]).toBe('tag2');
+
+        budget_updated = await budget_tag_repo.update({
+            id: '2',
+            title: 'title',
+            target: 1500,
+            date_start: new DateParser(2024, 4, 2),
+            date_end: new DateParser(2024, 4, 3),
+            tags: ['tag2']
+        });
+
+        expect(budget_updated.tags.length).toBe(1);
+        expect(budget_updated.tags[0]).toBe('tag2');
+    });
 })
