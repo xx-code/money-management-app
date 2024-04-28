@@ -56,12 +56,14 @@ export class CreationBudgetCategoryUseCase implements ICreationBudgetUseCase {
             if (request.categories.length <= 0) {
                 throw new ValidationError('Budget categories must have at least 1 value');
             }
-
+            
+            let categories = []
             for (let i = 0; i < request.categories.length; i++) {
-                let category = await this.category_repository.get(request.categories[i]);
-                if (category != null) {
+                let category = await this.category_repository.get(formatted(request.categories[i]));
+                if (category === null) {
                     throw new ValidationError('Category ' + request.categories[i] + ' not exist')
                 }
+                categories.push(formatted(request.categories[i]));
             }
 
             if (request.target <= 0) {
@@ -70,6 +72,15 @@ export class CreationBudgetCategoryUseCase implements ICreationBudgetUseCase {
 
             if (request.period_time <= 0) {
                 throw new ValidationError('Period time must be greather than 0');
+            }
+
+            if (is_empty(request.period)) {
+                throw new ValidationError('Period field is empty');
+            }
+
+            const period_list = ['Month', 'Week' , 'Year']
+            if (!period_list.includes(request.period)) {
+                throw new ValidationError('Period must be Week, Month or year');
             }
 
             let new_id = this.crypto.generate_uuid_to_string();
@@ -81,7 +92,7 @@ export class CreationBudgetCategoryUseCase implements ICreationBudgetUseCase {
                 target: request.target,
                 period: request.period,
                 period_time: request.period_time,
-                categories: request.categories
+                categories: categories
             });
 
             this.presenter.success(response);
@@ -118,11 +129,13 @@ export class CreationBudgetTagUseCase implements ICreationBudgetUseCase {
                 throw new ValidationError('Tags must have at least 1 value');
             }
 
+            let tags = [];
             for (let i = 0; i < request.tags.length; i++) {
-                let tag = await this.tag_repository.get(request.tags[i]);
-                if (tag != null) {
+                let tag = await this.tag_repository.get(formatted(request.tags[i]));
+                if (tag === null) {
                     this.tag_repository.save({title: formatted(request.tags[i]) });
                 }
+                tags.push(formatted(request.tags[i]));
             }
 
             if (new Date(request.date_start.toString())  >= new Date(request.date_end.toString())) {
@@ -137,7 +150,7 @@ export class CreationBudgetTagUseCase implements ICreationBudgetUseCase {
                 target: request.target,
                 date_start: request.date_start,
                 date_end: request.date_end,
-                tags: request.tags
+                tags: tags
             });
             this.presenter.success(response);
         } catch(err) {

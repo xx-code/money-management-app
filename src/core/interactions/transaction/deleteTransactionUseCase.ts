@@ -6,7 +6,7 @@ interface IDeleteTransactionUseCase {
 }
 
 export interface IDeleteTransactoinUseCaseResponse {
-    success(id: string): void;
+    success(is_deleted: boolean): void;
     fail(err: Error): void
 }
 
@@ -19,16 +19,16 @@ export class DeleteTransactionUseCase implements IDeleteTransactionUseCase {
         this.presenter = presenter;
     }
     
-    execute(id: string): void {
+    async execute(id: string): Promise<void> {
         try {
-            let transaction = this.repository.get(id);
+            let transaction = await this.repository.get(id);
             if (transaction == null) {
                 throw new NotFoundError('Transaction not found');
             }
 
-            this.repository.delete(id);
+            let is_deleted = await this.repository.delete(id);
             
-            this.presenter.success(id)
+            this.presenter.success(is_deleted);
         } catch(err) {
             this.presenter.fail(err as Error);
         }

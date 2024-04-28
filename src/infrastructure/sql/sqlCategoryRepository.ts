@@ -1,34 +1,29 @@
 import { Category } from "@/core/entities/category";
 import { CategoryRepository, dbCategory } from "../../core/interactions/repositories/categoryRepository";
+import { open_database } from "../../config/sqlLiteConnection";
 
 
 export class SqlCategoryRepository implements CategoryRepository {
     
     private db: any;
-    private table_category_name: string;
-    private is_table_exist: boolean = false;
+    public table_category_name: string;
 
-    constructor(db: any, table_category_name: string) {
-        this.db = db;
+    constructor(table_category_name: string) {
         this.table_category_name = table_category_name;
     }
     
-    async create_table(): Promise<void> {
+    async init(db_file_name: string): Promise<void> {
+        this.db = await open_database(db_file_name);
         await this.db.exec(`
             CREATE TABLE IF NOT EXISTS ${this.table_category_name} (
                 title TEXT PRIMARY KEY,
                 icon TEXT
             )
         `);
-        this.is_table_exist = true;
     }
 
     save(dbCategory: dbCategory): Promise<boolean> {
         return new Promise( async (resolve, reject) => {
-            if (!this.is_table_exist) {
-                throw Error("Table category not created");
-            }
-    
             let result = await this.db.run(`
                 INSERT INTO ${this.table_category_name} (title, icon) VALUES (?, ?)`,
                 dbCategory.title, dbCategory.icon
@@ -54,10 +49,6 @@ export class SqlCategoryRepository implements CategoryRepository {
     }
     get(title: string): Promise<Category | null> {
         return new Promise( async (resolve, reject) => {
-            if (!this.is_table_exist) {
-                throw Error("Table category not created");
-            }
-    
             let result = await this.db.get(`
                 SELECT title, icon FROM ${this.table_category_name} WHERE title = ?`,
                 title
@@ -75,10 +66,6 @@ export class SqlCategoryRepository implements CategoryRepository {
     }
     get_all(): Promise<Category[]> {
         return new Promise( async (resolve, reject) => {
-            if (!this.is_table_exist) {
-                throw Error("Table category not created");
-            }
-    
             let results = await this.db.all(`SELECT title, icon FROM ${this.table_category_name} `);
 
             let categories = [];

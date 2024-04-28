@@ -6,7 +6,7 @@ import { CategoryRepository } from '../../core/interactions/repositories/categor
 import { TagRepository } from '../../core/interactions/repositories/tagRepository';
 import { ValidationError } from '../../core/errors/validationError';
 import { NotFoundError } from '../../core/errors/notFoundError';
-import { Transaction } from '../../core/entities/transaction';
+import { Transaction, TransactionType } from '../../core/entities/transaction';
 import { GetTransactionUseCase, IGetTransactionUseCase, IGetTransactionUseCaseResponse } from '../../core/interactions/transaction/getTransactionUseCase';
 import { GetPaginationTransaction, IGetPaginationTransactionResponse } from '../../core/interactions/transaction/getPaginationTransactionUseCase';
 import { DeleteTransactionUseCase, IDeleteTransactoinUseCaseResponse } from '../../core/interactions/transaction/deleteTransactionUseCase';
@@ -78,7 +78,7 @@ describe('Creation transaction Use Case', () => {
             account_ref: 'df',
             tag_ref: ['df'],
             price: 0,
-            type: 'Credit'
+            type: TransactionType.Credit
         });
         expect(presenter.fail).toHaveBeenCalled()
         /*try { 
@@ -104,7 +104,7 @@ describe('Creation transaction Use Case', () => {
             account_ref: 'df',
             tag_ref: ['df'],
             price: 0,
-            type: 'Credit'
+            type: TransactionType.Credit
         });
         expect(presenter.fail).toHaveBeenCalled()
         /*try {
@@ -130,7 +130,7 @@ describe('Creation transaction Use Case', () => {
             account_ref: 'df',
             tag_ref: [' '],
             price: 0,
-            type: "Credit"
+            type: TransactionType.Debit
         });
         expect(presenter.fail).toHaveBeenCalled()
         /*try {
@@ -141,7 +141,7 @@ describe('Creation transaction Use Case', () => {
                 account_ref: 'df',
                 tag_ref: [' '],
                 price: 0,
-                type: "Credit"
+                type: TransactionType.Debit
             });
         } catch(err) {
             expect(err).toStrictEqual(new ValidationError('Tag ref field is empty'));
@@ -156,7 +156,7 @@ describe('Creation transaction Use Case', () => {
             account_ref: 'df',
             tag_ref: ['df'],
             price: -12,
-            type: "Credit"
+            type: TransactionType.Debit
         });
         expect(presenter.fail).toHaveBeenCalled()
         /*try {
@@ -167,7 +167,7 @@ describe('Creation transaction Use Case', () => {
                 account_ref: 'df',
                 tag_ref: ['df'],
                 price: -12,
-                type: "Credit"
+                type: TransactionType.Debit
             });
         } catch(err) {
             expect(err).toStrictEqual(new ValidationError('Price must be greather to 0'));
@@ -182,7 +182,7 @@ describe('Creation transaction Use Case', () => {
             account_ref: ' ',
             tag_ref: ['df'],
             price: -12,
-            type: "Credit"
+            type: TransactionType.Debit
         });
         expect(presenter.fail).toHaveBeenCalled()
         /*try {
@@ -193,7 +193,7 @@ describe('Creation transaction Use Case', () => {
                 account_ref: ' ',
                 tag_ref: ['df'],
                 price: -12,
-                type: "Credit"
+                type: TransactionType.Debit
             });
         } catch(err) {
             expect(err).toStrictEqual(new ValidationError('Account ref field is empty'));

@@ -8,22 +8,18 @@ describe('Test Category sql repository', () => {
     let db: any | null = null;
     let table_category_name = 'categories';
 
-    beforeEach(async () => {
+    afterEach(async () => {
         db = await open({
-            filename: '',
+            filename: 'test.db',
             driver: sqlite3.Database
         })
-    });
 
-    afterEach(async () => {
-       if (db != null) {
-            await db.exec(`DELETE FROM ${table_category_name}`)
-       }
+        await db.exec(`DELETE FROM ${table_category_name}`)
     });
 
     test('Create Category', async () => {
-        let category_repo = new SqlCategoryRepository(db, table_category_name);
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository(table_category_name);
+        await category_repo.init('test.db');
         
         let new_category: Category = {
             title: 'cat',
@@ -36,8 +32,8 @@ describe('Test Category sql repository', () => {
     });
 
     test('Get category', async () => {
-        let category_repo = new SqlCategoryRepository(db, table_category_name);
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository(table_category_name);
+        await category_repo.init('test.db');
         
         let new_category: Category = {
             title: 'cat',
@@ -52,8 +48,8 @@ describe('Test Category sql repository', () => {
     });
 
     test('Get all category', async () => {
-        let category_repo = new SqlCategoryRepository(db, table_category_name);
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository(table_category_name);
+        await category_repo.init('test.db');
         
         let new_category: Category = {
             title: 'cat',
@@ -70,8 +66,8 @@ describe('Test Category sql repository', () => {
     });
 
     test('delete category', async () => {
-        let category_repo = new SqlCategoryRepository(db, table_category_name);
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository(table_category_name);
+        await category_repo.init('test.db');
         
         let new_category: Category = {
             title: 'cat',

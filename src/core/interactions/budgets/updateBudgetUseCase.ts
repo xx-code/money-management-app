@@ -78,6 +78,14 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 budget.period_time = request.period_time;
             }
 
+            if (request.period != null) {
+                const period_list = ['Month', 'Week' , 'Year']
+                if (!period_list.includes(request.period)) {
+                    throw new ValidationError('Period must be Week, Month or year');
+                }
+                budget.period = request.period;
+            }
+
             if (request.categories != null) {
                 if (request.categories.length <= 0){
                     throw new ValidationError('Budget categories must have at least 1 value');

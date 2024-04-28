@@ -13,7 +13,7 @@ export interface ICreationCategoryUseCase {
 }
 
 export interface ICreationCategoryUseCaseResponse {
-    success(title: string): void;
+    success(is_saved: boolean): void;
     fail(err: Error): void;
 }
 
@@ -47,11 +47,11 @@ export class CreationCategoryUseCase implements ICreationCategoryUseCase {
                 icon: request.icon
             });
 
-            if (is_saved) {
+            if (!is_saved) {
                 throw new Error('Category not save');
             }
 
-            this.presenter.success(request.title);
+            this.presenter.success(is_saved);
         } catch (err) {
             this.presenter.fail(err as Error);
         }

@@ -1,0 +1,9 @@
+.textinput {
+    margin: 1rem 0.5rem;
+}
+
+.textinput input {
+    border: #7E7E7E solid 1px;
+    border-radius: 0.4em;
+    padding: 1em;
+}

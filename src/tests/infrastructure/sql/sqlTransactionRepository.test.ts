@@ -8,8 +8,8 @@ import { SqlTagRepository } from "../../../infrastructure/sql/sqlTagRepository";
 import { Tag } from '@/core/entities/tag';
 import { Account } from '@/core/entities/account';
 import { Category } from '@/core/entities/category';
-import { Transaction, Record } from '@/core/entities/transaction';
-import { dbTransaction } from '@/core/interactions/repositories/transactionRepository';
+import { Transaction, Record, TransactionType } from '../../../core/entities/transaction';
+import { dbTransaction } from '../../../core/interactions/repositories/transactionRepository';
 import DateParser from '../../../core/entities/date_parser';
 
 describe('Test transaction sql repository', () => {
@@ -19,28 +19,25 @@ describe('Test transaction sql repository', () => {
     let table_category_name = 'categories';
     let table_account_name = 'accounts';
     let table_tag_name = 'tags';
-    let table_record_name = 'records'
-
-    beforeEach(async () => {
-        db = await open({
-            filename: '',
-            driver: sqlite3.Database
-        })
-    });
+    let table_record_name = 'records';
 
     afterEach(async () => {
-       if (db != null) {
-            await db.exec(`DELETE FROM ${table_name}`);
-            await db.exec(`DELETE FROM ${table_category_name}`);
-            await db.exec(`DELETE FROM ${table_account_name}`);
-            await db.exec(`DELETE FROM ${table_tag_name}`);
-            await db.exec(`DELETE FROM ${table_record_name}`);
-       }
+        db = await open({
+            filename: 'test.db',
+            driver: sqlite3.Database
+        })
+
+        await db.exec(`DELETE FROM ${table_name}`);
+        await db.exec(`DELETE FROM ${table_category_name}`);
+        await db.exec(`DELETE FROM ${table_account_name}`);
+        await db.exec(`DELETE FROM ${table_tag_name}`);
+        await db.exec(`DELETE FROM ${table_record_name}`);
+        await db.exec(`DELETE FROM ${table_name}_tags`)
     });
 
     test('Test create add new transaction with category', async () => {
-        let account_repo = new SqlAccountRepository(db, 'accounts');
-        await account_repo.create_table();
+        let account_repo = new SqlAccountRepository('accounts');
+        await account_repo.init('test.db');
 
         let new_account: Account = {
             id: '1',
@@ -50,34 +47,34 @@ describe('Test transaction sql repository', () => {
         };
         await account_repo.save(new_account);
 
-        let category_repo = new SqlCategoryRepository(db, 'categories');
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository('categories');
+        await category_repo.init('test.db');
         let new_category: Category = {
             title: 'cat',
             icon: 'ico-cat'
         }
         await category_repo.save(new_category);
 
-        let tag_repo = new SqlTagRepository(db, 'tags');
-        await tag_repo.create_table();
+        let tag_repo = new SqlTagRepository('tags');
+        await tag_repo.init('test.db');
         let new_tag: Tag = 'tag';
         await tag_repo.save({title: new_tag});
 
-        let record_repo = new SqlRecordRepository(db, 'records');
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository('records');
+        await record_repo.init('test.db');
 
         let new_record: Record = {
-            id: 'record_1',
+            id: 'record_J1',
             date: DateParser.now(),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
 
         await record_repo.save(new_record);
 
-        let transaction_repo = new SqlTransactionRepository(db, table_name);
-        await transaction_repo.create_table('accounts', 'categories', 'tags', 'records');
+        let transaction_repo = new SqlTransactionRepository(table_name);
+        await transaction_repo.init('test.db', 'accounts', 'categories', 'tags', 'records');
 
         let new_transaction: dbTransaction = {
             id: '1',
@@ -92,8 +89,8 @@ describe('Test transaction sql repository', () => {
     });
 
     test('Test create add new transaction with tag', async () => {
-        let account_repo = new SqlAccountRepository(db, 'accounts');
-        await account_repo.create_table();
+        let account_repo = new SqlAccountRepository('accounts');
+        await account_repo.init('test.db');
 
         let new_account: Account = {
             id: '1',
@@ -103,34 +100,34 @@ describe('Test transaction sql repository', () => {
         };
         await account_repo.save(new_account);
 
-        let category_repo = new SqlCategoryRepository(db, 'categories');
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository('categories');
+        await category_repo.init('test.db');
         let new_category: Category = {
             title: 'cat',
             icon: 'ico-cat'
         }
         await category_repo.save(new_category);
 
-        let tag_repo = new SqlTagRepository(db, 'tags');
-        await tag_repo.create_table();
+        let tag_repo = new SqlTagRepository('tags');
+        await tag_repo.init('test.db');
         let new_tag: Tag = 'tag';
         await tag_repo.save({title: new_tag});
 
-        let record_repo = new SqlRecordRepository(db, 'records');
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository('records');
+        await record_repo.init('test.db');
 
         let new_record: Record = {
-            id: 'record_1',
+            id: 'record_11',
             date: DateParser.now(),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
 
         await record_repo.save(new_record);
 
-        let transaction_repo = new SqlTransactionRepository(db, table_name);
-        await transaction_repo.create_table('accounts', 'categories', 'tags', 'records');
+        let transaction_repo = new SqlTransactionRepository(table_name);
+        await transaction_repo.init('test.db', 'accounts', 'categories', 'tags', 'records');
 
         let new_transaction: dbTransaction = {
             id: '1',
@@ -145,8 +142,8 @@ describe('Test transaction sql repository', () => {
     });
 
     test('Get  transaction', async () => {
-        let account_repo = new SqlAccountRepository(db, 'accounts');
-        await account_repo.create_table();
+        let account_repo = new SqlAccountRepository('accounts');
+        await account_repo.init('test.db');
 
         let new_account: Account = {
             id: '1',
@@ -156,28 +153,28 @@ describe('Test transaction sql repository', () => {
         };
         await account_repo.save(new_account);
 
-        let category_repo = new SqlCategoryRepository(db, 'categories');
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository('categories');
+        await category_repo.init('test.db');
         let new_category: Category = {
             title: 'cat',
             icon: 'ico-cat'
         }
         await category_repo.save(new_category);
 
-        let tag_repo = new SqlTagRepository(db, 'tags');
-        await tag_repo.create_table();
+        let tag_repo = new SqlTagRepository('tags');
+        await tag_repo.init('test.db');
         let new_tag: Tag = 'tag';
         await tag_repo.save({title: new_tag});
 
-        let record_repo = new SqlRecordRepository(db, 'records');
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository('records');
+        await record_repo.init('test.db');
 
         let new_record: Record = {
             id: 'record_1',
             date: DateParser.now(),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
 
         await record_repo.save(new_record);
@@ -187,13 +184,13 @@ describe('Test transaction sql repository', () => {
             date: DateParser.now(),
             description: 'un blabla 2',
             price: 18,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
 
         await record_repo.save(new_record_with_tag);
 
-        let transaction_repo = new SqlTransactionRepository(db, table_name);
-        await transaction_repo.create_table('accounts', 'categories', 'tags', 'records');
+        let transaction_repo = new SqlTransactionRepository(table_name);
+        await transaction_repo.init('test.db', 'accounts', 'categories', 'tags', 'records');
 
         let new_transaction: dbTransaction = {
             id: '1',
@@ -232,8 +229,8 @@ describe('Test transaction sql repository', () => {
     });
 
     test('Pagination transactions', async () => {
-        let account_repo = new SqlAccountRepository(db, 'accounts');
-        await account_repo.create_table();
+        let account_repo = new SqlAccountRepository('accounts');
+        await account_repo.init('test.db');
 
         let new_account: Account = {
             id: '1',
@@ -251,8 +248,8 @@ describe('Test transaction sql repository', () => {
         };
         await account_repo.save(new_account);
 
-        let category_repo = new SqlCategoryRepository(db, 'categories');
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository('categories');
+        await category_repo.init('test.db');
         let new_category: Category = {
             title: 'cat',
             icon: 'ico-cat'
@@ -271,23 +268,23 @@ describe('Test transaction sql repository', () => {
         }
         await category_repo.save(new_category);
 
-        let tag_repo = new SqlTagRepository(db, 'tags');
-        await tag_repo.create_table();
+        let tag_repo = new SqlTagRepository('tags');
+        await tag_repo.init('test.db');
         let new_tag: Tag = 'tag';
         await tag_repo.save({title: new_tag});
 
-        let record_repo = new SqlRecordRepository(db, 'records');
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository('records');
+        await record_repo.init('test.db');
 
-        let transaction_repo = new SqlTransactionRepository(db, table_name);
-        await transaction_repo.create_table('accounts', 'categories', 'tags', 'records');
+        let transaction_repo = new SqlTransactionRepository(table_name);
+        await transaction_repo.init('test.db', 'accounts', 'categories', 'tags', 'records');
 
         let new_record: Record = {
             id: 'record_1',
             date: DateParser.now(),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
         await record_repo.save(new_record);
 
@@ -305,7 +302,7 @@ describe('Test transaction sql repository', () => {
             date: DateParser.now(),
             description: 'un blabla',
             price: 10,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
         await record_repo.save(new_record);
 
@@ -323,7 +320,7 @@ describe('Test transaction sql repository', () => {
             date: DateParser.now(),
             description: 'un blabla',
             price: 2,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
         await record_repo.save(new_record);
 
@@ -363,7 +360,7 @@ describe('Test transaction sql repository', () => {
             date: DateParser.now(),
             description: 'un blabla',
             price: 100,
-            type: 'Debit'
+            type: TransactionType.Debit
         };
         await record_repo.save(new_record);
 
@@ -387,7 +384,7 @@ describe('Test transaction sql repository', () => {
             date: DateParser.now(),
             description: 'un blabla',
             price: 5,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
         await record_repo.save(new_record);
 
@@ -415,8 +412,8 @@ describe('Test transaction sql repository', () => {
     });
 
     test('Get transaction by categeory with range date', async () => {
-        let account_repo = new SqlAccountRepository(db, 'accounts');
-        await account_repo.create_table();
+        let account_repo = new SqlAccountRepository('accounts');
+        await account_repo.init('test.db');
 
         let new_account: Account = {
             id: '1',
@@ -426,11 +423,11 @@ describe('Test transaction sql repository', () => {
         };
         await account_repo.save(new_account);
 
-        let tag_repo = new SqlTagRepository(db, 'tags');
-        await tag_repo.create_table();
+        let tag_repo = new SqlTagRepository('tags');
+        await tag_repo.init('test.db');
 
-        let category_repo = new SqlCategoryRepository(db, 'categories');
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository('categories');
+        await category_repo.init('test.db');
         let new_category: Category = {
             title: 'cat',
             icon: 'ico-cat'
@@ -443,18 +440,18 @@ describe('Test transaction sql repository', () => {
         }
         await category_repo.save(new_category);
 
-        let record_repo = new SqlRecordRepository(db, 'records');
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository('records');
+        await record_repo.init('test.db');
 
-        let transaction_repo = new SqlTransactionRepository(db, table_name);
-        await transaction_repo.create_table('accounts', 'categories', 'tags', 'records');
+        let transaction_repo = new SqlTransactionRepository(table_name);
+        await transaction_repo.init('test.db', 'accounts', 'categories', 'tags', 'records');
 
         let new_record: Record = {
             id: 'record_1',
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
         await record_repo.save(new_record);
 
@@ -472,7 +469,7 @@ describe('Test transaction sql repository', () => {
             date: new DateParser(2024, 4, 5),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
         await record_repo.save(new_record);
 
@@ -490,7 +487,7 @@ describe('Test transaction sql repository', () => {
             date: new DateParser(2024, 4, 6),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
         await record_repo.save(new_record);
 
@@ -513,8 +510,8 @@ describe('Test transaction sql repository', () => {
     });
 
     test('Get transaction by tags with range date', async () => {
-        let account_repo = new SqlAccountRepository(db, 'accounts');
-        await account_repo.create_table();
+        let account_repo = new SqlAccountRepository('accounts');
+        await account_repo.init('test.db');
 
         let new_account: Account = {
             id: '1',
@@ -524,8 +521,8 @@ describe('Test transaction sql repository', () => {
         };
         await account_repo.save(new_account);
 
-        let tag_repo = new SqlTagRepository(db, 'tags');
-        await tag_repo.create_table();
+        let tag_repo = new SqlTagRepository('tags');
+        await tag_repo.init('test.db');
 
         let new_tag: Tag = 'tag';
         await tag_repo.save({title: new_tag});
@@ -533,19 +530,19 @@ describe('Test transaction sql repository', () => {
         new_tag = 'tag2';
         await tag_repo.save({title: new_tag});
 
-        let category_repo = new SqlCategoryRepository(db, 'categories');
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository('categories');
+        await category_repo.init('test.db');
         let new_category: Category = {
             title: 'cat',
             icon: 'ico-cat'
         }
         await category_repo.save(new_category);
 
-        let transaction_repo = new SqlTransactionRepository(db, table_name);
-        await transaction_repo.create_table('accounts', 'categories', 'tags', 'records');
+        let transaction_repo = new SqlTransactionRepository(table_name);
+        await transaction_repo.init('test.db', 'accounts', 'categories', 'tags', 'records');
 
-        let record_repo = new SqlRecordRepository(db, 'records');
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository('records');
+        await record_repo.init('test.db');
 
         let tag1 = await tag_repo.get('tag') 
 
@@ -554,7 +551,7 @@ describe('Test transaction sql repository', () => {
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 16,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
         await record_repo.save(new_record);
 
@@ -574,7 +571,7 @@ describe('Test transaction sql repository', () => {
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 25,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
         await record_repo.save(new_record);
 
@@ -592,7 +589,7 @@ describe('Test transaction sql repository', () => {
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 35,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
         await record_repo.save(new_record);
 
@@ -618,8 +615,8 @@ describe('Test transaction sql repository', () => {
     });
 
     test('Balance of transaction', async () => {
-        let account_repo = new SqlAccountRepository(db, 'accounts');
-        await account_repo.create_table();
+        let account_repo = new SqlAccountRepository('accounts');
+        await account_repo.init('test.db');
 
         let new_account: Account = {
             id: '1',
@@ -629,8 +626,8 @@ describe('Test transaction sql repository', () => {
         };
         await account_repo.save(new_account);
 
-        let tag_repo = new SqlTagRepository(db, 'tags');
-        await tag_repo.create_table();
+        let tag_repo = new SqlTagRepository('tags');
+        await tag_repo.init('test.db');
 
         let new_tag: Tag = 'tag';
         await tag_repo.save({title: new_tag});
@@ -638,19 +635,19 @@ describe('Test transaction sql repository', () => {
         new_tag = 'tag2';
         await tag_repo.save({title: new_tag});
 
-        let category_repo = new SqlCategoryRepository(db, 'categories');
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository('categories');
+        await category_repo.init('test.db');
         let new_category: Category = {
             title: 'cat',
             icon: 'ico-cat'
         }
         await category_repo.save(new_category);
 
-        let transaction_repo = new SqlTransactionRepository(db, table_name);
-        await transaction_repo.create_table('accounts', 'categories', 'tags', 'records');
+        let transaction_repo = new SqlTransactionRepository(table_name);
+        await transaction_repo.init('test.db', 'accounts', 'categories', 'tags', 'records');
 
-        let record_repo = new SqlRecordRepository(db, 'records');
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository('records');
+        await record_repo.init('test.db');
 
         let tag1 = await tag_repo.get('tag') 
 
@@ -659,7 +656,7 @@ describe('Test transaction sql repository', () => {
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 100,
-            type: 'Debit'
+            type: TransactionType.Debit
         };
         await record_repo.save(new_record);
 
@@ -679,7 +676,7 @@ describe('Test transaction sql repository', () => {
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 25,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
         await record_repo.save(new_record);
 
@@ -697,7 +694,7 @@ describe('Test transaction sql repository', () => {
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 20,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
         await record_repo.save(new_record);
 
@@ -716,8 +713,8 @@ describe('Test transaction sql repository', () => {
     });
 
     test('Delete Transacation', async () => {
-        let account_repo = new SqlAccountRepository(db, 'accounts');
-        await account_repo.create_table();
+        let account_repo = new SqlAccountRepository('accounts');
+        await account_repo.init('test.db');
 
         let new_account: Account = {
             id: '1',
@@ -727,8 +724,8 @@ describe('Test transaction sql repository', () => {
         };
         await account_repo.save(new_account);
 
-        let tag_repo = new SqlTagRepository(db, 'tags');
-        await tag_repo.create_table();
+        let tag_repo = new SqlTagRepository('tags');
+        await tag_repo.init('test.db');
 
         let new_tag: Tag = 'tag';
         await tag_repo.save({title: new_tag});
@@ -736,19 +733,19 @@ describe('Test transaction sql repository', () => {
         new_tag = 'tag2';
         await tag_repo.save({title: new_tag});
 
-        let category_repo = new SqlCategoryRepository(db, 'categories');
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository('categories');
+        await category_repo.init('test.db');
         let new_category: Category = {
             title: 'cat',
             icon: 'ico-cat'
         }
         await category_repo.save(new_category);
 
-        let transaction_repo = new SqlTransactionRepository(db, table_name);
-        await transaction_repo.create_table('accounts', 'categories', 'tags', 'records');
+        let transaction_repo = new SqlTransactionRepository(table_name);
+        await transaction_repo.init('test.db', 'accounts', 'categories', 'tags', 'records');
 
-        let record_repo = new SqlRecordRepository(db, 'records');
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository('records');
+        await record_repo.init('test.db');
 
         let tag1 = await tag_repo.get('tag') 
 
@@ -757,7 +754,7 @@ describe('Test transaction sql repository', () => {
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 100,
-            type: 'Debit'
+            type: TransactionType.Debit
         };
         await record_repo.save(new_record);
 
@@ -779,8 +776,8 @@ describe('Test transaction sql repository', () => {
     });
 
     test('Update transaction', async () => {
-        let account_repo = new SqlAccountRepository(db, 'accounts');
-        await account_repo.create_table();
+        let account_repo = new SqlAccountRepository('accounts');
+        await account_repo.init('test.db');
 
         let new_account: Account = {
             id: '1',
@@ -790,8 +787,8 @@ describe('Test transaction sql repository', () => {
         };
         await account_repo.save(new_account);
 
-        let tag_repo = new SqlTagRepository(db, 'tags');
-        await tag_repo.create_table();
+        let tag_repo = new SqlTagRepository('tags');
+        await tag_repo.init('test.db');
 
         let new_tag: Tag = 'tag';
         await tag_repo.save({title: new_tag});
@@ -799,8 +796,8 @@ describe('Test transaction sql repository', () => {
         new_tag = 'tag2';
         await tag_repo.save({title: new_tag});
 
-        let category_repo = new SqlCategoryRepository(db, 'categories');
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository('categories');
+        await category_repo.init('test.db');
         let new_category: Category = {
             title: 'cat',
             icon: 'ico-cat'
@@ -813,11 +810,11 @@ describe('Test transaction sql repository', () => {
         }
         await category_repo.save(new_category);
 
-        let transaction_repo = new SqlTransactionRepository(db, table_name);
-        await transaction_repo.create_table('accounts', 'categories', 'tags', 'records');
+        let transaction_repo = new SqlTransactionRepository(table_name);
+        await transaction_repo.init('test.db', 'accounts', 'categories', 'tags', 'records');
 
-        let record_repo = new SqlRecordRepository(db, 'records');
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository('records');
+        await record_repo.init('test.db');
 
         let tag1 = await tag_repo.get('tag')
         let tag2 = await tag_repo.get('tag2') 
@@ -827,7 +824,7 @@ describe('Test transaction sql repository', () => {
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 100,
-            type: 'Debit'
+            type: TransactionType.Debit
         };
         await record_repo.save(new_record);
 
@@ -850,7 +847,7 @@ describe('Test transaction sql repository', () => {
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 100,
-            type: 'Debit'
+            type: TransactionType.Debit
         };
         await record_repo.save(new_record);
 

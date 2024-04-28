@@ -1,17 +1,17 @@
 import { Account } from "@/core/entities/account";
 import { AccountRepository, dbAccount } from "../../core/interactions/repositories/accountRepository";
+import { open_database } from "../../config/sqlLiteConnection";
 
 export class SqlAccountRepository implements AccountRepository {
     private db: any;
-    private table_account_name: string;
-    private is_table_exist: boolean = false;
+    public table_account_name: string;
 
-    constructor(db: any, table_account_name: string) {
-        this.db = db;
+    constructor(table_account_name: string) {
         this.table_account_name = table_account_name;
     }
 
-    async create_table(): Promise<void> {
+    async init(db_name: string): Promise<void> {
+        this.db = await open_database(db_name)
         await this.db.exec(`
             CREATE TABLE IF NOT EXISTS ${this.table_account_name} (
                 id TEXT PRIMARY KEY,
@@ -20,15 +20,10 @@ export class SqlAccountRepository implements AccountRepository {
                 credit_limit INTEGER NOT NULL
             )
         `);
-        this.is_table_exist = true;
     }
 
     async save(account: dbAccount): Promise<boolean> {
-        return new Promise( async (resolve, reject) => {
-            if (!this.is_table_exist) {
-                throw Error("Table account not created");
-            }
-    
+        return new Promise( async (resolve, reject) => {    
             let result = await this.db.run(`
                 INSERT INTO ${this.table_account_name} (id, title, credit_value, credit_limit) VALUES (?, ?, ?, ?)`,
                 account.id, account.title, account.credit_value, account.credit_limit
@@ -41,8 +36,16 @@ export class SqlAccountRepository implements AccountRepository {
             }
         })
     }
-    exist(title: string): boolean {
-        throw new Error("Method not implemented.");
+    async exist(account_title: string): Promise<boolean> {
+        return new Promise(async (resolve, reject) => {
+            let result = await this.db.get(`SELECT id, title, credit_value, credit_limit FROM ${this.table_account_name} WHERE title = ?`, account_title);
+
+            if (result != undefined) {
+                resolve(true);
+            } else {
+                resolve(false);
+            }
+        });
     }
     async get(id: string): Promise<Account | null> {
         return new Promise(async (resolve, reject) => {

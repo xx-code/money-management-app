@@ -1,35 +1,29 @@
 import { Tag } from "@/core/entities/tag";
 import { TagRepository, dbTag } from "../../core/interactions/repositories/tagRepository";
+import { open_database } from "../../config/sqlLiteConnection";
 
 
 export class SqlTagRepository implements TagRepository {
     
     private db: any;
-    private table_tage_name: string;
-    private is_table_exist: boolean = false;
-
-    constructor(db: any, table_tage_name: string) {
-        this.db = db;
-        this.table_tage_name = table_tage_name;
+    public table_tag_name: string;
+    constructor(table_tag_name: string) {
+        this.table_tag_name = table_tag_name;
     }
     
-    async create_table(): Promise<void> {
+    async init(db_file_name: string): Promise<void> {
+        this.db = await open_database(db_file_name);
         await this.db.exec(`
-            CREATE TABLE IF NOT EXISTS ${this.table_tage_name} (
+            CREATE TABLE IF NOT EXISTS ${this.table_tag_name} (
                 title TEXT PRIMARY KEY
             )
         `);
-        this.is_table_exist = true;
     }
 
     save(db_tag: dbTag): Promise<boolean> {
         return new Promise( async (resolve, reject) => {
-            if (!this.is_table_exist) {
-                throw Error("Table tag not created");
-            }
-    
             let result = await this.db.run(`
-                INSERT INTO ${this.table_tage_name} (title) VALUES (?)`,
+                INSERT INTO ${this.table_tag_name} (title) VALUES (?)`,
                 db_tag.title
             );
 
@@ -43,7 +37,7 @@ export class SqlTagRepository implements TagRepository {
 
     delete(title: string): Promise<boolean> {
         return new Promise(async (resolve, reject) => {
-            let result = await this.db.run(`DELETE FROM ${this.table_tage_name} WHERE title = ?`, title);
+            let result = await this.db.run(`DELETE FROM ${this.table_tag_name} WHERE title = ?`, title);
 
             if (result['changes'] == 0) {
                 resolve(false);
@@ -55,12 +49,8 @@ export class SqlTagRepository implements TagRepository {
 
     get(title: string): Promise<Tag | null> {
         return new Promise( async (resolve, reject) => {
-            if (!this.is_table_exist) {
-                throw Error("Table tag not created");
-            }
-    
             let result = await this.db.get(`
-                SELECT title FROM ${this.table_tage_name} WHERE title = ?`,
+                SELECT title FROM ${this.table_tag_name} WHERE title = ?`,
                 title
             );
 
@@ -73,11 +63,7 @@ export class SqlTagRepository implements TagRepository {
     }
     get_all(): Promise<Tag[]> {
         return new Promise( async (resolve, reject) => {
-            if (!this.is_table_exist) {
-                throw Error("Table tag not created");
-            }
-    
-            let results = await this.db.all(`SELECT title FROM ${this.table_tage_name}`);
+            let results = await this.db.all(`SELECT title FROM ${this.table_tag_name}`);
 
             let tags = [];
 

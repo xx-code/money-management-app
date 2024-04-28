@@ -1,4 +1,4 @@
-import { TransactionType } from "../../entities/transaction";
+import { TransactionType, is_Transaction_type } from "../../entities/transaction";
 import { ValidationError } from "../../errors/validationError";
 import { TransactionRepository } from "../repositories/transactionRepository";
 import { AccountRepository } from "../repositories/accountRepository";

@@ -17,34 +17,33 @@ describe('Budget sql repository', () => {
     let table_budget_category_name = 'budget_categories';
     let table_budget_tag_name = 'budget_tags';
 
-    beforeEach(async () => {
-        db = await open({
-            filename: '',
-            driver: sqlite3.Database
-        });
-    });
 
     afterEach(async () => {
-       if (db != null) {
-            await db.exec(`DELETE FROM ${table_budget_category_name}`);
-            await db.exec(`DELETE FROM ${table_budget_tag_name}`);
-            await db.exec(`DELETE FROM ${table_category_name}`);
-            await db.exec(`DELETE FROM ${table_tag_name}`);
-       }
+        db = await open({
+            filename: 'test.db',
+            driver: sqlite3.Database
+        });
+
+        await db.exec(`DELETE FROM ${table_budget_category_name}`);
+        await db.exec(`DELETE FROM ${table_budget_tag_name}`);
+        await db.exec(`DELETE FROM ${table_category_name}`);
+        await db.exec(`DELETE FROM ${table_tag_name}`);
+        await db.exec(`DELETE FROM ${table_budget_category_name}_categories`)
+        await db.exec(`DELETE FROM ${table_budget_tag_name}_tags`)
     });
 
     test('Create Budget category', async () => {
-        let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
-        await budget_category_repo.create_table(table_category_name);
-        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
-        await budget_tag_repo.create_table(table_tag_name);
-        let tag_repo = new SqlTagRepository(db, 'tags');
-        await tag_repo.create_table();
+        let budget_category_repo = new SqlBudgetCategoryRepository(table_budget_category_name);
+        await budget_category_repo.init('test.db', table_category_name);
+        let budget_tag_repo = new SqlBudgetTagRepository(table_budget_tag_name);
+        await budget_tag_repo.init('test.db', table_tag_name);
+        let tag_repo = new SqlTagRepository('tags');
+        await tag_repo.init('test.db', );
 
-        let category_repo = new SqlCategoryRepository(db, table_category_name);
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository(table_category_name);
+        await category_repo.init('test.db', );
         let new_category: Category = {
-            title: 'cat',
+            title: 'cat-2',
             icon: 'ico-cat'
         }
         await category_repo.save(new_category);
@@ -66,15 +65,15 @@ describe('Budget sql repository', () => {
     });
 
     test('get Budget category', async () => {
-        let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
-        await budget_category_repo.create_table(table_category_name);
-        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
-        await budget_tag_repo.create_table(table_tag_name);
-        let tag_repo = new SqlTagRepository(db, 'tags');
-        await tag_repo.create_table();
+        let budget_category_repo = new SqlBudgetCategoryRepository(table_budget_category_name);
+        await budget_category_repo.init('test.db', table_category_name);
+        let budget_tag_repo = new SqlBudgetTagRepository(table_budget_tag_name);
+        await budget_tag_repo.init('test.db', table_tag_name);
+        let tag_repo = new SqlTagRepository('tags');
+        await tag_repo.init('test.db', );
 
-        let category_repo = new SqlCategoryRepository(db, table_category_name);
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository(table_category_name);
+        await category_repo.init('test.db', );
         let new_category: Category = {
             title: 'cat',
             icon: 'ico-cat'
@@ -105,15 +104,15 @@ describe('Budget sql repository', () => {
     });
 
     test('get all Budget category', async () => {
-        let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
-        await budget_category_repo.create_table(table_category_name);
-        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
-        await budget_tag_repo.create_table(table_tag_name);
-        let tag_repo = new SqlTagRepository(db, 'tags');
-        await tag_repo.create_table();
+        let budget_category_repo = new SqlBudgetCategoryRepository(table_budget_category_name);
+        await budget_category_repo.init('test.db', table_category_name);
+        let budget_tag_repo = new SqlBudgetTagRepository(table_budget_tag_name);
+        await budget_tag_repo.init('test.db', table_tag_name);
+        let tag_repo = new SqlTagRepository('tags');
+        await tag_repo.init('test.db', );
 
-        let category_repo = new SqlCategoryRepository(db, table_category_name);
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository(table_category_name);
+        await category_repo.init('test.db', );
         let new_category: Category = {
             title: 'cat',
             icon: 'ico-cat'
@@ -152,15 +151,15 @@ describe('Budget sql repository', () => {
     });
     
     test('delete budget category', async () => {
-        let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
-        await budget_category_repo.create_table(table_category_name);
-        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
-        await budget_tag_repo.create_table(table_tag_name);
-        let tag_repo = new SqlTagRepository(db, 'tags');
-        await tag_repo.create_table();
+        let budget_category_repo = new SqlBudgetCategoryRepository(table_budget_category_name);
+        await budget_category_repo.init('test.db', table_category_name);
+        let budget_tag_repo = new SqlBudgetTagRepository(table_budget_tag_name);
+        await budget_tag_repo.init('test.db', table_tag_name);
+        let tag_repo = new SqlTagRepository('tags');
+        await tag_repo.init('test.db', );
 
-        let category_repo = new SqlCategoryRepository(db, table_category_name);
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository(table_category_name);
+        await category_repo.init('test.db', );
         let new_category: Category = {
             title: 'cat',
             icon: 'ico-cat'
@@ -187,23 +186,23 @@ describe('Budget sql repository', () => {
     });
 
     test('update budget category', async () => {
-        let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
-        await budget_category_repo.create_table(table_category_name);
-        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
-        await budget_tag_repo.create_table(table_tag_name);
-        let tag_repo = new SqlTagRepository(db, 'tags');
-        await tag_repo.create_table();
+        let budget_category_repo = new SqlBudgetCategoryRepository(table_budget_category_name);
+        await budget_category_repo.init('test.db', table_category_name);
+        let budget_tag_repo = new SqlBudgetTagRepository(table_budget_tag_name);
+        await budget_tag_repo.init('test.db', table_tag_name);
+        let tag_repo = new SqlTagRepository('tags');
+        await tag_repo.init('test.db', );
 
-        let category_repo = new SqlCategoryRepository(db, table_category_name);
-        await category_repo.create_table();
+        let category_repo = new SqlCategoryRepository(table_category_name);
+        await category_repo.init('test.db');
         let new_category: Category = {
-            title: 'cat',
+            title: 'cat0',
             icon: 'ico-cat'
         }
         await category_repo.save(new_category);
 
         new_category = {
-            title: 'cat2',
+            title: 'cat02',
             icon: 'ico-cat'
         }
         await category_repo.save(new_category);
@@ -241,7 +240,7 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Week',
             period_time: 1,
-            categories: ['cat']
+            categories: ['cat0']
         };
 
         await budget_category_repo.save(budget);
@@ -252,11 +251,11 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Month',
             period_time: 3,
-            categories: ['cat', 'cat2']
+            categories: ['cat0', 'cat02']
         });
 
         expect(budget_updated.categories.length).toBe(2);
-        expect(budget_updated.categories[1].title).toBe('cat2');
+        expect(budget_updated.categories[1].title).toBe('cat02');
 
         budget_updated = await budget_category_repo.update({
             id: '2',
@@ -264,24 +263,24 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Month',
             period_time: 3,
-            categories: ['cat2']
+            categories: ['cat02']
         });
 
         expect(budget_updated.categories.length).toBe(1);
-        expect(budget_updated.categories[0].title).toBe('cat2');
+        expect(budget_updated.categories[0].title).toBe('cat02');
     });
 
     test('Create Budget tag', async () => {
-        let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
-        await budget_category_repo.create_table(table_category_name);
-        let category_repo = new SqlCategoryRepository(db, table_category_name);
-        await category_repo.create_table();
-        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
-        await budget_tag_repo.create_table(table_tag_name);
+        let budget_category_repo = new SqlBudgetCategoryRepository(table_budget_category_name);
+        await budget_category_repo.init('test.db', table_category_name);
+        let category_repo = new SqlCategoryRepository(table_category_name);
+        await category_repo.init('test.db', );
+        let budget_tag_repo = new SqlBudgetTagRepository(table_budget_tag_name);
+        await budget_tag_repo.init('test.db', table_tag_name);
         
 
-        let tag_repo = new SqlTagRepository(db, table_tag_name);
-        await tag_repo.create_table();
+        let tag_repo = new SqlTagRepository(table_tag_name);
+        await tag_repo.init('test.db', );
         let new_tag: Tag = 'tag';
         await tag_repo.save({title: new_tag});
 
@@ -302,15 +301,15 @@ describe('Budget sql repository', () => {
     });
 
     test('get Budget tag', async () => {
-        let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
-        await budget_category_repo.create_table(table_category_name);
-        let category_repo = new SqlCategoryRepository(db, table_category_name);
-        await category_repo.create_table();
-        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
-        await budget_tag_repo.create_table(table_tag_name);
+        let budget_category_repo = new SqlBudgetCategoryRepository(table_budget_category_name);
+        await budget_category_repo.init('test.db', table_category_name);
+        let category_repo = new SqlCategoryRepository(table_category_name);
+        await category_repo.init('test.db', );
+        let budget_tag_repo = new SqlBudgetTagRepository(table_budget_tag_name);
+        await budget_tag_repo.init('test.db', table_tag_name);
 
-        let tag_repo = new SqlTagRepository(db, table_tag_name);
-        await tag_repo.create_table();
+        let tag_repo = new SqlTagRepository(table_tag_name);
+        await tag_repo.init('test.db', );
         let new_tag: Tag = 'tag';
         await tag_repo.save({title: new_tag});
 
@@ -338,15 +337,15 @@ describe('Budget sql repository', () => {
     });
 
     test('get all Budget tag', async () => {
-        let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
-        await budget_category_repo.create_table(table_category_name);
-        let category_repo = new SqlCategoryRepository(db, table_category_name);
-        await category_repo.create_table();
-        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
-        await budget_tag_repo.create_table(table_tag_name);
+        let budget_category_repo = new SqlBudgetCategoryRepository(table_budget_category_name);
+        await budget_category_repo.init('test.db', table_category_name);
+        let category_repo = new SqlCategoryRepository(table_category_name);
+        await category_repo.init('test.db', );
+        let budget_tag_repo = new SqlBudgetTagRepository(table_budget_tag_name);
+        await budget_tag_repo.init('test.db', table_tag_name);
 
-        let tag_repo = new SqlTagRepository(db, table_tag_name);
-        await tag_repo.create_table();
+        let tag_repo = new SqlTagRepository(table_tag_name);
+        await tag_repo.init('test.db', );
         let new_tag: Tag = 'tag';
         await tag_repo.save({title: new_tag});
 
@@ -382,15 +381,15 @@ describe('Budget sql repository', () => {
     });
 
     test('delete budget tag', async () => {
-        let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
-        await budget_category_repo.create_table(table_category_name);
-        let category_repo = new SqlCategoryRepository(db, table_category_name);
-        await category_repo.create_table();
-        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
-        await budget_tag_repo.create_table(table_tag_name);
+        let budget_category_repo = new SqlBudgetCategoryRepository(table_budget_category_name);
+        await budget_category_repo.init('test.db', table_category_name);
+        let category_repo = new SqlCategoryRepository(table_category_name);
+        await category_repo.init('test.db', );
+        let budget_tag_repo = new SqlBudgetTagRepository(table_budget_tag_name);
+        await budget_tag_repo.init('test.db', table_tag_name);
 
-        let tag_repo = new SqlTagRepository(db, table_tag_name);
-        await tag_repo.create_table();
+        let tag_repo = new SqlTagRepository(table_tag_name);
+        await tag_repo.init('test.db', );
         let new_tag: Tag = 'tag';
         await tag_repo.save({title: new_tag});
 
@@ -414,15 +413,15 @@ describe('Budget sql repository', () => {
     });
 
     test('update budget tag', async () => {
-        let budget_category_repo = new SqlBudgetCategoryRepository(db, table_budget_category_name);
-        await budget_category_repo.create_table(table_category_name);
-        let category_repo = new SqlCategoryRepository(db, table_category_name);
-        await category_repo.create_table();
-        let budget_tag_repo = new SqlBudgetTagRepository(db, table_budget_tag_name);
-        await budget_tag_repo.create_table(table_tag_name);
+        let budget_category_repo = new SqlBudgetCategoryRepository(table_budget_category_name);
+        await budget_category_repo.init('test.db', table_category_name);
+        let category_repo = new SqlCategoryRepository(table_category_name);
+        await category_repo.init('test.db', );
+        let budget_tag_repo = new SqlBudgetTagRepository(table_budget_tag_name);
+        await budget_tag_repo.init('test.db', table_tag_name);
 
-        let tag_repo = new SqlTagRepository(db, table_tag_name);
-        await tag_repo.create_table();
+        let tag_repo = new SqlTagRepository(table_tag_name);
+        await tag_repo.init('test.db', );
         let new_tag: Tag = 'tag';
         await tag_repo.save({title: new_tag});
 

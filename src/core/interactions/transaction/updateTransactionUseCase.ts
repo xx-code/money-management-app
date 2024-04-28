@@ -120,13 +120,12 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
             }
 
             let record_updated = await this.record_repository.update({
-                id: '',
+                id: record.id,
                 price: record.price,
                 description: record.description,
                 date: record.date,
                 type: record.type
             });
-
 
             let response = await this.transaction_repository.update({
                 id: transaction.id,

@@ -8,22 +8,19 @@ describe('Account sql repository', () => {
     let db: any | null = null;
     let table_account_name = 'accounts';
 
-    beforeEach(async () => {
-        db = await open({
-            filename: '',
-            driver: sqlite3.Database
-        })
-    });
 
     afterEach(async () => {
-       if (db != null) {
-            await db.exec(`DELETE FROM ${table_account_name}`)
-       }
+        db = await open({
+            filename: 'test.db',
+            driver: sqlite3.Database
+        })
+
+        await db.exec(`DELETE FROM ${table_account_name}`)
     });
 
     test('Creation account', async () => {
-        let account_repo = new SqlAccountRepository(db, table_account_name);
-        await account_repo.create_table();
+        let account_repo = new SqlAccountRepository(table_account_name);
+        await account_repo.init('test.db');
 
         let true_response = '1-id';
 
@@ -40,8 +37,8 @@ describe('Account sql repository', () => {
     });
     
     test('Get account', async () => {
-        let account_repo = new SqlAccountRepository(db, table_account_name);
-        await account_repo.create_table();
+        let account_repo = new SqlAccountRepository(table_account_name);
+        await account_repo.init('test.db');
         
         let true_response = '1-id';
 
@@ -60,8 +57,8 @@ describe('Account sql repository', () => {
     });
 
     test('Get all account', async () => {
-        let account_repo = new SqlAccountRepository(db, table_account_name);
-        await account_repo.create_table();
+        let account_repo = new SqlAccountRepository(table_account_name);
+        await account_repo.init('test.db');
 
         let true_response = '1-id';
 
@@ -81,8 +78,8 @@ describe('Account sql repository', () => {
     });
 
     test('Update title of account', async () => {
-        let account_repo = new SqlAccountRepository(db, table_account_name);
-        await account_repo.create_table();
+        let account_repo = new SqlAccountRepository(table_account_name);
+        await account_repo.init('test.db');
 
         let new_account: Account = {
             id: '1-id',
@@ -101,8 +98,8 @@ describe('Account sql repository', () => {
     });
 
     test('Update credit limit of account', async () => {
-        let account_repo = new SqlAccountRepository(db, table_account_name);
-        await account_repo.create_table();
+        let account_repo = new SqlAccountRepository(table_account_name);
+        await account_repo.init('test.db');
 
         let new_account: Account = {
             id: '1-id',
@@ -121,8 +118,8 @@ describe('Account sql repository', () => {
     });
 
     test('Update credit value of account', async () => {
-        let account_repo = new SqlAccountRepository(db, table_account_name);
-        await account_repo.create_table();
+        let account_repo = new SqlAccountRepository(table_account_name);
+        await account_repo.init('test.db');
 
         let new_account: Account = {
             id: '1-id',
@@ -141,8 +138,8 @@ describe('Account sql repository', () => {
     });
 
     test('Delete account', async () => {
-        let account_repo = new SqlAccountRepository(db, table_account_name);
-        await account_repo.create_table();
+        let account_repo = new SqlAccountRepository(table_account_name);
+        await account_repo.init('test.db');
 
         let new_account: Account = {
             id: '1-id',

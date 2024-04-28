@@ -1,7 +1,7 @@
 import sqlite3 from 'sqlite3';
 import { open } from "sqlite";
 import { SqlRecordRepository } from "../../../infrastructure/sql/sqlRecordRepository";
-import { Record } from "@/core/entities/transaction";
+import { Record, TransactionType } from "../../../core/entities/transaction";
 import DateParser from "../../../core/entities/date_parser";
 
 describe('Test Record sql repository', () => {
@@ -9,29 +9,26 @@ describe('Test Record sql repository', () => {
     let db: any | null = null;
     let table_name = 'records';
 
-    beforeEach(async () => {
-        db = await open({
-            filename: '',
-            driver: sqlite3.Database
-        })
-    });
 
     afterEach(async () => {
-       if (db != null) {
-            await db.exec(`DELETE FROM ${table_name}`)
-       }
+        db = await open({
+            filename: 'test.db',
+            driver: sqlite3.Database
+        })
+
+        await db.exec(`DELETE FROM ${table_name}`)
     });
 
     test('Create Record', async () => {
-        let record_repo = new SqlRecordRepository(db, table_name);
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository(table_name);
+        await record_repo.init('test.db');
 
         let new_record: Record = {
             id: 'record_1',
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
 
         let is_saved = await record_repo.save(new_record);
@@ -40,15 +37,15 @@ describe('Test Record sql repository', () => {
     });
 
     test('Get record', async () => {
-        let record_repo = new SqlRecordRepository(db, table_name);
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository(table_name);
+        await record_repo.init('test.db');
 
         let new_record: Record = {
             id: 'record_1',
             date: new DateParser(2024, 1, 31),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
 
         await record_repo.save(new_record);
@@ -62,14 +59,14 @@ describe('Test Record sql repository', () => {
     });
 
     test('Get all records', async () => {
-        let record_repo = new SqlRecordRepository(db, table_name);
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository(table_name);
+        await record_repo.init('test.db');
         let new_record: Record = {
             id: 'record_1',
             date: new DateParser(2024,1,31),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
 
         await record_repo.save(new_record);
@@ -85,14 +82,14 @@ describe('Test Record sql repository', () => {
     });
 
     test('Get many by id records', async () => {
-        let record_repo = new SqlRecordRepository(db, table_name);
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository(table_name);
+        await record_repo.init('test.db');
         let new_record: Record = {
             id: 'record_1',
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
 
         await record_repo.save(new_record);
@@ -102,7 +99,7 @@ describe('Test Record sql repository', () => {
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
 
         await record_repo.save(new_record2);
@@ -112,7 +109,7 @@ describe('Test Record sql repository', () => {
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
 
         await record_repo.save(new_record3);
@@ -128,14 +125,14 @@ describe('Test Record sql repository', () => {
     });
 
     test('Update description', async () => {
-        let record_repo = new SqlRecordRepository(db, table_name);
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository(table_name);
+        await record_repo.init('test.db');
         let new_record: Record = {
             id: 'record_1',
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
 
         await record_repo.save(new_record);
@@ -148,14 +145,14 @@ describe('Test Record sql repository', () => {
     });
 
     test('Update price', async () => {
-        let record_repo = new SqlRecordRepository(db, table_name);
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository(table_name);
+        await record_repo.init('test.db');
         let new_record: Record = {
             id: 'record_1',
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
 
         await record_repo.save(new_record);
@@ -169,34 +166,34 @@ describe('Test Record sql repository', () => {
 
 
     test('Update type', async () => {
-        let record_repo = new SqlRecordRepository(db, table_name);
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository(table_name);
+        await record_repo.init('test.db');
         let new_record: Record = {
             id: 'record_1',
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
 
         await record_repo.save(new_record);
 
-        new_record.type = 'Debit';
+        new_record.type = TransactionType.Debit;
 
         let record_updated = await record_repo.update(new_record);
 
-        expect(record_updated.type).toBe('Debit');
+        expect(record_updated.type).toBe(TransactionType.Debit);
     });
 
     test('Update date', async () => {
-        let record_repo = new SqlRecordRepository(db, table_name);
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository(table_name);
+        await record_repo.init('test.db');
         let new_record: Record = {
             id: 'record_1',
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
 
         await record_repo.save(new_record);
@@ -209,14 +206,14 @@ describe('Test Record sql repository', () => {
     });
 
     test('delete record', async () => {
-        let record_repo = new SqlRecordRepository(db, table_name);
-        await record_repo.create_table();
+        let record_repo = new SqlRecordRepository(table_name);
+        await record_repo.init('test.db');
         let new_record: Record = {
             id: 'record_1',
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
-            type: 'Credit'
+            type: TransactionType.Credit
         };
 
         await record_repo.save(new_record);

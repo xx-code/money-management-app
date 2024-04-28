@@ -1,9 +1,12 @@
 import './index.css';
 
-export default function TextInput() {
+type TextInputType = 'text'|'number'; 
+
+export default function TextInput({type, value, onChange, title}: {type: TextInputType, title: string, value: any, onChange: any}) {
     return (
         <div className="textinput">
-            <input />
+            <p>{title}</p>
+            <input type={type} value={value} onChange={onChange} />
         </div>
     )
 }

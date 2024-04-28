@@ -4,22 +4,22 @@ import { Transaction, Record } from "@/core/entities/transaction";
 import { Category } from "@/core/entities/category";
 import { Tag } from "@/core/entities/tag";
 import DateParser from "../../core/entities/date_parser";
+import { open_database } from "../../config/sqlLiteConnection";
 
 export class SqlTransactionRepository implements TransactionRepository {
     private db: any;
-    private table_name: string;
-    private is_table_exist: boolean = false;
+    public table_name: string;
     private table_account_name: string = '';
     private table_category_name: string = '';
     private table_record_name: string = '';
     private table_tag_name: string = '';
 
-    constructor(db: any, table_name: string) {
-        this.db = db;
+    constructor(table_name: string) {
         this.table_name = table_name;
     }
 
-    async create_table(table_account_name: string, table_category_name: string, table_tag_name: string, table_record_name: string): Promise<void> {
+    async init(db_file_name: string, table_account_name: string, table_category_name: string, table_tag_name: string, table_record_name: string): Promise<void> {
+        this.db = await open_database(db_file_name);
         await this.db.exec(`
             CREATE TABLE IF NOT EXISTS ${this.table_name} (
                 id TEXT PRIMARY KEY,
@@ -47,8 +47,6 @@ export class SqlTransactionRepository implements TransactionRepository {
         this.table_category_name = table_category_name;
         this.table_record_name = table_record_name;
         this.table_tag_name = table_tag_name;
-
-        this.is_table_exist = true;
     }
 
 
@@ -108,10 +106,6 @@ export class SqlTransactionRepository implements TransactionRepository {
 
     save(request: dbTransaction): Promise<boolean> {
         return new Promise(async (resolve, reject) => {
-            if (!this.is_table_exist) {
-                throw Error("Table transaction not created");
-            }
-
             let result = await this.db.run(`
                 INSERT INTO ${this.table_name} (id, id_account, id_category, id_record) VALUES (?, ?, ?, ?)`,
                 request.id, request.account_ref, request.category_ref, request.record_ref,
@@ -138,11 +132,6 @@ export class SqlTransactionRepository implements TransactionRepository {
     }
     get(id: string): Promise<Transaction | null> {
         return new Promise(async (resolve, reject) => {
-            if (!this.is_table_exist) {
-                throw Error("Table transaction not created");
-            }
-            
-            
             let result = await this.db.get(`
                 SELECT 
                     ${this.table_name}.id, 
@@ -174,10 +163,6 @@ export class SqlTransactionRepository implements TransactionRepository {
     }
     get_transactions_by_categories(category_ref: string[], start_date: DateParser, end_date: DateParser): Promise<Transaction[]> {
         return new Promise(async (resolve, reject) => {
-            if (!this.is_table_exist) {
-                throw Error("Table transaction not created");
-            }
-            
             let results = await this.db.all(`
                 SELECT 
                     ${this.table_name}.id, 
@@ -215,10 +200,6 @@ export class SqlTransactionRepository implements TransactionRepository {
     }
     get_transactions_by_tags(tags_ref: string[], start_date: DateParser, end_date: DateParser): Promise<Transaction[]> {
         return new Promise(async (resolve, reject) => {
-            if (!this.is_table_exist) {
-                throw Error("Table transaction not created");
-            }
-
             let result_filter_by_tag = await this.db.all(`
                 SELECT id_transaction
                 FROM 
@@ -268,10 +249,6 @@ export class SqlTransactionRepository implements TransactionRepository {
     }
     get_paginations(page: number, size: number, sort_by: dbSortBy | null, filter_by: dbFilter): Promise<dbTransactionPaginationResponse> {
         return new Promise(async (resolve, reject) => {
-            if (!this.is_table_exist) {
-                throw Error("Table transaction not created");
-            }
-
             let count = await this.db.get(`SELECT COUNT(*) FROM ${this.table_name}`);
 
             let max_page = Math.ceil(count['COUNT(*)']/size);
@@ -372,10 +349,6 @@ export class SqlTransactionRepository implements TransactionRepository {
     }
     get_account_balance(id: string): Promise<number> {
         return new Promise(async (resolve, reject) => {
-            if (!this.is_table_exist) {
-                throw Error("Table transaction not created");
-            }
-
             let result_credit = await this.db.get(`
                     SELECT id_account, SUM(${this.table_record_name}.price) as total_price 
                     FROM ${this.table_name}
@@ -461,7 +434,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                 }
             }
 
-            let transaction = await this.get('1');
+            let transaction = await this.get(request.id);
 
             resolve(transaction!);
         });

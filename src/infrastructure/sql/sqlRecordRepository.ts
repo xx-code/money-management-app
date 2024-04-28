@@ -2,17 +2,17 @@ import { Tag } from "@/core/entities/tag";
 import { RecordRepository } from "../../core/interactions/repositories/recordRepository";
 import { Record } from "@/core/entities/transaction";
 import DateParser from "../../core/entities/date_parser";
+import { open_database } from "../../config/sqlLiteConnection";
 
 export class SqlRecordRepository implements RecordRepository {
     private db: any;
-    private table_record_name: string;
-    private is_table_exist: boolean = false;
+    public table_record_name: string;
 
-    constructor(db: any, table_record_name: string) {
-        this.db = db;
+    constructor(table_record_name: string) {
         this.table_record_name = table_record_name;
     }
-    async create_table(): Promise<void> {
+    async init(db_file_name: string): Promise<void> {
+        this.db = await open_database(db_file_name);
         await this.db.exec(`
             CREATE TABLE IF NOT EXISTS ${this.table_record_name} (
                 id TEXT PRIMARY KEY,
@@ -22,15 +22,9 @@ export class SqlRecordRepository implements RecordRepository {
                 type TEXT NOT NULL
             )
         `);
-        this.is_table_exist = true;
     }
     save(request: Record): Promise<boolean> {
         return new Promise(async (resolve, rejects) => {
-            if (!this.is_table_exist) {
-                throw Error("Table record not created");
-            }
-
-
             let result = await this.db.run(`
                 INSERT INTO ${this.table_record_name} (id, price, date, description, type) VALUES (?, ?, ?, ?, ?)`,
                 request.id, request.price, request.date.toString(), request.description, request.type
@@ -45,10 +39,6 @@ export class SqlRecordRepository implements RecordRepository {
     }
     get(id: string): Promise<Record | null> {
         return new Promise(async (resolve, rejects) => {
-            if (!this.is_table_exist) {
-                throw Error("Table record not created");
-            }
-
             let result = await this.db.get(`SELECT id, price, date, description, type FROM ${this.table_record_name} WHERE id = ?`, id);
             
             if (result != undefined) {
@@ -68,10 +58,6 @@ export class SqlRecordRepository implements RecordRepository {
     }
     get_all(): Promise<Record[]> {
         return new Promise(async (resolve, rejects) => {
-            if (!this.is_table_exist) {
-                throw Error("Table record not created");
-            }
-
             let results = await this.db.all(`SELECT id, price, date, description, type FROM ${this.table_record_name}`);
             
             let records: Record[] = [];
@@ -91,10 +77,6 @@ export class SqlRecordRepository implements RecordRepository {
     }
     get_many_by_id(ids: string[]): Promise<Record[]> {
         return new Promise(async (resolve, rejects) => {
-            if (!this.is_table_exist) {
-                throw Error("Table record not created");
-            }
-
             let records: Record[] = [];
             for (let id of ids) {
                 let record = await this.get(id);

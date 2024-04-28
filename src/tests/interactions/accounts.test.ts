@@ -70,8 +70,8 @@ describe('Creation Account Use Case', () => {
 
     let use_case = new CreationAccountUseCase(repo, crypto, presenter);
     
-    it('Test error title creation', () => {
-        use_case.execute({
+    it('Test error title creation', async () => {
+        await use_case.execute({
             title: ' ',
             credit_value: 0,
             credit_limit: 0
@@ -88,8 +88,8 @@ describe('Creation Account Use Case', () => {
         }*/
     });
 
-    it('Test error credit value', () => {
-        use_case.execute({
+    it('Test error credit value', async () => {
+        await use_case.execute({
             title: 'value',
             credit_limit: -4,
             credit_value: 0
@@ -106,8 +106,8 @@ describe('Creation Account Use Case', () => {
         }*/
     });
 
-    it('Test error credit limit', () => {
-        use_case.execute({
+    it('Test error credit limit', async () => {
+        await use_case.execute({
             title: 'value',
             credit_value: -4,
             credit_limit: 0

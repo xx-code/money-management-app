@@ -77,7 +77,7 @@ export class GetAllBudgetTagUseCase implements IGetAllBudgetUseCase {
             for (let i = 0; i < budgets.length; i++) {
                 let budget = budgets[i];
 
-                let transactions = await this.transaction_repository.get_transactions_by_tags(budget.tags, budget.date_start, budget.date_end);4
+                let transactions = await this.transaction_repository.get_transactions_by_tags(budget.tags, budget.date_start, budget.date_end);
 
                 let budget_display: BudgetWithTagDisplay = {
                     id: budget.id,
