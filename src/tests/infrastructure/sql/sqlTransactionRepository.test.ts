@@ -5,9 +5,9 @@ import { SqlAccountRepository } from "../../../infrastructure/sql/sqlAccountRepo
 import { SqlCategoryRepository } from "../../../infrastructure/sql/sqlCategoryRepository";
 import { SqlRecordRepository } from "../../../infrastructure/sql/sqlRecordRepository";
 import { SqlTagRepository } from "../../../infrastructure/sql/sqlTagRepository";
-import { Tag } from '@/core/entities/tag';
-import { Account } from '@/core/entities/account';
-import { Category } from '@/core/entities/category';
+import { Tag } from '../../../core/entities/tag';
+import { Account } from '../../../core/entities/account';
+import { Category } from '../../../core/entities/category';
 import { Transaction, Record, TransactionType } from '../../../core/entities/transaction';
 import { dbTransaction } from '../../../core/interactions/repositories/transactionRepository';
 import DateParser from '../../../core/entities/date_parser';
@@ -334,7 +334,7 @@ describe('Test transaction sql repository', () => {
         await transaction_repo.save(new_transaction);
 
 
-        let pagination = await transaction_repo.get_paginations(1, 1, null, {accounts: [], categories: [], tags: []});
+        let pagination = await transaction_repo.get_paginations(1, 1, null, {accounts: [], categories: [], tags: [], start_date: null, end_date: null, type: null, price: null});
 
         expect(pagination.transactions.length).toBe(1);
         expect(pagination.transactions[0]?.account.id).toBe('1');
@@ -342,14 +342,14 @@ describe('Test transaction sql repository', () => {
         expect(pagination.transactions[0]?.category.title).toBe('cat');
         expect(pagination.max_page).toBe(3);
 
-        pagination = await transaction_repo.get_paginations(2, 1, null, {accounts: [], categories: [], tags: []});
+        pagination = await transaction_repo.get_paginations(2, 1, null, {accounts: [], categories: [], tags: [], start_date: null, end_date: null, type: null, price: null});
 
         expect(pagination.transactions.length).toBe(1);
         expect(pagination.transactions[0]?.account.id).toBe('1');
         expect(pagination.transactions[0]?.record.price).toBe(10);
         expect(pagination.transactions[0]?.category.title).toBe('cat2');
 
-        pagination = await transaction_repo.get_paginations(1, 2, null, {accounts: [], categories: [], tags: []});
+        pagination = await transaction_repo.get_paginations(1, 2, null, {accounts: [], categories: [], tags: [], start_date: null, end_date: null, type: null, price: null});
         
         expect(pagination.transactions.length).toBe(2);
         expect(pagination.transactions[0]?.record.price).toBe(15);
@@ -374,7 +374,7 @@ describe('Test transaction sql repository', () => {
         await transaction_repo.save(new_transaction);
 
         let account2 = await account_repo.get('2');
-        pagination = await transaction_repo.get_paginations(1, 1, null, {accounts: [account2!], categories: [], tags: []});
+        pagination = await transaction_repo.get_paginations(1, 1, null, {accounts: [account2!.id], categories: [], tags: [], start_date: null, end_date: null, type: null, price: null});
 
         expect(pagination.transactions.length).toBe(1);
         expect(pagination.transactions[0]?.account.title).toBe('title2');
@@ -397,13 +397,13 @@ describe('Test transaction sql repository', () => {
         }
         await transaction_repo.save(new_transaction);
 
-        pagination = await transaction_repo.get_paginations(1, 1, null, {accounts: [], categories: [], tags: [new_tag]});
+        pagination = await transaction_repo.get_paginations(1, 1, null, {accounts: [], categories: [], tags: [new_tag], start_date: null, end_date: null, type: null, price: null});
 
         expect(pagination.transactions.length).toBe(1);
         expect(pagination.transactions[0]?.record.id).toBe('record_5');
 
         let category = await category_repo.get('cat2');
-        pagination = await transaction_repo.get_paginations(1, 4, null, {accounts: [], categories: [category!], tags: []});
+        pagination = await transaction_repo.get_paginations(1, 4, null, {accounts: [], categories: [category!.title], tags: [], start_date: null, end_date: null, type: null, price: null});
 
         expect(pagination.transactions.length).toBe(3);
         expect(pagination.transactions[0].category.title).toBe('cat2');

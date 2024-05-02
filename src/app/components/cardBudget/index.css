@@ -48,14 +48,25 @@
 }
 
 .card-budget .card-budget-content .card-budget-edit-button .icon-modif {
-    width: 40px;
-    height: 40px;
-    background-color: #313343;
-    margin-right: 1rem;
+    width: 1.3rem;
+    height: 1.3rem;
+    color: #313343;
+    margin-right: 1.5rem;
+    cursor: pointer;
+}
+
+.card-budget .card-budget-content .card-budget-edit-button .icon-modif:hover {
+    opacity: 0.7;
 }
 
 .card-budget .card-budget-content .card-budget-edit-button .icon-delete {
-    width: 40px;
-    height: 40px;
-    background-color: #DC4C4C;
+    width: 1.3rem;
+    height: 1.3rem;
+    color: #DC4C4C;
+    cursor: pointer;
 }
+
+.card-budget .card-budget-content .card-budget-edit-button .icon-delete:hover {
+    opacity: 0.7;
+}
+

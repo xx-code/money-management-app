@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { CreationAccountUseCase, ICreationAccountUseCaseResponse, CreationAccountUseCaseRequest } from '../../../core/interactions/account/creationAccountUseCase';
 import { GetAllAccountUseCase, IGetAllAccountUseCaseResponse } from '../../../core/interactions/account/getAllAccountUseCase';
 import UUIDMaker from '../../../services/crypto';
-import { DB_FILENAME, account_repo } from '../../configs/repository';
+import { DB_FILENAME, account_repo, category_repo, record_repo, tag_repo, transaction_repo } from '../../configs/repository';
 import { Account } from '@/core/entities/account';
 
 type CreationAccountModelView = {
@@ -72,7 +72,12 @@ export async function GET() {
 
   let presenter = new GetAllAccountApiResponse();
 
-  let account = new GetAllAccountUseCase(account_repo, presenter);
+  await account_repo.init(DB_FILENAME);
+  await category_repo.init(DB_FILENAME);
+  await tag_repo.init(DB_FILENAME);
+  await record_repo.init(DB_FILENAME);
+  await transaction_repo.init(DB_FILENAME, account_repo.table_account_name, category_repo.table_category_name, tag_repo.table_tag_name, record_repo.table_record_name);
+  let account = new GetAllAccountUseCase(account_repo, transaction_repo, presenter);
 
   await account.execute();
 

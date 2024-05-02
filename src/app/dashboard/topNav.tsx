@@ -1,9 +1,14 @@
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+library.add(fas)
+
 import './topNav.css';
 
 function IconNotification() {
     return(
         <div className='icon-notification'>
-            <div className="icon"></div>
+            <FontAwesomeIcon className='icon' style={{width: "20px", height: "100%", color: ""}} icon={["fas", "bell"]} />
             <div className="alert-icon"></div>
         </div>
     )

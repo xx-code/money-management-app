@@ -1,7 +1,7 @@
-import { DB_FILENAME, account_repo } from '@/app/configs/repository';
+import { DB_FILENAME, account_repo, category_repo, record_repo, tag_repo, transaction_repo } from '@/app/configs/repository';
 import { GetAccountUseCase, IGetAccountUseCaseResponse } from '../../../../core/interactions/account/getAccountUseCase';
 import { NextResponse } from 'next/server';
-import { Account } from '@/core/entities/account';
+import { Account, AccountDisplay } from '@/core/entities/account';
 import { DeleteAccountUseCase, IDeleteAccountUseCaseResponse } from '@/core/interactions/account/deleteAccountUseCase';
 import { IUpdateAccountUseCaseResponse, RequestUpdateAccountUseCase, UpdateAccountUseCase } from '@/core/interactions/account/updateAccountUseCase';
 
@@ -14,7 +14,7 @@ type CreationAccountModelView = {
 class GetAccountApiResponse implements IGetAccountUseCaseResponse {
     model_view: CreationAccountModelView = {response: null, error: null};
 
-    success(account: Account): void {
+    success(account: AccountDisplay): void {
         this.model_view.response = {title: account.title, credit_value: account.credit_value, balance: 0, credit_limit: account.credit_limit};
         this.model_view.error = null;
     }
@@ -30,11 +30,16 @@ export async function GET(
     { params }: { params: {id: string} }
 ) {
     const id = params.id;
+
     await account_repo.init(DB_FILENAME);
+    await category_repo.init(DB_FILENAME);
+    await tag_repo.init(DB_FILENAME);
+    await record_repo.init(DB_FILENAME);
+    await transaction_repo.init(DB_FILENAME, account_repo.table_account_name, category_repo.table_category_name, tag_repo.table_tag_name, record_repo.table_record_name);
 
     let presenter = new GetAccountApiResponse();
 
-    let use_case = new GetAccountUseCase(account_repo, presenter);
+    let use_case = new GetAccountUseCase(account_repo, transaction_repo, presenter);
     await use_case.execute(id);
 
     if (presenter.model_view.error != null) {

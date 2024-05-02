@@ -1,15 +1,17 @@
 import { DB_FILENAME, account_repo, category_repo, record_repo, tag_repo, transaction_repo } from "@/app/configs/repository";
+import DateParser from "@/core/entities/date_parser";
 import { Transaction } from "@/core/entities/transaction";
+import { is_empty } from "@/core/entities/verify_empty_value";
 import { GetPaginationTransaction, IGetPaginationTransactionResponse, RequestGetPagination, TransactionResponse } from "@/core/interactions/transaction/getPaginationTransactionUseCase";
 import { NextResponse } from "next/server";
 
-type PaginationTransactions = {
+type PaginationTransactionsModelView = {
     response: {transactions: Transaction[], current_page: number, max_pages: number} | null,
     error: Error | null
 }
 
 class PaginationTransactionPresenter implements IGetPaginationTransactionResponse {
-    model_view: PaginationTransactions = {response: null, error: null};
+    model_view: PaginationTransactionsModelView = {response: null, error: null};
 
     success(response: TransactionResponse): void {
         this.model_view.response = {transactions: response.transactions, current_page: response.current_page, max_pages: response.max_pages};
@@ -24,9 +26,20 @@ class PaginationTransactionPresenter implements IGetPaginationTransactionRespons
 export async function POST(
     request: Request
 ) {
-    let request_get_pagination: RequestGetPagination = await request.json();
+    let pagination = await request.json();
+    let request_get_pagination: RequestGetPagination = pagination;
 
     let presenter = new PaginationTransactionPresenter();
+
+    if (!is_empty(pagination.date_start)) {
+        let [year_start, month_start, day_start] = pagination.date_start.split('-');
+        request_get_pagination.date_start = new DateParser(Number(year_start), Number(month_start), Number(day_start));
+    }
+
+    if (!is_empty(pagination.date_end)) {
+        let [year_end, month_end, day_end] = pagination.date_end.split('-');
+        request_get_pagination.date_end = new DateParser(Number(year_end),Number( month_end), Number(day_end));
+    }
 
     await account_repo.init(DB_FILENAME);
     await category_repo.init(DB_FILENAME);

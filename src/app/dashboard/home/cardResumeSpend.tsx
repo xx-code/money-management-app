@@ -10,6 +10,10 @@ export function CardResumeSpend({title, last_month='------', current_month='----
         let value_percent = diff/Number(last_month);
         percent = (Math.round(value_percent * 100)/100).toString();
 
+        if (isNaN(Number(percent))) {
+            percent = '--';
+        }
+
         if (Number(last_month) > Number(current_month)) {
             color = '#4FDC4C';
         } else if (Number(last_month) < Number(current_month)) {

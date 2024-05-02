@@ -2,12 +2,16 @@ import { Account } from "@/core/entities/account";
 import { Category } from "@/core/entities/category";
 import DateParser from "@/core/entities/date_parser";
 import { Tag } from "@/core/entities/tag";
-import { Transaction } from "@/core/entities/transaction";
+import { Transaction, TransactionType } from "@/core/entities/transaction";
 
 export type dbFilter = {
-    accounts: Array<Account>;
-    categories: Array<Category>;
-    tags: Array<Tag>;
+    accounts: Array<string>;
+    categories: Array<string>;
+    tags: Array<string>;
+    start_date: DateParser | null | undefined;
+    end_date: DateParser | null | undefined;
+    price: number | null | undefined;
+    type: TransactionType | null | undefined;
 }
 
 export type dbSortBy = {
@@ -37,6 +41,7 @@ export interface TransactionRepository {
     get_transactions_by_tags(tags_ref: string[], start_date: DateParser, end_date: DateParser): Promise<Transaction[]>;
     get_paginations(page:number, size: number, sort_by: dbSortBy|null, filter_by: dbFilter): Promise<dbTransactionPaginationResponse>;
     get_account_balance(id: string): Promise<number>;
+    get_balance(filter_by: dbFilter): Promise<number>;
     delete(id: string): Promise<boolean>;
     update(request: dbTransaction): Promise<Transaction>;
 }

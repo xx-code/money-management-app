@@ -218,6 +218,7 @@ describe('Get budget test tag', () => {
 
     let trans_repo: TransactionRepository = {
         save: jest.fn().mockReturnValue('new id'),
+        get_balance: jest.fn().mockReturnValue(0),
         get:jest.fn(),
         get_transactions_by_categories: jest.fn().mockReturnValue(["FD", "SDf"]),
         get_transactions_by_tags: jest.fn().mockReturnValue(["FD", "SDf"]),
@@ -268,6 +269,7 @@ describe('Get budget test category', () => {
 
     let trans_repo: TransactionRepository = {
         save: jest.fn().mockReturnValue('new id'),
+        get_balance: jest.fn().mockReturnValue(0),
         get:jest.fn(),
         get_transactions_by_categories: jest.fn(),
         get_transactions_by_tags: jest.fn(),
@@ -378,6 +380,7 @@ describe('Update Budget test', () => {
 
     let trans_repo: TransactionRepository = {
         save: jest.fn().mockReturnValue('new id'),
+        get_balance: jest.fn().mockReturnValue(0),
         get:jest.fn(),
         get_transactions_by_categories: jest.fn(),
         get_transactions_by_tags: jest.fn(),

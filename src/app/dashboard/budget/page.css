@@ -6,3 +6,16 @@
     display: flex;
     justify-content: space-between;
 }
+
+.add-budget-modal {
+    background-color: white;
+    padding: 1em;
+    border-radius: 0.5rem;
+    width: 30%;
+}
+
+.add-budget-modal-head   {
+    padding: 0.3rem 0.6rem;
+    font-size: medium;
+    font-weight: 500;
+}

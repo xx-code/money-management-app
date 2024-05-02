@@ -36,13 +36,21 @@ export class GetAllBudgetCategoryUseCase implements IGetAllBudgetUseCase {
                 let start_date = current_date_budget.start_date;
                 let end_date = current_date_budget.end_date;
 
-                let transactions = await this.transaction_repository.get_transactions_by_categories(budget.categories.map(cat => cat.title), start_date, end_date);
+                let balance = await this.transaction_repository.get_balance({
+                    categories: budget.categories.map(cat => cat.title),
+                    accounts: [],
+                    tags: [],
+                    type: null,
+                    start_date: start_date,
+                    end_date: end_date,
+                    price: null
+                });
                 
                 let budget_display: BudgetWithCategoryDisplay = {
                     id: budget.id,
                     title: budget.title,
                     categories: budget.categories,
-                    current: compute_current_spend(transactions),
+                    current: balance,
                     period: budget.period,
                     period_time: budget.period_time,
                     target: budget.target
@@ -77,12 +85,20 @@ export class GetAllBudgetTagUseCase implements IGetAllBudgetUseCase {
             for (let i = 0; i < budgets.length; i++) {
                 let budget = budgets[i];
 
-                let transactions = await this.transaction_repository.get_transactions_by_tags(budget.tags, budget.date_start, budget.date_end);
+                let balance = await this.transaction_repository.get_balance({
+                    categories: [],
+                    accounts: [],
+                    tags: budget.tags,
+                    type: null,
+                    start_date: budget.date_start,
+                    end_date: budget.date_end,
+                    price: null
+                });
 
                 let budget_display: BudgetWithTagDisplay = {
                     id: budget.id,
                     title: budget.title,
-                    current: compute_current_spend(transactions),
+                    current: balance,
                     date_start: budget.date_start,
                     date_end: budget.date_end,
                     target: budget.target,

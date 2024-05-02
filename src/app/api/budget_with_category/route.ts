@@ -29,7 +29,9 @@ export async function POST(
 ) {
     let uuid = new UUIDMaker();
     
-    let request_budget_category: CreationBudgetCategoryUseCaseRequest = await request.json();
+    let request_obj = await request.json();
+    let request_budget_category: CreationBudgetCategoryUseCaseRequest = request_obj;
+    // request_budget_category.categories = JSON.parse(request_obj);
 
     let presenter = new CreationBudgetWithCategoryPresenter();
 

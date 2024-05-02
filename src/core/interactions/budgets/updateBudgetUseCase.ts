@@ -90,19 +90,24 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 if (request.categories.length <= 0){
                     throw new ValidationError('Budget categories must have at least 1 value');
                 }
-                for (let i = 0; request.categories.length; i++) {
-                    let category = await this.category_repository.get(request.categories[i]);
+             
+                for (let i = 0; i < request.categories.length; i++) {
+                    let category = await this.category_repository.get(formatted(request.categories[i]));
                     if (category == null) {
-                        throw new ValidationError('This category is already use');
+                        throw new ValidationError('This category not exist');
                     }
 
-                    if (!budget.categories.includes(category!)) {
+                    if (!budget.categories.map(cat => cat.title).includes(category.title!)) {
                         budget.categories.push(category!);
+                    } else {
+                        let index_to_delete = budget.categories.map(cat => cat.title).indexOf(category.title);
+                        budget.categories.splice(index_to_delete, 1);
                     }
                 }
             }
 
             let categories_ref = budget.categories.map(cat => cat.title);
+            
             let budget_updated = await this.budget_repository.update({
                 id: budget.id,
                 title: budget.title,
@@ -117,13 +122,21 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
             let start_date = current_date_budget.start_date;
             let end_date = current_date_budget.end_date;
 
-            let transactions = await this.transaction_repository.get_transactions_by_categories(categories_ref, start_date, end_date);
+            let balance = await this.transaction_repository.get_balance({
+                categories: budget.categories.map(cat => cat.title),
+                accounts: [],
+                tags: [],
+                type: null,
+                start_date: start_date,
+                end_date: end_date,
+                price: null
+            });
 
             let budget_display: BudgetWithCategoryDisplay = {
                 id: budget_updated.id,
                 title: budget_updated.title,
                 categories: budget_updated.categories,
-                current: compute_current_spend(transactions),
+                current: balance,
                 period: budget_updated.period,
                 period_time: budget_updated.period_time,
                 target: budget_updated.target
@@ -174,7 +187,7 @@ export class UpdateBudgetTagUseCase implements IUpdateBudgetUseCase {
             }
 
             if ( request.date_end != null && request.date_start != null) {
-                if (new Date(request.date_start.toString()) >= new Date(request.date_end.toString())) {
+                if (request.date_start >= request.date_end) {
                     throw new ValidationError('Date start must be inferiour at Date of end');
                 }
                 budget.date_start = request.date_start;
@@ -194,13 +207,22 @@ export class UpdateBudgetTagUseCase implements IUpdateBudgetUseCase {
                 }
             }
 
-            let transactions = await this.transaction_repository.get_transactions_by_tags(budget.tags, budget.date_start, budget.date_end);
+            let balance = await this.transaction_repository.get_balance({
+                categories: [],
+                accounts: [],
+                tags: budget.tags,
+                type: null,
+                start_date: budget.date_start,
+                end_date: budget.date_end,
+                price: null
+            });
+
             let budget_updated = await this.budget_repository.update(budget);
 
             let budget_display: BudgetWithTagDisplay = {
                 id: budget_updated.id,
                 title: budget_updated.title,
-                current: compute_current_spend(transactions),
+                current: balance,
                 date_start: budget_updated.date_start,
                 date_end: budget_updated.date_end,
                 target: budget_updated.target,

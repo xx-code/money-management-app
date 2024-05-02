@@ -7,6 +7,7 @@ import { NotFoundError } from '../../core/errors/notFoundError';
 import { GetAllAccountUseCase, IGetAllAccountUseCaseResponse } from '../../core/interactions/account/getAllAccountUseCase';
 import { DeleteAccountUseCase, IDeleteAccountUseCaseResponse } from '../../core/interactions/account/deleteAccountUseCase';
 import { Account } from '@/core/entities/account';
+import { TransactionRepository, dbFilter } from '@/core/interactions/repositories/transactionRepository';
 
 const replyRepositoryMock: AccountRepository = {
     save: jest.fn().mockReturnValue('new id'),
@@ -137,12 +138,24 @@ describe('Get Account Use Case', () => {
         update: jest.fn()
     };
 
+    let repo_transaction: TransactionRepository = {
+        save: jest.fn(),
+        get: jest.fn(),
+        get_account_balance: jest.fn().mockReturnValue(0),
+        get_paginations: jest.fn(),
+        get_transactions_by_categories: jest.fn(),
+        get_transactions_by_tags: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+        get_balance: jest.fn()
+    }
+
     let presenter: IGetAccountUseCaseResponse = {
         success: jest.fn().mockReturnValue(mock_rest),
         fail: jest.fn().mockReturnValue(new ValidationError('Account name already exist'))
     }
     
-    let use_case = new GetAccountUseCase(repo, presenter);
+    let use_case = new GetAccountUseCase(repo, repo_transaction, presenter);
     it('Test not found account', async () => {
         await use_case.execute("Dvvd");
         expect(presenter.fail).toHaveBeenCalled();
@@ -158,7 +171,7 @@ describe('Get Account Use Case', () => {
         fail: jest.fn().mockReturnValue(new ValidationError('Error'))
     }
 
-    let use_case2 = new GetAllAccountUseCase(repo, presenter2);
+    let use_case2 = new GetAllAccountUseCase(repo, repo_transaction, presenter2);
     it('Test get all account', async () => {
         await use_case2.execute() ;
         expect(presenter2.success).toHaveBeenCalled()

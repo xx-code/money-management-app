@@ -3,6 +3,7 @@ import { BudgetWithCategoryDisplay, BudgetWithTagDisplay } from "@/core/entities
 import { DeleteBudgetCategoryUseCase, IDeleteBudgetUseCaseResponse } from "@/core/interactions/budgets/deleteBudgetUseCase"
 import { GetBudgetCategoryUseCase, IGetBudgetUseCaseResponse } from "@/core/interactions/budgets/getBudgetUseCase"
 import { RequestpdateCategoryBudget, UpdateBudgetCategoryUseCase } from "@/core/interactions/budgets/updateBudgetUseCase"
+import { json } from "body-parser"
 import { NextResponse } from "next/server"
 
 type GetBudgetWithCategory = {
@@ -72,7 +73,9 @@ export async function PUT(
     const id = params.id;
     let presenter = new GetBudgetWithCategoryPresenter();
 
-    let request_budget: RequestpdateCategoryBudget = await request.json();
+    let request_obj = await request.json();
+    let request_budget: RequestpdateCategoryBudget = request_obj;
+    request_budget.categories = Object.assign([], request_obj.categories);
     request_budget.id = id;
 
     await account_repo.init(DB_FILENAME);

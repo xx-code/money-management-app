@@ -25,6 +25,7 @@ describe('Creation transaction Use Case', () => {
     let trans_repo: TransactionRepository = {
         save: jest.fn().mockReturnValue('new id'),
         get:jest.fn(),
+        get_balance: jest.fn(),
         get_transactions_by_categories: jest.fn(),
         get_transactions_by_tags: jest.fn(),
         get_paginations:jest.fn(),
@@ -209,6 +210,7 @@ describe('Get transaction Use Case', () => {
         get_transactions_by_tags: jest.fn(),
         get_paginations:jest.fn().mockReturnValue(["DF", "DF"]),
         get_account_balance: jest.fn().mockReturnValue(0),
+        get_balance: jest.fn(),
         delete: jest.fn(),
         update: jest.fn()
     };
@@ -270,7 +272,11 @@ describe('Get transaction Use Case', () => {
             sort_sense: null,
             account_filter: [],
             tag_filter: [],
-            category_filter: []
+            category_filter: [],
+            type: null,
+            date_end: null,
+            date_start: null,
+            price: undefined
         });
         expect(presenter2.fail).toHaveBeenCalled()
         /*try {
@@ -296,7 +302,11 @@ describe('Get transaction Use Case', () => {
             sort_sense: null,
             account_filter: [],
             tag_filter: [],
-            category_filter: []
+            category_filter: [],
+            type: null,
+            date_end: null,
+            date_start: null,
+            price: undefined
         });
         expect(presenter2.fail).toHaveBeenCalled()
         /*try {
@@ -322,7 +332,11 @@ describe('Get transaction Use Case', () => {
             sort_sense: null,
             account_filter: [],
             tag_filter: [],
-            category_filter: []
+            category_filter: [],
+            type: null,
+            date_end: null,
+            date_start: null,
+            price: undefined
         });
         expect(presenter2.fail).toHaveBeenCalled();
         /*try {
@@ -348,7 +362,11 @@ describe('Get transaction Use Case', () => {
             sort_sense: ' ',
             account_filter: [],
             tag_filter: [],
-            category_filter: []
+            category_filter: [],
+            type: null,
+            date_end: null,
+            date_start: null,
+            price: undefined
         });
         expect(presenter2.fail).toHaveBeenCalled();
         /*try {
@@ -374,7 +392,11 @@ describe('Get transaction Use Case', () => {
             sort_sense: null,
             account_filter: [],
             tag_filter: [],
-            category_filter: []
+            category_filter: [],
+            type: null,
+            date_end: null,
+            date_start: null,
+            price: undefined
         });
         expect(presenter2.fail).toHaveBeenCalled();
         /*try {
@@ -400,7 +422,11 @@ describe('Get transaction Use Case', () => {
             sort_sense: null,
             account_filter: [],
             tag_filter: [],
-            category_filter: []
+            category_filter: [],
+            type: null,
+            date_end: null,
+            date_start: null,
+            price: undefined
         });
         expect(presenter2.success).toHaveBeenCalled();
         /*let response = use_case2.execute({
@@ -425,6 +451,7 @@ describe('Update transaction use case', () => {
         get_transactions_by_tags: jest.fn(),
         get_paginations:jest.fn(),
         get_account_balance: jest.fn().mockReturnValue(0),
+        get_balance: jest.fn(),
         delete: jest.fn(),
         update: jest.fn()
     };
@@ -607,6 +634,7 @@ describe('Delete Transaction Use case', () => {
         get_transactions_by_tags: jest.fn(),
         get: jest.fn().mockReturnValue(null),
         get_paginations: jest.fn(),
+        get_balance: jest.fn().mockReturnValue(0),
         get_account_balance: jest.fn().mockReturnValue(0),
         delete: jest.fn(),
         update: jest.fn()
@@ -618,8 +646,8 @@ describe('Delete Transaction Use case', () => {
     };
 
     let use_case = new DeleteTransactionUseCase(repo, presenter);
-    it('Test not found transcation', () => {
-        use_case.execute('9');
+    it('Test not found transcation', async () => {
+        await use_case.execute('9');
         expect(presenter.fail).toHaveBeenCalled();
         /*try {
             use_case.execute('9');

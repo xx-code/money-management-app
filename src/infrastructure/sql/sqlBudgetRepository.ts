@@ -177,6 +177,8 @@ export class SqlBudgetCategoryRepository implements BudgetCategoryRepository {
                 }
             }
 
+            
+
             if (category_to_remove.length > 0) {
                 await this.db.run(`DELETE FROM ${this.table_name}_categories WHERE id_category in (?)`, category_to_remove.toString());
             }

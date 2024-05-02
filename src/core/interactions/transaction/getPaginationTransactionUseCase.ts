@@ -1,4 +1,4 @@
-import { Transaction } from "../../entities/transaction";
+import { Transaction, TransactionType, is_Transaction_type } from "../../entities/transaction";
 import { TransactionRepository, dbFilter, dbSortBy } from "../repositories/transactionRepository";
 import { RecordRepository } from "../repositories/recordRepository";
 import { AccountRepository } from "../repositories/accountRepository";
@@ -7,6 +7,7 @@ import { CategoryRepository } from "../repositories/categoryRepository";
 import { ValidationError } from "../../errors/validationError";
 import { formatted, reverseFormatted } from "../../entities/formatted";
 import { is_empty } from "../../entities/verify_empty_value";
+import DateParser from "@/core/entities/date_parser";
 
 export type RequestGetPagination = {
     page: number;
@@ -16,6 +17,10 @@ export type RequestGetPagination = {
     account_filter: Array<string>;
     category_filter: Array<string>;
     tag_filter: Array<string>;
+    date_start: DateParser|null;
+    date_end: DateParser|null;
+    type: string | null | undefined;
+    price: number | undefined;
 }
 
 export type TransactionResponse = {
@@ -71,7 +76,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
                     throw new ValidationError('Account ' + request.account_filter[i] + ' in filter not exist');
                 }
 
-                accounts_to_filter.push(account!)
+                accounts_to_filter.push(account!.id)
             }
 
             for (let i = 0; i < request.category_filter.length; i++) {
@@ -81,7 +86,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
                     throw new ValidationError('Category ' + request.category_filter[i] + ' in filter not exist');
                 }
 
-                categories_to_filter.push(category!)
+                categories_to_filter.push(category!.title)
             }
 
             for (let i = 0; i < request.tag_filter.length; i++) {
@@ -93,11 +98,37 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
 
                 tags_to_filter.push(tag!)
             }
+
+            if ((request.date_start !== null && request.date_start !== undefined) && ((request.date_end !== null && request.date_end !== undefined))) {
+                if (request.date_end < request.date_start) {
+                    throw new ValidationError('Date start must be less than date end');
+                }
+            }
+
+            let type = null;
+            if (request.type !== null && request.type !== undefined) {
+                if (!is_Transaction_type(request.type)) {
+                    throw new ValidationError('Type must be Debit or Credit')
+                }
+                type = TransactionType[request.type];
+            }
+
+            let price = null;
+            if (request.price !== null && request.price !== undefined) {
+                if (request.price < 0) {
+                    throw new ValidationError('Price must be greather than 0')
+                }
+                price = request.price;
+            }
  
             let filters: dbFilter = {
                 accounts: accounts_to_filter, 
                 tags: tags_to_filter,
-                categories: categories_to_filter
+                categories: categories_to_filter,
+                start_date: request.date_start,
+                end_date: request.date_end,
+                type: type,
+                price: price
             };
 
             let sort_by: dbSortBy|null = null;

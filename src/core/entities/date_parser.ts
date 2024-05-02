@@ -75,4 +75,24 @@ export default class DateParser {
         let date = new Date();
         return new DateParser(date.getFullYear(), date.getMonth()+1, date.getDate());
     }
+
+    static from_date(date: Date): DateParser {
+        let year = date.getFullYear();
+        let month = date.getMonth() + 1;
+        let day_date = date.getDate();
+
+        return new DateParser(year, month, day_date)
+    }
+
+    static from_string(date_format: string): DateParser {
+        // TODO add machter to respect yyyy-mm-dd format
+
+        if (!date_format.includes('-')) {
+            throw Error('No good format yyyy-mm-dd')
+        }
+
+        let [year, month, date] = date_format.split('-');
+
+        return new DateParser(parseInt(year), parseInt(month), parseInt(date))
+    }
 }

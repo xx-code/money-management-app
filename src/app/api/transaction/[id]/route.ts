@@ -1,4 +1,5 @@
 import { DB_FILENAME, account_repo, category_repo, record_repo, tag_repo, transaction_repo } from "@/app/configs/repository";
+import DateParser from "@/core/entities/date_parser";
 import { Transaction } from "@/core/entities/transaction"
 import { DeleteTransactionUseCase, IDeleteTransactoinUseCaseResponse } from "@/core/interactions/transaction/deleteTransactionUseCase";
 import { GetTransactionUseCase, IGetTransactionUseCaseResponse } from "@/core/interactions/transaction/getTransactionUseCase"
@@ -92,9 +93,17 @@ export async function PUT(
     const id = params.id;
 
     let presenter = new UpdateTransactionPresenter();
+
+    let transaction = await request.json()
     
-    let request_transaction: RequestUpdateTransactionUseCase = await request.json();
+    let request_transaction: RequestUpdateTransactionUseCase = transaction;
     request_transaction.id = id;
+
+    if (transaction.date !== undefined) {
+        let [year, month, day] = transaction.date.split('-');
+        request_transaction.date = new DateParser(parseInt(year), parseInt(month), parseInt(day));
+    }
+    
 
     await account_repo.init(DB_FILENAME);
     await category_repo.init(DB_FILENAME);

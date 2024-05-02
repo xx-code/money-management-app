@@ -9,14 +9,12 @@
     font-weight: bold;
 }
 
-.top-nav .icon {
-    height: 25px;
-    width: 25px;
-    background-color: #1E3050;
-}
-
 .top-nav .icon-notification {
     position: relative;
+}
+
+.top-nav .icon-notification .icon {
+    cursor: pointer;
 }
 
 .top-nav .alert-icon {

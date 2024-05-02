@@ -53,7 +53,14 @@ export async function POST(
         );
     }
 
-    let date = new Date(new_transaction.date);
+    if (is_empty(new_transaction.date)) {
+        return new Response(
+            'You have to set date transaction',
+            {status: 400}
+        );
+    }
+
+    let [year, month, day] = new_transaction.date.split('-');
 
     let request_new_transaction: RequestAddTransactionUseCase = {
         account_ref: new_transaction.account_ref,
@@ -62,7 +69,7 @@ export async function POST(
         description: new_transaction.description,
         price: new_transaction.price,
         type: type,
-        date: new DateParser(date.getFullYear(), date.getMonth() + 1, date.getDate())
+        date: new DateParser(parseInt(year), parseInt(month), parseInt(day))
     }
 
     let uuid = new UUIDMaker(); 

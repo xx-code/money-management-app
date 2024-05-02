@@ -4,3 +4,7 @@ export type Account = {
     credit_value: number;
     credit_limit: number;
 }
+
+export type AccountDisplay = Account & {
+    balance: number
+}
