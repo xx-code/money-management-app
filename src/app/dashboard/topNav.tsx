@@ -14,11 +14,11 @@ function IconNotification() {
     )
 }
 
-export default function TopNav () {
+export default function TopNav ({title} : {title: string}) {
     return (
         <div className="top-nav">
             <div className='title'>
-                <h1>Bonjour, Auguste!</h1>
+                <h1>{title}</h1>
             </div>
             <div>
                 <IconNotification />

@@ -46,7 +46,9 @@ describe('Creation transaction Use Case', () => {
         delete: jest.fn(),
         get: jest.fn(),
         get_all: jest.fn(),
-        save: jest.fn()
+        save: jest.fn(),
+        update: jest.fn(),
+        get_by_title: jest.fn()
     };
     let record_repo: RecordRepository = {
         delete: jest.fn(),
@@ -227,7 +229,9 @@ describe('Get transaction Use Case', () => {
         delete: jest.fn(),
         get: jest.fn(),
         get_all: jest.fn(),
-        save: jest.fn()
+        save: jest.fn(),
+        get_by_title: jest.fn(),
+        update: jest.fn()
     };
     let record_repo: RecordRepository = {
         delete: jest.fn(),
@@ -468,7 +472,9 @@ describe('Update transaction use case', () => {
         delete: jest.fn(),
         get: jest.fn(),
         get_all: jest.fn(),
-        save: jest.fn()
+        save: jest.fn(),
+        get_by_title: jest.fn(),
+        update: jest.fn()
     };
     let record_repo: RecordRepository = {
         delete: jest.fn(),
@@ -640,12 +646,21 @@ describe('Delete Transaction Use case', () => {
         update: jest.fn()
     };
 
+    let record_repo: RecordRepository = {
+        delete: jest.fn(),
+        get: jest.fn(),
+        get_all: jest.fn(),
+        save: jest.fn(),
+        update: jest.fn(),
+        get_many_by_id: jest.fn()
+    };
+
     let presenter: IDeleteTransactoinUseCaseResponse = {
         success: jest.fn(),
         fail: jest.fn()
     };
 
-    let use_case = new DeleteTransactionUseCase(repo, presenter);
+    let use_case = new DeleteTransactionUseCase(repo, record_repo, presenter);
     it('Test not found transcation', async () => {
         await use_case.execute('9');
         expect(presenter.fail).toHaveBeenCalled();

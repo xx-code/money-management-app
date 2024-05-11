@@ -14,15 +14,16 @@ import Modal from "@/app/components/modal";
 import Tag from "@/app/components/tag";
 import { is_empty } from "@/core/entities/verify_empty_value";
 import DateParser from "@/core/entities/date_parser";
+import TopNav from "../topNav";
 
 export default function Budget() {
     const [currentModal, setCurrentModal] = useState({category: false, tag: false});
 
     const [budgets, setBudgets] = useState<Array<BudgetWithCategoryDisplay|BudgetWithTagDisplay>>([]);
 
-    const [categories, setCategories] = useState<string[]>([]);
-    const [categoriesSearching, setCategoriesSearching] = useState<string[]>([]);
-    const [categoriesSelected, setCategoriesSelected] = useState<string[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [categoriesSearching, setCategoriesSearching] = useState<Category[]>([]);
+    const [categoriesSelected, setCategoriesSelected] = useState<Category[]>([]);
     const [inputBudgetCategory, setInputBudgetCategory] = useState({title: '', category: '', target: 0, period: '', period_time: 0});
     const [errorValidationBudgetCategory, setErrorValidationBudgetCategory] = useState<{title: string|null, category: string|null, period: string|null, period_time: string|null, target: string|null}>({title: null, category: null, period: null, period_time: null, target: null});
     const periods = {Mois: 'Month', Semaine: 'Week', Année: 'Year'}
@@ -38,21 +39,22 @@ export default function Budget() {
 
     function handleChangeCategories(event: any) {
         if (event.target.name === 'category') {
-            let categories_found = search_in_array(event.target.value, categories);
-            setCategoriesSearching(categories_found);
+            let categories_found = search_in_array(event.target.value, categories.map(category => category.title));
+            setCategoriesSearching(categories.filter(category => categories_found.includes(category.title)));
         }
         setInputBudgetCategory({...inputBudgetCategory, [event.target.name]: event.target.value});
     }
 
-    function handleSelectCategoriesClick(name: any, value: any) {
+    function handleSelectClickCategoriesModal(name: any, value: any) {
         setInputBudgetCategory({...inputBudgetCategory, [name]: value});
-        if (!categoriesSelected.includes(value) && name !== 'period') {
-            setCategoriesSelected([...categoriesSelected, value]);
+        let category = categories.find(cat => cat.title === value);
+        if (category !== undefined && name !== 'period') {
+            setCategoriesSelected([...categoriesSelected, category]);
         } 
     }
     function removeCategoriesSelected(name: string) {
         let categories = Object.assign([], categoriesSelected);
-        categories.splice(categories.indexOf(name), 1);
+        categories.splice(categories.findIndex((category: Category) => category.title === name), 1);
         setCategoriesSelected(categories);
     }
     function cleanCategoryInput() {
@@ -111,7 +113,7 @@ export default function Budget() {
         try {
             const response_categories = await axios.get('/api/category');
             let categories: Category[] = response_categories.data.categories;
-            setCategories(Array.from(categories, (value) => (value.title)))
+            setCategories(categories)
         } catch(error) {
             console.log(error);
         }
@@ -158,7 +160,7 @@ export default function Budget() {
                 target: budget_cat.target,
                 category: ""
             });
-            setCategoriesSelected(Array.from(budget_cat.categories, (value) => (value.title)));
+            setCategoriesSelected(budget_cat.categories);
         } else {
             setCurrentModal({...currentModal, tag: true, category: false});
             let budget_tag = budget as BudgetWithTagDisplay;
@@ -237,7 +239,7 @@ export default function Budget() {
                 let period = Object.entries(periods).find(key => key[0] === inputBudgetCategory.period);
                 let budget = {
                     title: inputBudgetCategory.title,
-                    categories: categoriesSelected,
+                    categories: categoriesSelected.map(cat => cat.id),
                     period: period![1],
                     period_time: inputBudgetCategory.period_time,
                     target: inputBudgetCategory.target
@@ -339,6 +341,7 @@ export default function Budget() {
 
     return (
         <>
+            <TopNav title='Les budgets'/>
             <div className="budgets">
                 <div>
                     <div>                        
@@ -358,15 +361,15 @@ export default function Budget() {
                     </div>
                     
                     <TextInput title="Nom budget" name="title" type="text" value={inputBudgetCategory.title} onChange={handleChangeCategories} options={[]} onClickOption={undefined} error={errorValidationBudgetCategory.title} overOnBlur={undefined} />
-                    <TextInput title="Categorie" name="category" type="text" value={inputBudgetCategory.category} onChange={handleChangeCategories} options={categoriesSearching} onClickOption={handleSelectCategoriesClick} error={errorValidationBudgetCategory.category}  overOnBlur={undefined} /> 
+                    <TextInput title="Categorie" name="category" type="text" value={inputBudgetCategory.category} onChange={handleChangeCategories} options={categoriesSearching.map(cat => cat.title)} onClickOption={handleSelectClickCategoriesModal} error={errorValidationBudgetCategory.category}  overOnBlur={undefined} /> 
                     <div className="flex flex-wrap" style={{marginTop: "-12px"}}>
                         {
-                            categoriesSelected.map((category: string, key: any) => 
-                                <Tag key={key} title={category}  onDelete={() => removeCategoriesSelected(category)}/>
+                            categoriesSelected.map((category: Category, key: any) => 
+                                <Tag key={key} title={category.title}  onDelete={() => removeCategoriesSelected(category.title)}/>
                             )
                         }
                     </div>
-                    <TextInput title="Periode" name="period" type="text" value={inputBudgetCategory.period} onChange={() => {}} options={Object.keys(periods)} onClickOption={handleSelectCategoriesClick} error={errorValidationBudgetCategory.period}  overOnBlur={undefined} />
+                    <TextInput title="Periode" name="period" type="text" value={inputBudgetCategory.period} onChange={() => {}} options={Object.keys(periods)} onClickOption={handleSelectClickCategoriesModal} error={errorValidationBudgetCategory.period}  overOnBlur={undefined} />
                     <div style={{width: '45%'}}>
                         <TextInput title="Nb Periode" name="period_time" type="number" value={inputBudgetCategory.period_time} onChange={handleChangeCategories} options={[]} onClickOption={undefined} error={errorValidationBudgetCategory.period_time}  overOnBlur={undefined} />  
                     </div>

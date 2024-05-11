@@ -33,7 +33,7 @@ export class SqlBudgetCategoryRepository implements BudgetCategoryRepository {
                 id_category TEXT NOT NULL,
                 FOREIGN KEY (id_budget) REFERENCES ${this.table_name}(id)
                     ON DELETE CASCADE
-                FOREIGN KEY (id_category) REFERENCES ${table_category_name}(title)  
+                FOREIGN KEY (id_category) REFERENCES ${table_category_name}(id)  
             )
         `);
 
@@ -47,7 +47,7 @@ export class SqlBudgetCategoryRepository implements BudgetCategoryRepository {
                 FROM 
                     ${this.table_name}_categories
                 JOIN ${this.table_category_name}
-                    ON ${this.table_category_name}.title = ${this.table_name}_categories.id_category
+                    ON ${this.table_category_name}.id = ${this.table_name}_categories.id_category
                 WHERE ${this.table_name}_categories.id_budget = ?
                 `,
                 id_budget
@@ -56,6 +56,7 @@ export class SqlBudgetCategoryRepository implements BudgetCategoryRepository {
             let categories: Category[] = []
             for (let result of result_category) {
                 categories.push({
+                    id: result['id'],
                     title: result['title'],
                     icon: result['icon']
                 });
@@ -153,7 +154,7 @@ export class SqlBudgetCategoryRepository implements BudgetCategoryRepository {
                 FROM 
                     ${this.table_name}_categories
                 JOIN ${this.table_category_name}
-                    ON ${this.table_category_name}.title = ${this.table_name}_categories.id_category
+                    ON ${this.table_category_name}.id = ${this.table_name}_categories.id_category
                 WHERE ${this.table_name}_categories.id_budget = ?
                 `,
                 request.id

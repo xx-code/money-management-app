@@ -37,7 +37,6 @@ export async function POST(request: Request) {
   await account.execute(new_account);
 
   if (presenter.model_view.error !== null) {
-    console.log(presenter.model_view.error.message);
     return new Response(presenter.model_view.error.message, {
       status: 400,
     });
@@ -82,7 +81,6 @@ export async function GET() {
   await account.execute();
 
   if (presenter.model_view.error != null) {
-    console.log(presenter.model_view.error);
     return new Response(presenter.model_view.error.message, {
       status: 400
     });

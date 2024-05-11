@@ -94,8 +94,8 @@ export async function PUT(
 
     let presenter = new UpdateTransactionPresenter();
 
-    let transaction = await request.json()
-    
+    let transaction = await request.json();
+
     let request_transaction: RequestUpdateTransactionUseCase = transaction;
     request_transaction.id = id;
 
@@ -154,9 +154,10 @@ export async function DELETE(
     await category_repo.init(DB_FILENAME);
     await tag_repo.init(DB_FILENAME);
     await record_repo.init(DB_FILENAME);
+    await record_repo.init(DB_FILENAME);
     await transaction_repo.init(DB_FILENAME, account_repo.table_account_name, category_repo.table_category_name, tag_repo.table_tag_name, record_repo.table_record_name);
 
-    let use_case = new DeleteTransactionUseCase(transaction_repo, presenter);
+    let use_case = new DeleteTransactionUseCase(transaction_repo, record_repo, presenter);
     use_case.execute(id);
 
     if (presenter.model_view.error !== null) {

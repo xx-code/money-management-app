@@ -2,7 +2,12 @@
 'use client';
 
 import './nav.css';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+library.add(fas)
 
 
 function LogoTitle({ title }: {title: string}) {
@@ -13,29 +18,32 @@ function LogoTitle({ title }: {title: string}) {
     )
 }
 
-function NavButton({title, onClick}: {title: string, onClick: any}) {
+function NavButton({title, icon, link, className}: {title: string, className: string, icon:any,  link: any}) {
     return (
-        <div className="nav-link-content">
-            <button onClick={onClick}>
+        <div className={`nav-link-content`}>
+            <Link href={link}>
                 <div className='button-content'> 
-                    <div className='icon' />
+                    <FontAwesomeIcon className={'icon ' + className} icon={icon} />
                     <span>
                         { title }
                     </span>  
                 </div>
-            </button>
+            </Link>
         </div>
     )
 }
 
 export default function Nav() {
+    const pathname = usePathname();
+
     return (
         <div className="nav">
             <div className="nav-content">
                 <LogoTitle title="Agni." />
                 <div className="nav-link">
-                    <NavButton title='Accueil' onClick={() => {console.log('home')} } />
-                    <NavButton title='Budget' onClick={() => {console.log('budget')} }/>
+                    <NavButton className={pathname === '/dashboard/home' ? 'active' : ''} title='Accueil' link='/dashboard/home' icon={["fas", "house"]} />
+                    <NavButton className={pathname === '/dashboard/budget' ? 'active' : ''} title='Budget' link='/dashboard/budget' icon={["fas", "wallet"]}/>
+                    <NavButton className={pathname === '/dashboard/parameter' ? 'active' : ''} title='Parametre' link='/dashboard/parameter' icon={["fas", "gear"]}/>
                 </div>
             </div>
         </div>

@@ -56,10 +56,3 @@
 .transactions .right-content .filter-part .filter-dropdown-content .tags{
     padding: 1em 0.3em;
 }
-
-.transactions .right-content .filter-part .filter-dropdown-content span {
-    color: white;
-    background-color: #6755D7;
-    padding: 0.4em;
-    border-radius: 0.4em;
-}

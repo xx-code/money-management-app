@@ -3,6 +3,7 @@ import { CreationCategoryUseCase, RequestCreationCategoryUseCase, ICreationCateg
 import { DB_FILENAME, category_repo } from '../../configs/repository';
 import { GetAllCategoryUseCase, IGetAllCategoryUseCaseResponse } from '@/core/interactions/category/getAllCategoryUseCase';
 import { Category } from '@/core/entities/category';
+import UUIDMaker from '@/services/crypto';
 
 type CreationCategoryModelView = {
     response: {is_saved: boolean} | null,
@@ -25,13 +26,15 @@ class CreationCategoryPresenter implements ICreationCategoryUseCaseResponse {
 export async function POST(
     request: Request
 ) {
+    let uuid = new UUIDMaker();
+    
     let request_category: RequestCreationCategoryUseCase = await request.json();
 
     let presenter = new CreationCategoryPresenter();
 
     await category_repo.init(DB_FILENAME);
 
-    let use_case = new CreationCategoryUseCase(category_repo, presenter);
+    let use_case = new CreationCategoryUseCase(category_repo, presenter, uuid);
     await use_case.execute(request_category);
 
     if (presenter.model_view.error != null) {
@@ -70,7 +73,6 @@ export async function GET() {
     await use_case.execute();
 
     if (presenter.model_view.error != null) {
-        console.log(presenter.model_view.error)
         return new Response(presenter.model_view.error.message, {
             status: 400,
         });

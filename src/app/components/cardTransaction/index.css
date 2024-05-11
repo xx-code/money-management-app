@@ -1,5 +1,6 @@
 .card-transaction {
     margin: 1rem;
+    position: relative;
 }
 
 .card-transaction .card-transaction-content {
@@ -8,6 +9,7 @@
     background-color: #F5F6F8;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .card-transaction .card-transaction-content .card-transction-content-icon {
@@ -32,7 +34,7 @@
 .card-transaction .card-transaction-content .card-transaction-icon .icon .icon-in {
     width: 25px;
     height: 25px;
-    background-color: #313343;
+    color: #313343;
 }
 
 .card-transaction .card-transaction-content .card-transaction-info {
@@ -63,4 +65,34 @@
 .card-transaction .card-transaction-content .card-transaction-price h5 {
     font-size: 0.7em;
     color:#7E7E7E; 
+}
+
+.card-transaction .card-transaction-edit {
+    position: absolute;
+    top:-20px;
+    right: 0;
+}
+
+.card-transaction:hover  .card-transaction-edit .edit-btn {
+    opacity: 1;
+}
+
+.card-transaction .card-transaction-edit .edit-btn {
+    background-color: aliceblue;
+    width: 25px;
+    height: 25px;
+    margin: 8px;
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    cursor: pointer;
+    opacity: 0;
+    transition: 150ms linear;
+    position: relative;
+}
+
+.card-transaction .card-transaction-edit .edit-btn:hover {
+    top: -5px
 }

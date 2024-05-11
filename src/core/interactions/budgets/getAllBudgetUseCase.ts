@@ -2,6 +2,7 @@ import { ValidationError } from "@/core/errors/validationError";
 import { BudgetWithCategoryDisplay, BudgetWithTagDisplay, compute_current_spend, determined_start_end_date_budget } from "../../entities/budget";
 import { BudgetTagRepository, BudgetCategoryRepository } from "../repositories/budgetRepository";
 import { TransactionRepository } from "../repositories/transactionRepository";
+import { TransactionType } from "@/core/entities/transaction";
 
 export interface IGetAllBudgetUseCase {
     execute(): void;
@@ -37,10 +38,10 @@ export class GetAllBudgetCategoryUseCase implements IGetAllBudgetUseCase {
                 let end_date = current_date_budget.end_date;
 
                 let balance = await this.transaction_repository.get_balance({
-                    categories: budget.categories.map(cat => cat.title),
+                    categories: budget.categories.map(cat => cat.id),
                     accounts: [],
                     tags: [],
-                    type: null,
+                    type: TransactionType.Debit,
                     start_date: start_date,
                     end_date: end_date,
                     price: null
@@ -50,7 +51,7 @@ export class GetAllBudgetCategoryUseCase implements IGetAllBudgetUseCase {
                     id: budget.id,
                     title: budget.title,
                     categories: budget.categories,
-                    current: balance,
+                    current: Math.abs(balance),
                     period: budget.period,
                     period_time: budget.period_time,
                     target: budget.target

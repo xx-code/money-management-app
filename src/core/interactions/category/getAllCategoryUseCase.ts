@@ -29,7 +29,13 @@ export class GetAllCategoryUseCase implements IGetAllCategoryUseCase {
         try {
             let results = await this.repository.get_all();
 
-            this.presenter.success(results);
+            // TODO: Data transfert a implement
+            let categories: Category[] = [];
+            for (let result of results) {
+                result.title = reverseFormatted(result.title);
+                categories.push(result);
+            }
+            this.presenter.success(categories);
         } catch(err) {
             this.presenter.fail(err as Error);
         }

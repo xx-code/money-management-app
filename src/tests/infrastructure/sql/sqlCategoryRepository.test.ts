@@ -22,6 +22,7 @@ describe('Test Category sql repository', () => {
         await category_repo.init('test.db');
         
         let new_category: Category = {
+            id: '1',
             title: 'cat',
             icon: 'ico-cat'
         }
@@ -36,6 +37,7 @@ describe('Test Category sql repository', () => {
         await category_repo.init('test.db');
         
         let new_category: Category = {
+            id: '1',
             title: 'cat',
             icon: 'ico-cat'
         }
@@ -52,6 +54,7 @@ describe('Test Category sql repository', () => {
         await category_repo.init('test.db');
         
         let new_category: Category = {
+            id: '1',
             title: 'cat',
             icon: 'ico-cat'
         }
@@ -70,6 +73,7 @@ describe('Test Category sql repository', () => {
         await category_repo.init('test.db');
         
         let new_category: Category = {
+            id: '1',
             title: 'cat',
             icon: 'ico-cat'
         }

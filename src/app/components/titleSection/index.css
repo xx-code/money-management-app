@@ -1,0 +1,10 @@
+.title-section {
+    font-size: large;
+}
+
+.title-section .bar {
+    margin-top: 0.5em;
+    padding: 0.01em;
+    width: 100%;
+    background-color: #eeeeee;
+}

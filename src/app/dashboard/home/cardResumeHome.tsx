@@ -3,144 +3,86 @@
 import RangeSlider from "../../components/rangeSlider";
 import Title from "../../components/title";
 import Dropdown from "../../components/dropdown";
-import Button from "../../components/button";
 
 import './cardResumeHome.css';
-import { useEffect, useState } from "react";
-import axios from "axios";
 import { AccountDisplay } from "@/core/entities/account";
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+library.add(fas)
 
 
-export default function CardResumeHome({ onClickAddAccount }: { onClickAddAccount: any} ) {
-    const [account, setAccount] = useState<AccountDisplay|null>(null);
-    const [accounts, setAccounts] = useState([]);
+export default function CardResumeHome({account, accounts, onDeleteAccount, onEditAccount, onMakeTransfert, onAddNewAccount, onAddNewTransaction, handleSelectAccount, handleSliderChange, handleSliderRelease}: 
+    {account: AccountDisplay|null, accounts: AccountDisplay[], onDeleteAccount: any, onEditAccount:any, onMakeTransfert:any, onAddNewAccount: any, onAddNewTransaction: any,
+    handleSelectAccount: any, handleSliderChange: any, handleSliderRelease: any}) {
 
-    async function get_all_accounts(is_refresh: boolean) {
-        fetch('/api/account')
-        .then((res) => res.json())
-        .then((data) => {
-            let accounts = Object.assign([], data.accounts);
-            let balance = accounts.reduce((sum:number, current:AccountDisplay) => sum + current.balance, 0)
-            accounts.unshift({
-                id: "all",
-                title: "Tous les comptes",
-                credit_limit: 0,
-                credit_value: 0,
-                balance: balance
-            });
-            if (!is_refresh)  {
-                setAccount(accounts[0]);
-            }
-            setAccounts(accounts);
-        })
-    }
-    
-    async function update_account_credit_limit() {
-        try {
-            let response = await axios.put(`/api/account/${account!.id}`, account);    
-            let updated = response.data;
-
-            setAccount({...account!, credit_limit: updated.credit_limit});
-            get_all_accounts(true);
-        } catch (error) {
-            console.log(error);
-        }       
-    }
-    
-    useEffect(() => {
-        get_all_accounts(false);
-    }, [])
-    
-    const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        let value = parseInt(event.target.value);
-        setAccount({...account!, id: account!.id, credit_limit: value});
-    };
-
-    const handleSliderRelease = (event: React.ChangeEvent<HTMLInputElement>) => {
-        try {
-            update_account_credit_limit();
-        } catch(err) {
-            console.log(err);
-        }
-    }
-
-    const handleDropDownChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        let account = accounts.find((value: AccountDisplay, index) => value.title == event.target.value);
-        setAccount(account!);
-    };
     return (
-        <div className="card-resume-home">
-            <Title value="Mon solde"/>
-            <div className="card-resume-content">
-                <div className="card-resume-dropdown">
-                    {
-                        account !== null ?
-                        <>
-                            {
-                                account.id !== "all" ?
-                                <>
-                                    <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                                        <span style={{color: "white"}}>Delete</span>
-                                        <span style={{color: "white"}}>Ajouter</span>
-                                    </div>
-                                </>
-                                :
-                                <></>
-
-                            }
-                        </>
-                        :
-                        <></>
-                    }
-                    <Dropdown values={accounts.map((account: AccountDisplay, key) => account.title)} onChange={handleDropDownChange} backgroundColor={null} color="black" customClassName={""} />
+        <>
+            <div className="card-resume-home">
+                <div className="flex justify-between content-center">
+                    <Title value="Mon solde"/>
+                    <span className="button-add-account" onClick={onAddNewAccount}>Ajouter nouveau compte</span>
                 </div>
-                <div className='card-resume-balance'>
-                    <h6>
-                        {
-                            account !== null ?
-                            <>$ {account.balance}</>
-                            :
-                            <></>
-                        }
-                    </h6>
-                </div>
-                <div className="card-resume-slider">
-                    {
-                        account !== null ?
-                        <>
+                {
+                    accounts.length > 1 ? 
+                    <div className="card-resume-content">
+                        <div className="card-resume-dropdown">
+                            <Dropdown values={accounts.map((account: AccountDisplay, key) => account.title)} onChange={handleSelectAccount} backgroundColor={null} color="white" customClassName={""} />
+                        </div>
+                        <div className='card-resume-balance'>
+                            <h6>
+                                {
+                                    account !== null ?
+                                    <>$ {account.balance}</>
+                                    :
+                                    <></>
+                                }
+                            </h6>
+                        </div>
+                        <div className="card-resume-slider">
                             {
-                                account.id !== "all" ? 
+                                account !== null ?
                                 <>
-                                    <p>{"Limite d'endettement"}</p>
-                                    <RangeSlider min={0} max={account.credit_value} change_indicator={account.credit_limit} value={account.credit_limit} onChange={handleSliderChange} onRelease={handleSliderRelease}/>
+                                    {
+                                        account.id !== "all" ? 
+                                        <>
+                                            <p>{"Limite d'endettement"}</p>
+                                            <RangeSlider min={0} max={account.credit_value} change_indicator={account.credit_limit} value={account.credit_limit} onChange={handleSliderChange} onRelease={handleSliderRelease}/>
+                                        </>
+                                        :
+                                        <></>
+                                    }
                                 </>
-                                :
+                                    :
                                 <></>
                             }
-                        </>
-                            :
-                        <></>
-                    }
-                </div>
-                <div className="card-resume-button">
-                    {
-                        account !== null ?
-                        <>
-                            {
-                                account.id !== "all" ?
-                                <>
-                                    <Button backgroundColor="#6755D7" onClick={onClickAddAccount} colorText="white" title="Ajouter nouvelle Transaction"/>
-                                </>
-                                :
-                                <></>
-
-                            }
-                        </>
-                        :
-                        <></>
-                    }
-                </div>
+                        </div>
+                        <div className="flex justify-between mt-2">
+                            <div className="flex">
+                                <div className="card-resume-btn-icon" style={{backgroundColor: "#4FDC4C"}} onClick={onAddNewTransaction}>
+                                    <FontAwesomeIcon icon={["fas", "plus"]} />
+                                </div>
+                                <div className="card-resume-btn-icon"  style={{backgroundColor: "#6755D7"}} onClick={onMakeTransfert}>
+                                    <FontAwesomeIcon icon={["fas", "right-left"]} />
+                                </div>
+                            </div>
+                            <div className="flex">
+                                <div className="card-resume-btn-icon"  style={{backgroundColor: "#3A77EF"}}  onClick={onEditAccount}>
+                                    <FontAwesomeIcon icon={["fas", "pen-to-square"]} />
+                                </div>
+                                <div className="card-resume-btn-icon"  style={{backgroundColor: "#DC4C4C"}}  onClick={onDeleteAccount}>
+                                    <FontAwesomeIcon icon={["fas", "trash"]} />
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+                    :
+                    <div className="card-resume-content-hodler flex flex-col content-center items-center" onClick={onAddNewAccount}>
+                        <FontAwesomeIcon color="#1E3050" icon={["fas", "plus"]} fontSize={"7em"} />
+                        <p style={{color: "#1E3050"}}>Cliquer pour ajouter un nouveau comptes</p>
+                    </div>
+                }
             </div>
-        </div>
+        </>
     )
 }

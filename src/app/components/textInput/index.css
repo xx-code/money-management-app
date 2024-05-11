@@ -75,6 +75,7 @@
 .search-option-display {
     display: block;
     height: fit-content;
+    max-height: 500px;
 }
 
 .search-option .option {

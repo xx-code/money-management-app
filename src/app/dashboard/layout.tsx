@@ -15,8 +15,7 @@ export default function DashboardLayout({
             <div className="container-left">
                 <Nav />
             </div>
-            <div className="container-right place-content-center">
-                <TopNav />
+            <div className="container-right">
                 {children}
                 {modal}
                 <div id="modal-root" />

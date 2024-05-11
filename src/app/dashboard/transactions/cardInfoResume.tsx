@@ -17,7 +17,7 @@ export default function CardInfoResume({total_spend, total_earning}: {total_spen
             <div className='card-info-resume-content'>
                 <div className='card'>
                     <h3>Total depsense</h3>
-                    <p className='card-spend'>-${spend}</p>
+                    <p className='card-spend'>${spend}</p>
                 </div>
                 <div className='card'>
                     <h3>Total gains</h3>

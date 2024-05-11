@@ -43,6 +43,7 @@ describe('Budget sql repository', () => {
         let category_repo = new SqlCategoryRepository(table_category_name);
         await category_repo.init('test.db', );
         let new_category: Category = {
+            id: '1',
             title: 'cat-2',
             icon: 'ico-cat'
         }
@@ -75,6 +76,7 @@ describe('Budget sql repository', () => {
         let category_repo = new SqlCategoryRepository(table_category_name);
         await category_repo.init('test.db', );
         let new_category: Category = {
+            id: '1',
             title: 'cat',
             icon: 'ico-cat'
         }
@@ -114,6 +116,7 @@ describe('Budget sql repository', () => {
         let category_repo = new SqlCategoryRepository(table_category_name);
         await category_repo.init('test.db', );
         let new_category: Category = {
+            id: '1',
             title: 'cat',
             icon: 'ico-cat'
         }
@@ -161,6 +164,7 @@ describe('Budget sql repository', () => {
         let category_repo = new SqlCategoryRepository(table_category_name);
         await category_repo.init('test.db', );
         let new_category: Category = {
+            id: '1',
             title: 'cat',
             icon: 'ico-cat'
         }
@@ -196,12 +200,14 @@ describe('Budget sql repository', () => {
         let category_repo = new SqlCategoryRepository(table_category_name);
         await category_repo.init('test.db');
         let new_category: Category = {
+            id: '1',
             title: 'cat0',
             icon: 'ico-cat'
         }
         await category_repo.save(new_category);
 
         new_category = {
+            id: '2',
             title: 'cat02',
             icon: 'ico-cat'
         }

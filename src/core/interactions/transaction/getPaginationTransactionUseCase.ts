@@ -86,7 +86,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
                     throw new ValidationError('Category ' + request.category_filter[i] + ' in filter not exist');
                 }
 
-                categories_to_filter.push(category!.title)
+                categories_to_filter.push(category!.id)
             }
 
             for (let i = 0; i < request.tag_filter.length; i++) {
@@ -133,6 +133,9 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
 
             let sort_by: dbSortBy|null = null;
 
+            request.sort_by = 'date';
+            request.sort_sense = 'desc'
+
             if (request.sort_by != null) {
                 if (is_empty(request.sort_by)) {
                    throw new ValidationError('Sort by is empty field');
@@ -141,7 +144,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
                 if (request.sort_sense == null) {
                     throw new ValidationError('Sort sense field is empty');
                 } else {
-                    if (formatted(request.sort_sense) != 'ASC' || formatted(request.sort_sense) != 'DESC' ) {
+                    if (formatted(request.sort_sense) != 'ASC' && formatted(request.sort_sense) != 'DESC' ) {
                         throw new ValidationError('The sort sense must be \'asc\' or \'desc\'');
                     }
                 }
@@ -157,6 +160,11 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
             }
       
             let response = await this.transaction_repository.get_paginations(request.page, request.size, sort_by, filters);
+
+            for (let i = 0; i < response.transactions.length ; i++) {
+                response.transactions[i].category.title = reverseFormatted(response.transactions[i].category.title);
+                response.transactions[i].tags = response.transactions[i].tags.map(tag => reverseFormatted(tag));
+            }
 
             this.presenter.success({ transactions: response.transactions, current_page: response.current_page, max_pages: response.max_page });
         } catch (err) {

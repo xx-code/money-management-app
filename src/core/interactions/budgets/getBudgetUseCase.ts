@@ -38,7 +38,7 @@ export class GetBudgetCategoryUseCase implements IGetBudgetUseCase {
             let end_date = current_date_budget.end_date;
 
             let balance = await this.transaction_repository.get_balance({
-                categories: budget.categories.map(cat => cat.title),
+                categories: budget.categories.map(cat => cat.id),
                 accounts: [],
                 tags: [],
                 type: null,

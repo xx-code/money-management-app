@@ -50,6 +50,7 @@ describe('Test transaction sql repository', () => {
         let category_repo = new SqlCategoryRepository('categories');
         await category_repo.init('test.db');
         let new_category: Category = {
+            id: '1',
             title: 'cat',
             icon: 'ico-cat'
         }
@@ -103,6 +104,7 @@ describe('Test transaction sql repository', () => {
         let category_repo = new SqlCategoryRepository('categories');
         await category_repo.init('test.db');
         let new_category: Category = {
+            id: '1',
             title: 'cat',
             icon: 'ico-cat'
         }
@@ -156,6 +158,7 @@ describe('Test transaction sql repository', () => {
         let category_repo = new SqlCategoryRepository('categories');
         await category_repo.init('test.db');
         let new_category: Category = {
+            id: '1',
             title: 'cat',
             icon: 'ico-cat'
         }
@@ -251,18 +254,21 @@ describe('Test transaction sql repository', () => {
         let category_repo = new SqlCategoryRepository('categories');
         await category_repo.init('test.db');
         let new_category: Category = {
+            id: '1',
             title: 'cat',
             icon: 'ico-cat'
         }
         await category_repo.save(new_category);
 
         new_category = {
+            id: '2',
             title: 'cat2',
             icon: 'ico-cat'
         }
         await category_repo.save(new_category);
 
         new_category = {
+            id: '3',
             title: 'cat3',
             icon: 'ico-cat'
         }
@@ -292,7 +298,7 @@ describe('Test transaction sql repository', () => {
             id: '1',
             account_ref: '1',
             tag_ref: [],
-            category_ref: 'cat',
+            category_ref: '1',
             record_ref: 'record_1'
         }
         await transaction_repo.save(new_transaction);
@@ -310,7 +316,7 @@ describe('Test transaction sql repository', () => {
             id: '2',
             account_ref: '1',
             tag_ref: [],
-            category_ref: 'cat2',
+            category_ref: '2',
             record_ref: 'record_2'
         }
         await transaction_repo.save(new_transaction);
@@ -328,7 +334,7 @@ describe('Test transaction sql repository', () => {
             id: '3',
             account_ref: '1',
             tag_ref: [],
-            category_ref: 'cat3',
+            category_ref: '3',
             record_ref: 'record_3'
         }
         await transaction_repo.save(new_transaction);
@@ -368,7 +374,7 @@ describe('Test transaction sql repository', () => {
             id: '4',
             account_ref: '2',
             tag_ref: [],
-            category_ref: 'cat2',
+            category_ref: '2',
             record_ref: 'record_4'
         }
         await transaction_repo.save(new_transaction);
@@ -392,7 +398,7 @@ describe('Test transaction sql repository', () => {
             id: '5',
             account_ref: '1',
             tag_ref: [new_tag],
-            category_ref: 'cat2',
+            category_ref: '2',
             record_ref: 'record_5'
         }
         await transaction_repo.save(new_transaction);
@@ -429,12 +435,14 @@ describe('Test transaction sql repository', () => {
         let category_repo = new SqlCategoryRepository('categories');
         await category_repo.init('test.db');
         let new_category: Category = {
+            id: '1',
             title: 'cat',
             icon: 'ico-cat'
         }
         await category_repo.save(new_category);
 
         new_category = {
+            id: '2',
             title: 'cat2',
             icon: 'ico-cat'
         }
@@ -459,7 +467,7 @@ describe('Test transaction sql repository', () => {
             id: '1',
             account_ref: '1',
             tag_ref: [],
-            category_ref: 'cat',
+            category_ref: '1',
             record_ref: 'record_1'
         }
         await transaction_repo.save(new_transaction);
@@ -477,7 +485,7 @@ describe('Test transaction sql repository', () => {
             id: '2',
             account_ref: '1',
             tag_ref: [],
-            category_ref: 'cat',
+            category_ref: '1',
             record_ref: 'record_2'
         }
         await transaction_repo.save(new_transaction);
@@ -495,7 +503,7 @@ describe('Test transaction sql repository', () => {
             id: '3',
             account_ref: '1',
             tag_ref: [],
-            category_ref: 'cat2',
+            category_ref: '2',
             record_ref: 'record_3'
         }
         await transaction_repo.save(new_transaction);
@@ -533,6 +541,7 @@ describe('Test transaction sql repository', () => {
         let category_repo = new SqlCategoryRepository('categories');
         await category_repo.init('test.db');
         let new_category: Category = {
+            id: '1',
             title: 'cat',
             icon: 'ico-cat'
         }
@@ -559,7 +568,7 @@ describe('Test transaction sql repository', () => {
             id: '1',
             account_ref: '1',
             tag_ref: [tag1!],
-            category_ref: 'cat',
+            category_ref: '1',
             record_ref: 'record_1'
         }
         await transaction_repo.save(new_transaction);
@@ -579,7 +588,7 @@ describe('Test transaction sql repository', () => {
             id: '2',
             account_ref: '1',
             tag_ref: [tag1!],
-            category_ref: 'cat',
+            category_ref: '1',
             record_ref: 'record_2'
         }
         await transaction_repo.save(new_transaction);
@@ -597,7 +606,7 @@ describe('Test transaction sql repository', () => {
             id: '3',
             account_ref: '1',
             tag_ref: [tag2!],
-            category_ref: 'cat',
+            category_ref: '1',
             record_ref: 'record_3'
         }
         await transaction_repo.save(new_transaction);
@@ -638,6 +647,7 @@ describe('Test transaction sql repository', () => {
         let category_repo = new SqlCategoryRepository('categories');
         await category_repo.init('test.db');
         let new_category: Category = {
+            id:"1",
             title: 'cat',
             icon: 'ico-cat'
         }
@@ -664,7 +674,7 @@ describe('Test transaction sql repository', () => {
             id: '1',
             account_ref: '1',
             tag_ref: [tag1!],
-            category_ref: 'cat',
+            category_ref: '1',
             record_ref: 'record_1'
         }
         await transaction_repo.save(new_transaction);
@@ -684,7 +694,7 @@ describe('Test transaction sql repository', () => {
             id: '2',
             account_ref: '1',
             tag_ref: [tag1!],
-            category_ref: 'cat',
+            category_ref: '1',
             record_ref: 'record_2'
         }
         await transaction_repo.save(new_transaction);
@@ -702,7 +712,7 @@ describe('Test transaction sql repository', () => {
             id: '3',
             account_ref: '1',
             tag_ref: [tag2!],
-            category_ref: 'cat',
+            category_ref: '1',
             record_ref: 'record_3'
         }
         await transaction_repo.save(new_transaction);
@@ -736,6 +746,7 @@ describe('Test transaction sql repository', () => {
         let category_repo = new SqlCategoryRepository('categories');
         await category_repo.init('test.db');
         let new_category: Category = {
+            id: '1',
             title: 'cat',
             icon: 'ico-cat'
         }
@@ -762,7 +773,7 @@ describe('Test transaction sql repository', () => {
             id: '1',
             account_ref: '1',
             tag_ref: [tag1!],
-            category_ref: 'cat',
+            category_ref: '1',
             record_ref: 'record_1'
         }
         await transaction_repo.save(new_transaction);
@@ -799,12 +810,14 @@ describe('Test transaction sql repository', () => {
         let category_repo = new SqlCategoryRepository('categories');
         await category_repo.init('test.db');
         let new_category: Category = {
+            id: '1',
             title: 'cat',
             icon: 'ico-cat'
         }
         await category_repo.save(new_category);
 
         new_category = {
+            id: '2',
             title: 'cat2',
             icon: 'ico-cat'
         }
@@ -832,7 +845,7 @@ describe('Test transaction sql repository', () => {
             id: '1',
             account_ref: '1',
             tag_ref: [],
-            category_ref: 'cat',
+            category_ref: '1',
             record_ref: 'record_1'
         }
         await transaction_repo.save(new_transaction);
@@ -855,7 +868,7 @@ describe('Test transaction sql repository', () => {
             id: '2',
             account_ref: '1',
             tag_ref: [tag1!],
-            category_ref: 'cat',
+            category_ref: '1',
             record_ref: 'record_2'
         }
         await transaction_repo.save(new_transaction);

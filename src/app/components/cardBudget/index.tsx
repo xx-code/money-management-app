@@ -3,13 +3,12 @@ import './index.css';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import styled, { keyframes } from "styled-components";
 library.add(fas)
 
 
 export default function CardBudget({budget, onUpdate, onDelete} : {budget: BudgetWithCategoryDisplay | BudgetWithTagDisplay, onUpdate: any, onDelete: any}) {
-    const [styling, setStyling] = useState({});
     let percent = (budget.current * 100) / budget.target;
     percent = Math.ceil(percent);
     percent = percent > 100 ? 100 : percent;
@@ -35,7 +34,7 @@ export default function CardBudget({budget, onUpdate, onDelete} : {budget: Budge
         stroke-dasharray: ${dash(0)} ${strokeDash(0)};
         transition: stroke-dasharray 0.3s linear 0s;
         stroke: #5394fd;  
-        animation: ${spin} 3s linear 0s 1 forwards; 
+        animation: ${spin} 1s linear 0s 1 forwards; 
     `
 
     return (

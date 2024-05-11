@@ -46,6 +46,8 @@ describe('Creation Budget Test', () => {
     }
 
     let cat_repo: CategoryRepository = {
+        get_by_title: jest.fn(),
+        update: jest.fn(),
         save: jest.fn(),
         delete: jest.fn(),
         get: jest.fn().mockReturnValue(Promise.resolve(null)),
@@ -398,6 +400,8 @@ describe('Update Budget test', () => {
     }
 
     let cat_repo: CategoryRepository = {
+        get_by_title: jest.fn(),
+        update: jest.fn(),
         save: jest.fn(),
         delete: jest.fn(),
         get: jest.fn().mockReturnValue(Promise.resolve(null)),

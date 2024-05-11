@@ -53,17 +53,17 @@ export class CreationBudgetCategoryUseCase implements ICreationBudgetUseCase {
                 throw new ValidationError('Title field is empty');
             }
 
-            if (request.categories.length <= 0) {
+            if (request.categories.length === 0) {
                 throw new ValidationError('Budget categories must have at least 1 value');
             }
             
             let categories = []
             for (let i = 0; i < request.categories.length; i++) {
-                let category = await this.category_repository.get(formatted(request.categories[i]));
+                let category = await this.category_repository.get(request.categories[i]);
                 if (category === null) {
                     throw new ValidationError('Category ' + request.categories[i] + ' not exist')
                 }
-                categories.push(formatted(request.categories[i]));
+                categories.push(request.categories[i]);
             }
 
             if (request.target <= 0) {

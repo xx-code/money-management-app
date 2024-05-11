@@ -5,6 +5,8 @@ import { Category } from "../../core/entities/category";
 import { Tag } from "../../core/entities/tag";
 import DateParser from "../../core/entities/date_parser";
 import { open_database } from "../../config/sqlLiteConnection";
+import { is_empty } from "@/core/entities/verify_empty_value";
+import { TRANSFERT_CATEGORY_ID } from "@/core/interactions/transaction/transfertTransactionUseCase";
 
 export class SqlTransactionRepository implements TransactionRepository {
     private db: any;
@@ -27,7 +29,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                 id_category TEXT NOT NULL,
                 id_record TEXT NOT NULL,
                 FOREIGN KEY (id_account) REFERENCES ${table_account_name}(id),
-                FOREIGN KEY (id_category) REFERENCES ${table_category_name}(title),
+                FOREIGN KEY (id_category) REFERENCES ${table_category_name}(id),
                 FOREIGN KEY (id_record) REFERENCES ${table_record_name}(id)
                     ON DELETE CASCADE
             )
@@ -81,6 +83,7 @@ export class SqlTransactionRepository implements TransactionRepository {
         }
 
         let category: Category = {
+            id: result_db['id'],
             title: result_db['category_title'],
             icon: result_db['icon']
         }
@@ -137,7 +140,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                     ${this.table_name}.id, 
                     ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
                     ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
-                    ${this.table_category_name}.title  as category_title, ${this.table_category_name}.icon
+                    ${this.table_category_name}.title as category_title, ${this.table_category_name}.icon
                 FROM 
                     ${this.table_name} 
                 JOIN ${this.table_account_name}
@@ -145,7 +148,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                 JOIN ${this.table_record_name}
                     ON ${this.table_record_name}.id = ${this.table_name}.id_record
                 JOIN ${this.table_category_name}
-                    ON ${this.table_category_name}.title = ${this.table_name}.id_category
+                    ON ${this.table_category_name}.id = ${this.table_name}.id_category
                 WHERE ${this.table_name}.id = ?`,
                 id
             );
@@ -267,7 +270,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                 filter_id_cat.push(`'${category}'`);
             }
 
-            let where_id_catogry = `category_title in (${filter_id_cat})`;
+            let where_id_catogry = `${this.table_category_name}.id in (${filter_id_cat})`;
 
             let filter_id_tag: string[] = [];
             for (let tag of filter_by.tags) {
@@ -275,7 +278,7 @@ export class SqlTransactionRepository implements TransactionRepository {
             }
 
             let result_filter_by_tag = await this.db.all(`
-                SELECT id_transaction
+                SELECT id_transaction, id_tag
                 FROM 
                     ${this.table_name}_tags
                 JOIN ${this.table_tag_name}
@@ -287,8 +290,9 @@ export class SqlTransactionRepository implements TransactionRepository {
 
             let filter_id_transaction_tag: string[] = [];
             for(let result of result_filter_by_tag) {
-                filter_id_transaction_tag.push(result['id_transaction']);
+                filter_id_transaction_tag.push(`"${result['id_transaction']}"` );
             }
+            
             let where_id_transaction_tag = `${this.table_name}.id in (${filter_id_transaction_tag})`;
 
             let where = '';
@@ -311,15 +315,16 @@ export class SqlTransactionRepository implements TransactionRepository {
             }
 
             if (value_where.length > 0) {
-                where = 'WHERE ' + value_where.toString().replaceAll(',', ' AND ');
+                where = 'WHERE ' + value_where.join(' AND ');
             }
+
 
             let results = await this.db.all(`
                 SELECT 
                     ${this.table_name}.id, 
                     ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
                     ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
-                    ${this.table_category_name}.title  as category_title, ${this.table_category_name}.icon
+                    ${this.table_category_name}.title as category_title, ${this.table_category_name}.icon
                 FROM 
                     ${this.table_name} 
                 JOIN ${this.table_account_name}
@@ -327,8 +332,10 @@ export class SqlTransactionRepository implements TransactionRepository {
                 JOIN ${this.table_record_name}
                     ON ${this.table_record_name}.id = ${this.table_name}.id_record
                 JOIN ${this.table_category_name}
-                    ON ${this.table_category_name}.title = ${this.table_name}.id_category
+                    ON ${this.table_category_name}.id = ${this.table_name}.id_category
                 ${where}
+                ORDER BY 
+                    ${this.table_record_name}.date ${sort_by!.asc ? 'ASC':'DESC'}
                 LIMIT ${size} OFFSET ${index_start_element_in_page}
                 `
             );
@@ -395,7 +402,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                 filter_id_cat.push(`'${category}'`);
             }
 
-            let where_id_catogry = `category_title in (${filter_id_cat})`;
+            let where_id_catogry = `${this.table_category_name}.id in (${filter_id_cat})`;
 
             let filter_id_tag: string[] = [];
             for (let tag of filter_by.tags) {
@@ -403,7 +410,7 @@ export class SqlTransactionRepository implements TransactionRepository {
             }
 
             let result_filter_by_tag = await this.db.all(`
-                SELECT id_transaction
+                SELECT id_transaction, id_tag
                 FROM 
                     ${this.table_name}_tags
                 JOIN ${this.table_tag_name}
@@ -415,7 +422,7 @@ export class SqlTransactionRepository implements TransactionRepository {
 
             let filter_id_transaction_tag: string[] = [];
             for(let result of result_filter_by_tag) {
-                filter_id_transaction_tag.push(result['id_transaction']);
+                filter_id_transaction_tag.push(`"${result['id_tag']}"`);
             }
             let where_id_transaction_tag = `${this.table_name}.id in (${filter_id_transaction_tag})`;
 
@@ -448,84 +455,124 @@ export class SqlTransactionRepository implements TransactionRepository {
 
             if (filter_by.type === null || filter_by.type === undefined) {
                 value_where.unshift("LOWER(type) = 'credit'");
-                where_credit = "WHERE " + value_where.toString().replaceAll(',', ' AND ');
+                where_credit = "WHERE " + value_where.join(' AND ');
                 value_where[0] = "LOWER(type) = 'debit' "
-                where_debit = "WHERE "  + value_where.toString().replaceAll(',', ' AND ');
+                where_debit = "WHERE "  + value_where.join(' AND ');
             } else {
                 if (filter_by.type === TransactionType.Credit) {
                     value_where.unshift("LOWER(type) = 'credit'");
-                    where_credit = "WHERE " + value_where.toString().replaceAll(',', ' AND ');
+                    where_credit = "WHERE " + value_where.join(' AND ');
                 }
 
                 if (filter_by.type === TransactionType.Debit) {
                     value_where.unshift("LOWER(type) = 'debit'");
-                    where_debit = "WHERE "  + value_where.toString().replaceAll(',', ' AND ');  
+                    where_debit = "WHERE "  + value_where.join(' AND ');  
                 }
             }
 
+            // TODO: Refactor transfert in compute balance
 
-            let results_credit = await this.db.get(`
-                SELECT 
-                    ${this.table_name}.id, 
-                    ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
-                    ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
-                    ${this.table_category_name}.title  as category_title, ${this.table_category_name}.icon,
-                    SUM(${this.table_record_name}.price) as total_price 
-                FROM 
-                    ${this.table_name} 
-                JOIN ${this.table_account_name}
-                    ON ${this.table_account_name}.id = ${this.table_name}.id_account
-                JOIN ${this.table_record_name}
-                    ON ${this.table_record_name}.id = ${this.table_name}.id_record
-                JOIN ${this.table_category_name}
-                    ON ${this.table_category_name}.title = ${this.table_name}.id_category
-                ${where_credit}
-                `
-            );
+            let results_credit:any = null;
+            let result_total_credit_transfert:any = null;
 
-            let credit = results_credit['total_price'];
 
-            let results_debit = await this.db.get(`
-                SELECT 
-                    ${this.table_name}.id, 
-                    ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
-                    ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
-                    ${this.table_category_name}.title  as category_title, ${this.table_category_name}.icon,
-                    SUM(${this.table_record_name}.price) as total_price 
-                FROM 
-                    ${this.table_name} 
-                JOIN ${this.table_account_name}
-                    ON ${this.table_account_name}.id = ${this.table_name}.id_account
-                JOIN ${this.table_record_name}
-                    ON ${this.table_record_name}.id = ${this.table_name}.id_record
-                JOIN ${this.table_category_name}
-                    ON ${this.table_category_name}.title = ${this.table_name}.id_category
-                ${where_debit}
-                `
-            );
-
-            let debit = results_debit['total_price'];
-
-            let balance_account = debit - credit;
-
-            if (!is_start_date_empty) {
-                let result_date = await this.db.get(`
+            if (!is_empty(where_credit)) {
+                if (where_id_catogry.includes(TRANSFERT_CATEGORY_ID) || filter_id_cat.length === 0) { 
+                    result_total_credit_transfert = await this.db.get(`
+                        SELECT 
+                            ${this.table_name}.id, 
+                            ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                            ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
+                            ${this.table_category_name}.title as category_title, ${this.table_category_name}.icon,
+                            SUM(${this.table_record_name}.price) as total_price 
+                        FROM 
+                            ${this.table_name} 
+                        JOIN ${this.table_account_name}
+                            ON ${this.table_account_name}.id = ${this.table_name}.id_account
+                        JOIN ${this.table_record_name}
+                            ON ${this.table_record_name}.id = ${this.table_name}.id_record
+                        JOIN ${this.table_category_name}
+                            ON ${this.table_category_name}.id = ${this.table_name}.id_category
+                        WHERE LOWER(type) = 'credit' AND ${this.table_category_name}.id = '${TRANSFERT_CATEGORY_ID}'
+                    `)
+        
+                }
+            
+                results_credit = await this.db.get(`
                     SELECT 
-                        Max(${this.table_record_name}.date) as max_date
+                        ${this.table_name}.id, 
+                        ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                        ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
+                        ${this.table_category_name}.title as category_title, ${this.table_category_name}.icon,
+                        SUM(${this.table_record_name}.price) as total_price 
                     FROM 
                         ${this.table_name} 
+                    JOIN ${this.table_account_name}
+                        ON ${this.table_account_name}.id = ${this.table_name}.id_account
                     JOIN ${this.table_record_name}
                         ON ${this.table_record_name}.id = ${this.table_name}.id_record
+                    JOIN ${this.table_category_name}
+                        ON ${this.table_category_name}.id = ${this.table_name}.id_category 
+                    ${where_credit}
                     `
                 );
-
-                let [year, month, day] = result_date['max_date'].split('-');
-                let max_date = new DateParser(parseInt(year), parseInt(month), parseInt(day))
-                
-                if (filter_by.start_date! > max_date){
-                    balance_account = 0;
-                }
             }
+
+            let transfert_credit =  result_total_credit_transfert !== null ? result_total_credit_transfert['total_price'] : 0;
+            let credit =  results_credit !== null ? results_credit['total_price'] : 0;
+
+            let results_debit:any = null;
+            let result_total_debit_transfert:any = null;
+
+            if (!is_empty(where_debit)) { 
+                if (where_id_catogry.includes(TRANSFERT_CATEGORY_ID) || filter_id_cat.length === 0) {
+                    result_total_debit_transfert = await this.db.get(`
+                        SELECT 
+                            ${this.table_name}.id, 
+                            ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                            ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
+                            ${this.table_category_name}.title  as category_title, ${this.table_category_name}.icon,
+                            SUM(${this.table_record_name}.price) as total_price 
+                        FROM 
+                            ${this.table_name} 
+                        JOIN ${this.table_account_name}
+                            ON ${this.table_account_name}.id = ${this.table_name}.id_account
+                        JOIN ${this.table_record_name}
+                            ON ${this.table_record_name}.id = ${this.table_name}.id_record
+                        JOIN ${this.table_category_name}
+                            ON ${this.table_category_name}.id = ${this.table_name}.id_category
+                        WHERE LOWER(type) = 'debit' AND ${this.table_category_name}.id = '${TRANSFERT_CATEGORY_ID}'
+                    `)
+                }
+                
+                
+                results_debit = await this.db.get(`
+                    SELECT 
+                        ${this.table_name}.id, 
+                        ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                        ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
+                        ${this.table_category_name}.title  as category_title, ${this.table_category_name}.icon,
+                        SUM(${this.table_record_name}.price) as total_price 
+                    FROM 
+                        ${this.table_name} 
+                    JOIN ${this.table_account_name}
+                        ON ${this.table_account_name}.id = ${this.table_name}.id_account
+                    JOIN ${this.table_record_name}
+                        ON ${this.table_record_name}.id = ${this.table_name}.id_record
+                    JOIN ${this.table_category_name}
+                        ON ${this.table_category_name}.id = ${this.table_name}.id_category
+                    ${where_debit}
+                    `
+                );
+            }
+
+            let transfert_debit =  result_total_debit_transfert !== null ? result_total_debit_transfert['total_price'] : 0;
+            let debit = results_debit !== null ? results_debit['total_price'] : 0;
+
+            credit = credit > 0 ? credit - transfert_credit : 0;
+            debit = debit > 0 ? debit - transfert_debit : 0;
+ 
+            let balance_account = credit - debit;
 
             resolve(balance_account);
         });

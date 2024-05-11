@@ -28,6 +28,7 @@ export class GetCategoryUseCase implements IGetCategoryUseCase {
             if (category == null) {
                 throw new NotFoundError('Category no found');
             }
+            category.title = reverseFormatted(category.title);
             
             this.presenter.success(category);
         } catch(err) {

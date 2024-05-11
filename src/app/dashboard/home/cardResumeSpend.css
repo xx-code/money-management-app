@@ -38,6 +38,13 @@
     margin: auto;
 }
 
+.card-resume-home .button-add-account {
+    text-decoration: underline;
+    color: #6755d7;
+    cursor: pointer;
+    font-size: small;
+    text-align: center;
+}
 
 .card-resume-spend .card-resume-spend-content .card-resume-spend-info-percent .card-resume-spend-percent {
     /*padding: 1em 0em 1em 1em;*/

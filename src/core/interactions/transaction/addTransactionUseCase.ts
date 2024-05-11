@@ -82,7 +82,7 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
                 } 
             }
 
-            for(let i = 0; i < tags.length; i++) {
+            for (let i = 0; i < tags.length; i++) {
                 if (await this.tag_repository.get(tags[i]) == null) {
                     let is_saved = await this.tag_repository.save({title: tags[i]});
 
@@ -116,7 +116,7 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
             await this.transaction_repository.save({
                 id: new_id,
                 account_ref: request.account_ref,
-                category_ref: formatted(request.category_ref),
+                category_ref: request.category_ref,
                 tag_ref: tags,
                 record_ref: record_id
             });

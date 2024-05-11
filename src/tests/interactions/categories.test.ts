@@ -5,9 +5,20 @@ import { GetCategoryUseCase, IGetCategoryUseCaseResponse } from "../../core/inte
 import { NotFoundError } from "../../core/errors/notFoundError";
 import { ValidationError } from "../../core/errors/validationError";
 import { CategoryRepository, dbCategory } from "../../core/interactions/repositories/categoryRepository";
+import { CryptoService } from "@/core/adapter/libs";
+
+class MockCrypto implements CryptoService {
+    generate_uuid_to_string(): string {
+        return 'new id';
+    }
+}
 
 describe('Add category', () => {
+    let crypto = new MockCrypto();
+    
     let repo: CategoryRepository = {
+        get_by_title: jest.fn(),
+        update: jest.fn(),
         save: jest.fn().mockReturnValue('new id'),
         get:jest.fn().mockRejectedValue(Promise.resolve(null)),
         get_all:jest.fn(),
@@ -19,7 +30,7 @@ describe('Add category', () => {
         fail: jest.fn()
     }
 
-    let use_case = new CreationCategoryUseCase(repo, presenter);
+    let use_case = new CreationCategoryUseCase(repo, presenter, crypto);
 
     test('test error title', () => {
         let request =  {
@@ -62,8 +73,10 @@ describe('Add category', () => {
 });
 
 describe('Get Category', () => {
-    let val: dbCategory = {title: 'df', icon: 'df'};
+    let val: dbCategory = {id: 'ff', title: 'df', icon: 'df'};
     let repo: CategoryRepository = {
+        get_by_title: jest.fn(),
+        update: jest.fn(),
         save: jest.fn().mockReturnValue('new id'),
         get:jest.fn().mockReturnValue(Promise.resolve(null)),
         get_all:jest.fn().mockReturnValue(Promise.resolve(["", ""])),
@@ -102,6 +115,8 @@ describe('Get Category', () => {
 
 describe('Delete Category', () => {
     let repo: CategoryRepository = {
+        get_by_title: jest.fn(),
+        update: jest.fn(),
         save: jest.fn().mockReturnValue('new id'),
         get:jest.fn().mockReturnValue(Promise.resolve(null)),
         get_all:jest.fn(),

@@ -3,11 +3,27 @@
     margin-top: 2em;
 }
 
+
 .card-resume-home .card-resume-content {
     margin-top: 1.5em;
     border-radius: 20px;
     background: #313343;
     padding: 1.5em ;
+}
+
+
+.card-resume-home .card-resume-content-hodler {
+    margin-top: 1.5em;
+    height: 250px;
+    border-radius: 20px;
+    background-color: #F8F8F8;
+    cursor: pointer;
+    border: 1px dashed black;
+    padding: 2.5em;
+}
+
+.card-resume-home .card-resume-content-hodler:hover {
+    opacity: 0.8;
 }
 
 .card-resume-home .card-resume-balance {
@@ -28,8 +44,20 @@
     font-size: small;
 }
 
-.card-resume-home .card-resume-button {
+.card-resume-home .card-resume-btn-icon {
     display: flex;
+    align-items: center;
     justify-content: center;
-    margin-top: 1.4em;
+    margin: 0.2em 0.5em;
+    width: 45px;
+    height: 45px;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 20px;
+    color: #313343;
+    transition: 250ms ease-out;
+}
+
+.card-resume-home .card-resume-btn-icon:hover {
+    border-radius: 0.2rem;
 }

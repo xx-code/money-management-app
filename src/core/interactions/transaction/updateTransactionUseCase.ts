@@ -56,8 +56,8 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
             }
 
             let record = transaction.record;
-            let category_ref = transaction.category.title;
-            let tags = transaction.tags
+            let category_ref = transaction.category.id;
+            let tags: string[] = [];
 
             if (request.description != null) {
                 if (is_empty(request.description)) {
@@ -81,11 +81,9 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
                 record.type = request.type;
             }
 
-            /*let date = null;
             if (request.date != null) {
-                date = new Date(request.date);
-                record.date = date;
-            }*/
+                record.date = request.date;
+            }
 
             if (request.category_ref != null) {
                 // category = formatted(request.category_ref);
@@ -97,7 +95,7 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
                 if (new_category == null) {
                     throw new ValidationError('Category not exist');
                 }
-                category_ref = new_category.title;
+                category_ref = new_category.id;
             }
 
             if (request.tag_ref != null) {
@@ -105,15 +103,13 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
                     if (is_empty(request.tag_ref[i])) {
                         throw new ValidationError('Tag a position ' + i + ' ref field is empty');
                     } 
-                    let tag = await this.tag_repository.get(request.tag_ref[i]);
-
+                    let req_tag = formatted(request.tag_ref[i]);
+                    let tag = await this.tag_repository.get(req_tag);
                     if (tag == null) {
-                        await this.tag_repository.save({ title: formatted(request.tag_ref[i]) });
-                        tags.push(request.tag_ref[i]);
+                        await this.tag_repository.save({ title: req_tag });
+                        tags.push(req_tag);
                     } else {
-                        if (tags.includes(tag)) {
-                            tags.push(tag)
-                        }
+                        tags.push(req_tag);
                     }
 
                 }

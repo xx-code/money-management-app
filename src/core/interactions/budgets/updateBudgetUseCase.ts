@@ -97,16 +97,16 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                         throw new ValidationError('This category not exist');
                     }
 
-                    if (!budget.categories.map(cat => cat.title).includes(category.title!)) {
+                    if (!budget.categories.map(cat => cat.id).includes(category.id!)) {
                         budget.categories.push(category!);
                     } else {
-                        let index_to_delete = budget.categories.map(cat => cat.title).indexOf(category.title);
+                        let index_to_delete = budget.categories.map(cat => cat.id).indexOf(category.id);
                         budget.categories.splice(index_to_delete, 1);
                     }
                 }
             }
 
-            let categories_ref = budget.categories.map(cat => cat.title);
+            let categories_ref = budget.categories.map(cat => cat.id);
             
             let budget_updated = await this.budget_repository.update({
                 id: budget.id,
@@ -123,7 +123,7 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
             let end_date = current_date_budget.end_date;
 
             let balance = await this.transaction_repository.get_balance({
-                categories: budget.categories.map(cat => cat.title),
+                categories: budget.categories.map(cat => cat.id),
                 accounts: [],
                 tags: [],
                 type: null,
