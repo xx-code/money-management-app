@@ -254,10 +254,11 @@ export default function Budget() {
                 handleCloseCurrentModal('category');
                 get_all_Budgets();
             } else {
+                // @ts-ignore
                 setErrorValidationBudgetCategory(errors)
             }
 
-        } catch(error) {
+        } catch(error: any) {
             console.log(error);
         }
     }
@@ -331,6 +332,7 @@ export default function Budget() {
                 get_all_Budgets();
                 get_all_tags();
             } else {
+                // @ts-ignore
                 setErrorValidationBudgetTag(errors)
             }
 
@@ -365,7 +367,7 @@ export default function Budget() {
                     <div className="flex flex-wrap" style={{marginTop: "-12px"}}>
                         {
                             categoriesSelected.map((category: Category, key: any) => 
-                                <Tag key={key} title={category.title}  onDelete={() => removeCategoriesSelected(category.title)}/>
+                                <Tag key={key} title={category.title} onDelete={() => removeCategoriesSelected(category.title)} color={undefined}/>
                             )
                         }
                     </div>
@@ -394,7 +396,7 @@ export default function Budget() {
                     <div className="flex flex-wrap" style={{marginTop: "-12px"}}>
                         {
                             tagsSelected.map((tag: string, key: any) => 
-                                <Tag key={key} title={tag}  onDelete={() => removeTagSelected(tag)}/>
+                                <Tag key={key} title={tag} onDelete={() => removeTagSelected(tag)} color={undefined}/>
                             )
                         }
                     </div>

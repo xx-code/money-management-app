@@ -91,6 +91,7 @@ export function SectionCategory() {
                 closeModalCategory();
                 get_all_category(); 
             } else {
+                // @ts-ignore
                 setErrorInput(errors);
             }
         } catch (error: any) {
@@ -140,7 +141,7 @@ export function SectionCategory() {
                         onDelete={category.icon === 'transfert' ? undefined : () => delete_category(category.id)}/>)
                 }
             </div>
-            <Modal isOpen={openModalCategory}>
+            <Modal isOpen={openModalCategory} onClose={()=>{}}>
                 <div className="modal-add-new-category ">
                     <h3>{isUpdate ? 'Modifier categorie' : 'Ajouter nouveau categorie'}</h3>
                     <TextInput title="Titre de la categorie" type="text" value={input.title} onChange={handleInput} name={"title"} options={[]} onClickOption={undefined} error={errorInput.title} overOnBlur={undefined} />

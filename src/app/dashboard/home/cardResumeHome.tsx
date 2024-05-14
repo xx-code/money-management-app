@@ -9,6 +9,7 @@ import { AccountDisplay } from "@/core/entities/account";
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// @ts-ignore
 library.add(fas)
 
 

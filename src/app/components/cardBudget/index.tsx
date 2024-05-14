@@ -5,7 +5,9 @@ import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import styled, { keyframes } from "styled-components";
-library.add(fas)
+
+// @ts-ignore
+library.add(fas);
 
 
 export default function CardBudget({budget, onUpdate, onDelete} : {budget: BudgetWithCategoryDisplay | BudgetWithTagDisplay, onUpdate: any, onDelete: any}) {

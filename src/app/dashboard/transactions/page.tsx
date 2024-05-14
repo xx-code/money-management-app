@@ -16,6 +16,7 @@ import axios from "axios";
 import DateParser from "@/core/entities/date_parser";
 import { Category } from "@/core/entities/category";
 import { search_in_array } from "@/core/entities/libs";
+import { AnyAaaaRecord } from "dns";
 
 export default function Transactions() {
     const [pagination, setPagination] = useState({current: 1, max_pages: 1});
@@ -113,7 +114,7 @@ export default function Transactions() {
             let categories: Category[] = response_categories.data.categories;
             setCategories(categories);
             setSearchingCategories(categories);
-        } catch(error) {
+        } catch(error:any) {
             console.log(error);
             alert(error.response.data);
         }
@@ -125,7 +126,7 @@ export default function Transactions() {
             let tags: string[] = response_categories.data.tags;
             setTags(tags);
             setSearchingTags(tags);
-        } catch(error) {
+        } catch(error: any) {
             console.log(error);
             alert(error.response.data);
         }
@@ -178,7 +179,7 @@ export default function Transactions() {
         try { 
             let balance = await get_total_balance('Debit');
             setTotalSpend(balance);
-        } catch (error) {
+        } catch (error: any) {
             console.log(error);
             alert(error.response.data);
         }
@@ -188,7 +189,7 @@ export default function Transactions() {
         try {
             let balance = await get_total_balance('Credit');
             setTotalGains(balance);
-        } catch (error) {
+        } catch (error: any) {
             console.log(error);
             alert(error.response.data);
         }
@@ -272,7 +273,7 @@ export default function Transactions() {
                                 <TextInput type="text" title={"Categorie"} value={filter.category} name="category" onChange={handleFilter} options={searchingCategories.map(cat => cat.title)} onClickOption={handleSelect} error={null} overOnBlur={undefined} />
                                 <div className="flex flex-wrap">
                                     {
-                                        selectedCategories.map((category, index) => <Tag key={index} title={category.title} onDelete={() => removeSelected('category', category.title)}/> )
+                                        selectedCategories.map((category, index) => <Tag key={index} title={category.title} onDelete={() => removeSelected('category', category.title)} color={undefined}/> )
                                     }
                                 </div>
                             </div>
@@ -280,7 +281,7 @@ export default function Transactions() {
                                 <TextInput type="text" title={"Tag"} value={filter.tag} name={"tag"} onChange={handleFilter} options={searchingTags} onClickOption={handleSelect} error={null} overOnBlur={undefined} />
                                 <div className="flex flex-wrap">
                                     {
-                                        selectedTags.map((tag, index) => <Tag key={index} title={tag} onDelete={() => removeSelected('tag', tag)}/> )
+                                        selectedTags.map((tag, index) => <Tag key={index} title={tag} onDelete={() => removeSelected('tag', tag)} color={undefined}/> )
                                     }
                                 </div>
                             </div>

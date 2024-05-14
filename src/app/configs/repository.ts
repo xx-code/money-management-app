@@ -5,7 +5,7 @@ import { SqlRecordRepository } from "@/infrastructure/sql/sqlRecordRepository";
 import { SqlTransactionRepository } from "@/infrastructure/sql/sqlTransactionRepository";
 import { SqlBudgetCategoryRepository, SqlBudgetTagRepository } from "@/infrastructure/sql/sqlBudgetRepository";
 
-const DB_FILENAME = 'testdb.db'
+const DB_FILENAME = process.env.NODE_ENV === 'production' ? 'database.db' : 'testdb.db'; 
 const account_repo = new SqlAccountRepository('accounts');
 const category_repo = new SqlCategoryRepository('categories');
 const tag_repo = new SqlTagRepository('tags');

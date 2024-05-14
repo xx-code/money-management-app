@@ -4,6 +4,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Tag from '../tag';
+// @ts-ignore
 library.add(fas);
 
 
@@ -18,6 +19,7 @@ export default function CardTransaction({transaction, onEdit, onDelete} : {trans
                                 transaction.category.title === 'Transfert' ?
                                 <FontAwesomeIcon className="icon-in" icon={["fas", "right-left"]} />
                                 :
+                                // @ts-ignore
                                 <FontAwesomeIcon className="icon-in" icon={transaction.category.icon} />
                             }
                         </div>
@@ -29,7 +31,7 @@ export default function CardTransaction({transaction, onEdit, onDelete} : {trans
                     <div className='ml-1'>
                        <div className='flex flex-wrap'>
                             {
-                                transaction.tags.map((tag, index) => <Tag key={index} title={tag} onDelete={undefined}/>) 
+                                transaction.tags.map((tag, index) => <Tag key={index} title={tag} onDelete={undefined} color={undefined}/>) 
                             }
                         </div>   
                     </div>

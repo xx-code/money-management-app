@@ -166,6 +166,7 @@ export function ModalAddNewTransaction({isOpen, transaction, onClose, onAdd, acc
                 onAdd();
                 closeModalTransaction();
             } else {
+                // @ts-ignore
                 setErrorInputTransaction(errors);
             }
         } catch(err:any) {
@@ -195,7 +196,7 @@ export function ModalAddNewTransaction({isOpen, transaction, onClose, onAdd, acc
                         <TextInput type={'text'} title={'tag'} value={inputTransaction.tag} name={'tag'} onChange={handleInputTransaction} options={searchingTags} onClickOption={handleSelectInTransaction} error={errorInputTransaction.tag} overOnBlur={() => handleSelectInTransaction('tag', inputTransaction.tag)} />
                         <div className='flex flex-wrap' style={{marginBottom: '1em'}}>
                             {
-                                selectedTagList.map((tag, index) => <Tag key={index} title={tag} onDelete={() => removeTagSelected(tag)} />)
+                                selectedTagList.map((tag, index) => <Tag key={index} title={tag} onDelete={() => removeTagSelected(tag)} color={undefined} />)
                             }
                         </div>
                     </div>
