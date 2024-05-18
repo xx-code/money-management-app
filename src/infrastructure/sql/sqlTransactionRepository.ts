@@ -477,7 +477,7 @@ export class SqlTransactionRepository implements TransactionRepository {
 
 
             if (!is_empty(where_credit)) {
-                if (where_id_catogry.includes(TRANSFERT_CATEGORY_ID) || filter_id_cat.length === 0) { 
+                /*if (where_id_catogry.includes(TRANSFERT_CATEGORY_ID) || filter_id_cat.length === 0) { 
                     result_total_credit_transfert = await this.db.get(`
                         SELECT 
                             ${this.table_name}.id, 
@@ -496,7 +496,8 @@ export class SqlTransactionRepository implements TransactionRepository {
                         WHERE LOWER(type) = 'credit' AND ${this.table_category_name}.id = '${TRANSFERT_CATEGORY_ID}'
                     `)
         
-                }
+                }*/
+
             
                 results_credit = await this.db.get(`
                     SELECT 
@@ -518,14 +519,14 @@ export class SqlTransactionRepository implements TransactionRepository {
                 );
             }
 
-            let transfert_credit =  result_total_credit_transfert !== null ? result_total_credit_transfert['total_price'] : 0;
+            // let transfert_credit =  result_total_credit_transfert !== null ? result_total_credit_transfert['total_price'] : 0;
             let credit =  results_credit !== null ? results_credit['total_price'] : 0;
 
             let results_debit:any = null;
             let result_total_debit_transfert:any = null;
 
             if (!is_empty(where_debit)) { 
-                if (where_id_catogry.includes(TRANSFERT_CATEGORY_ID) || filter_id_cat.length === 0) {
+                /*if (where_id_catogry.includes(TRANSFERT_CATEGORY_ID) || filter_id_cat.length === 0) {
                     result_total_debit_transfert = await this.db.get(`
                         SELECT 
                             ${this.table_name}.id, 
@@ -543,7 +544,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                             ON ${this.table_category_name}.id = ${this.table_name}.id_category
                         WHERE LOWER(type) = 'debit' AND ${this.table_category_name}.id = '${TRANSFERT_CATEGORY_ID}'
                     `)
-                }
+                }*/
                 
                 
                 results_debit = await this.db.get(`
@@ -566,11 +567,11 @@ export class SqlTransactionRepository implements TransactionRepository {
                 );
             }
 
-            let transfert_debit =  result_total_debit_transfert !== null ? result_total_debit_transfert['total_price'] : 0;
+            //let transfert_debit =  result_total_debit_transfert !== null ? result_total_debit_transfert['total_price'] : 0;
             let debit = results_debit !== null ? results_debit['total_price'] : 0;
 
-            credit = credit > 0 ? credit - transfert_credit : 0;
-            debit = debit > 0 ? debit - transfert_debit : 0;
+            credit = credit > 0 ? credit /*- transfert_credit*/ : 0;
+            debit = debit > 0 ? debit /*- transfert_debit*/ : 0;
  
             let balance_account = credit - debit;
 

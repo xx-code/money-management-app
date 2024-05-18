@@ -1,7 +1,6 @@
 import Button from "@/app/components/button";
 
 export default function TransactionPagination({current_page, max_page, precedent, next} : {current_page: number, max_page: number, precedent: any, next: any}) {
-
     return (
         <div className="flex justify-between">
             {
@@ -18,7 +17,7 @@ export default function TransactionPagination({current_page, max_page, precedent
                         :
                         <>
                             {
-                                current_page === max_page ?
+                                current_page == max_page ?
                                 <>
                                     <Button backgroundColor="#313343" colorText="white" title="Precedent" onClick={precedent} />
                                 </>

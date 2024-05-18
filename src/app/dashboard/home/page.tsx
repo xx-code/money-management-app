@@ -65,10 +65,16 @@ export default function Home() {
 
       let size = Math.floor(height_win_need / 100);
 
+      let account_filter:any = []
+
+      /*if (account !== null && account.id !== "all") {
+        account_filter = [account.id]
+      }*/
+ 
       let response = await axios.post('/api/pagination_transactions', {
         page: current_page,
         size: size,
-        account_filter: [],
+        account_filter: account_filter,
         category_filter: [],
         tag_filter: []
       });
@@ -101,10 +107,10 @@ export default function Home() {
         let past_month_date = determined_start_end_date(past, "Month", 1);
   
         const response_past = await axios.post('/api/transaction/get_balance_by', { type: type_transaction, date_start: past_month_date.start_date.toString(), date_end: past_month_date.end_date.toString() });
-        const balance_last_month = response_past.data.balance;
+        const balance_last_month = Math.round(response_past.data.balance * 100)/100;
   
         const response_current = await axios.post('/api/transaction/get_balance_by', { type: type_transaction, date_start: current_month_date.start_date.toString(), date_end: current_month_date.end_date.toString() });
-        const balance_current_month = response_current.data.balance;
+        const balance_current_month = Math.round(response_current.data.balance * 100)/100;
   
         resolve({last_month: balance_last_month, current_month: balance_current_month});
       } catch (error) {
@@ -165,7 +171,6 @@ export default function Home() {
 
   async function delete_transaction(id: string) {
     let isOK = confirm('Voulez vous supprimer cette transaction');
-    
     if (isOK) {
       try {
         await axios.delete(`/api/transaction/${id}`);
@@ -209,7 +214,7 @@ export default function Home() {
               title: "Tous les comptes",
               credit_limit: 0,
               credit_value: 0,
-              balance: balance
+              balance: Math.round(balance * 100)/100
           });
           if (!do_refresh)  {
               setAccount(accounts[0]);

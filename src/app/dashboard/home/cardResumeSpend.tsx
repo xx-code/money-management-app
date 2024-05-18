@@ -14,11 +14,13 @@ export function CardResumeSpend({title, last_month='------', current_month='----
             percent = '--';
         }
 
-        if (Number(last_month) > Number(current_month)) {
+        // refactor
+        if (Number(last_month) < Number(current_month)) {
             color = '#4FDC4C';
-        } else if (Number(last_month) < Number(current_month)) {
+        } else if (Number(last_month) > Number(current_month)) {
             color = '#DC4C4C';
         }
+    
     }
 
     return (

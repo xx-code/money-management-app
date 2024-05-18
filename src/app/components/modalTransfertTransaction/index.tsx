@@ -66,7 +66,7 @@ export default function ModalAddNewAccount ({isOpen, accounts, onClose, onAdd}:
 
             if (do_submit) {
                 let account_from = accounts.find(account => account.title === input.account_from);
-                let account_to = accounts.find(account => account.title === input.account_from);
+                let account_to = accounts.find(account => account.title === input.account_to);
 
                 let new_transaction = {
                     account_id_from: account_from!.id,

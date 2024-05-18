@@ -43,6 +43,7 @@ export function ModalAddNewTransaction({isOpen, transaction, onClose, onAdd, acc
                 description: transaction.record.description, 
                 price: transaction.record.price
             });
+            setSelectedTagList(transaction.tags);
         }
     }
 
