@@ -224,7 +224,7 @@ export default function Transactions() {
     }
 
     async function setup_data() {
-        get_transactions(pagination.current);
+        get_transactions(1);
         get_all_categories();
         get_all_tags();
         get_total_spend();
@@ -284,6 +284,10 @@ export default function Transactions() {
                                         selectedTags.map((tag, index) => <Tag key={index} title={tag} onDelete={() => removeSelected('tag', tag)} color={undefined}/> )
                                     }
                                 </div>
+                            </div>
+                            <div>
+                                <TextInput type={"date"} title={"Date de debut"} value={""} name={"date_start"} onChange={undefined} options={[]} onClickOption={undefined} error={null} overOnBlur={undefined} />
+                                <TextInput type={"date"} title={"Date de fin"} value={""} name={"date_end"} onChange={undefined} options={[]} onClickOption={undefined} error={null} overOnBlur={undefined} />
                             </div>
                         </div>
                     </div>

@@ -23,6 +23,10 @@ export default function CardInfoResume({total_spend, total_earning}: {total_spen
                     <h3>Total gains</h3>
                     <p className='card-earning'>${earning}</p>
                 </div>
+                <div className='card'>
+                    <h3>Total difference</h3>
+                    <p className='card-diff'>${Math.round((Number(earning) + Number(spend)) * 100)/100}</p>
+                </div>
             </div>
         </div>
     )

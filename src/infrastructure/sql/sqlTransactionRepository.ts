@@ -252,10 +252,6 @@ export class SqlTransactionRepository implements TransactionRepository {
     }
     get_paginations(page: number, size: number, sort_by: dbSortBy | null, filter_by: dbFilter): Promise<dbTransactionPaginationResponse> {
         return new Promise(async (resolve, reject) => {
-            let count = await this.db.get(`SELECT COUNT(*) FROM ${this.table_name}`);
-
-            let max_page = Math.ceil(count['COUNT(*)']/size);
-            
             let index_start_element_in_page = (page - 1) * size;
 
             let filter_id_account: string[] = [];
@@ -340,6 +336,20 @@ export class SqlTransactionRepository implements TransactionRepository {
                 `
             );
 
+            let count = await this.db.get(`
+                SELECT 
+                    COUNT(*) 
+                FROM 
+                    ${this.table_name} 
+                JOIN ${this.table_account_name}
+                    ON ${this.table_account_name}.id = ${this.table_name}.id_account
+                JOIN ${this.table_record_name}
+                    ON ${this.table_record_name}.id = ${this.table_name}.id_record
+                JOIN ${this.table_category_name}
+                    ON ${this.table_category_name}.id = ${this.table_name}.id_category
+                ${where}`);
+
+            let max_page = Math.ceil(count['COUNT(*)']/size);
 
             let transactions = [];
 
