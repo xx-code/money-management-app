@@ -16,7 +16,6 @@ import axios from "axios";
 import DateParser from "@/core/entities/date_parser";
 import { Category } from "@/core/entities/category";
 import { search_in_array } from "@/core/entities/libs";
-import { AnyAaaaRecord } from "dns";
 
 export default function Transactions() {
     const [pagination, setPagination] = useState({current: 1, max_pages: 1});
@@ -34,6 +33,9 @@ export default function Transactions() {
     const [searchingTags, setSearchingTags] = useState<string[]>([]); 
     const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+    const [dateStart, setDateStart] = useState('');
+    const [dateEnd, setDateEnd] = useState('');
 
     const [total_spend, setTotalSpend] = useState<number|null>(null);
     const [total_gains, setTotalGains] = useState<number|null>(null); 
@@ -89,6 +91,8 @@ export default function Transactions() {
             category: '',
             tag: ''
         });
+        setDateStart('');
+        setDateEnd('');
         setSelectedTags([]);
         setSelectedCategories([]);
     }
@@ -160,8 +164,8 @@ export default function Transactions() {
                     accounts_id: account!== null && account?.id !== 'all' ? [account?.id] : [],
                     tags_filter: selectedTags,
                     categories_filter: selectedCategories.map(cat => cat.id),
-                    date_start: null,
-                    date_end: null,
+                    date_start: dateStart,
+                    date_end: dateEnd,
                     type: type_transaction
                 }
                 
@@ -170,7 +174,7 @@ export default function Transactions() {
 
                 resolve(balance);
             } catch (error) {
-            reject(error);
+                reject(error);
             }
         })
     };
@@ -182,6 +186,7 @@ export default function Transactions() {
         } catch (error: any) {
             console.log(error);
             alert(error.response.data);
+            cleanFilter();
         }
     }
 
@@ -192,6 +197,7 @@ export default function Transactions() {
         } catch (error: any) {
             console.log(error);
             alert(error.response.data);
+            cleanFilter();
         }
     }
 
@@ -206,8 +212,8 @@ export default function Transactions() {
                 account_filter: account!== null && account?.id !== 'all' ? [account?.id] : [],
                 category_filter: selectedCategories.map(cat => cat.id),
                 tag_filter: selectedTags,
-                date_start: null,
-                date_end: null,
+                date_start: dateStart,
+                date_end: dateEnd,
             }
             let response = await axios.post('/api/pagination_transactions', request_filter);
         
@@ -218,8 +224,10 @@ export default function Transactions() {
                 transactions.push(transaction);
             }
             setTransactions(transactions);
-        } catch(err) {
+        } catch(err: any) {
             console.log(err);
+            alert(err.response.data);
+            cleanFilter();
         }
     }
 
@@ -237,7 +245,7 @@ export default function Transactions() {
 
     useEffect(() => {
         setup_data();
-    }, [account, selectedCategories, selectedTags])
+    }, [account, selectedCategories, selectedTags, dateStart, dateEnd])
 
     return (
         <div className="transactions">
@@ -286,8 +294,8 @@ export default function Transactions() {
                                 </div>
                             </div>
                             <div>
-                                <TextInput type={"date"} title={"Date de debut"} value={""} name={"date_start"} onChange={undefined} options={[]} onClickOption={undefined} error={null} overOnBlur={undefined} />
-                                <TextInput type={"date"} title={"Date de fin"} value={""} name={"date_end"} onChange={undefined} options={[]} onClickOption={undefined} error={null} overOnBlur={undefined} />
+                                <TextInput type={"date"} title={"Date de debut"} value={dateStart} name={"date_start"} onChange={(event: any) => setDateStart(event.target.value)} options={[]} onClickOption={undefined} error={null} overOnBlur={undefined} />
+                                <TextInput type={"date"} title={"Date de fin"} value={dateEnd} name={"date_end"} onChange={(event: any) => setDateEnd(event.target.value)} options={[]} onClickOption={undefined} error={null} overOnBlur={undefined} />
                             </div>
                         </div>
                     </div>

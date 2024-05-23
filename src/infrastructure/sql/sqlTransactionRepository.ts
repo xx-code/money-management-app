@@ -306,6 +306,17 @@ export class SqlTransactionRepository implements TransactionRepository {
                 value_where.push(where_id_catogry);
             }
 
+            const is_start_date_empty = filter_by.start_date === null || filter_by.start_date === undefined;
+            const is_end_date_empty = filter_by.end_date === null || filter_by.end_date === undefined;
+
+            if (!is_start_date_empty) {
+                value_where.push(`date >= '${filter_by.start_date!.toString()}'`)
+            }
+
+            if (!is_end_date_empty) {
+                value_where.push(`date <= '${filter_by.end_date!.toString()}'`)
+            }
+
             if (filter_by.type !== null && filter_by.type !== undefined) {
                 value_where.push(`LOWER(type) = LOWER('${filter_by.type}') `)
             }
