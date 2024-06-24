@@ -47,6 +47,7 @@ export const isBudgetCategory = (input: any) => input.categories !== undefined;
 
 export const isBudgetTag = (input: any) => input.tags !== undefined; 
 
+//Todo: Separeter value
 export function determined_start_end_date(date: Date, period: Period, period_time: number): CurrentDateBudget {
     let start_date = null;
     let end_date = null;
@@ -55,7 +56,7 @@ export function determined_start_end_date(date: Date, period: Period, period_tim
     let today_month = date.getMonth();
     let today_week_day = date.getDay();
 
-    if (period === 'Week') {
+    if (period === 'Year') {
         let year = today_year * period_time
         start_date = new Date(year, 0, 1);
         end_date = new Date(year, 31, 11);
@@ -66,7 +67,7 @@ export function determined_start_end_date(date: Date, period: Period, period_tim
         let last_day_of_month = new Date(today_year, today_month + 1, 0).getDate();
         end_date = new Date(today_year, month, last_day_of_month);
     }
-    else if (period == "Year") {
+    else if (period == "Week") {
         let day = (date.getDate() + (6 * (period_time - 1)))
         let monday_date = day - today_week_day + (today_week_day === 0 ? -6 : 0);
         let sunday_date = day - (6-today_week_day);
