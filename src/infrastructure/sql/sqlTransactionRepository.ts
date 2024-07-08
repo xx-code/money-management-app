@@ -5,7 +5,7 @@ import { Category } from "../../core/entities/category";
 import { Tag } from "../../core/entities/tag";
 import DateParser from "../../core/entities/date_parser";
 import { open_database } from "../../config/sqlLiteConnection";
-import { is_empty } from "@/core/entities/verify_empty_value";
+import { is_empty } from "../../core/entities/verify_empty_value";
 import { TRANSFERT_CATEGORY_ID } from "@/core/interactions/transaction/transfertTransactionUseCase";
 
 export class SqlTransactionRepository implements TransactionRepository {
@@ -76,7 +76,7 @@ export class SqlTransactionRepository implements TransactionRepository {
 
     private create_transaction(id:string, result_db: any, tags: Tag[]): Transaction {
         let account: Account = {
-            id: result_db['account_id'],
+            id: result_db['id_account'],
             title: result_db['account_title'],
             credit_limit: result_db['credit_limit'],
             credit_value: result_db['credit_value'],
@@ -138,7 +138,7 @@ export class SqlTransactionRepository implements TransactionRepository {
             let result = await this.db.get(`
                 SELECT 
                     ${this.table_name}.id, 
-                    ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                    ${this.table_account_name}.id as id_account,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
                     ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
                     ${this.table_category_name}.title as category_title, ${this.table_category_name}.icon
                 FROM 
@@ -169,7 +169,7 @@ export class SqlTransactionRepository implements TransactionRepository {
             let results = await this.db.all(`
                 SELECT 
                     ${this.table_name}.id, 
-                    ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                    ${this.table_account_name}.id as id_account,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
                     ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
                     ${this.table_category_name}.title  as category_title, ${this.table_category_name}.icon
                 FROM 
@@ -199,7 +199,6 @@ export class SqlTransactionRepository implements TransactionRepository {
             resolve(transactions);
         });
 
-        
     }
     get_transactions_by_tags(tags_ref: string[], start_date: DateParser, end_date: DateParser): Promise<Transaction[]> {
         return new Promise(async (resolve, reject) => {
@@ -222,7 +221,7 @@ export class SqlTransactionRepository implements TransactionRepository {
             let results = await this.db.all(`
                 SELECT 
                     ${this.table_name}.id, 
-                    ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                    ${this.table_account_name}.id as id_account,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
                     ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
                     ${this.table_category_name}.title  as category_title, ${this.table_category_name}.icon
                 FROM 
@@ -259,7 +258,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                 filter_id_account.push(`'${account}'`);
             }
 
-            let where_id_account = `account_id in (${filter_id_account})`;
+            let where_id_account = `id_account in (${filter_id_account})`;
 
             let filter_id_cat: string[] = [];
             for (let category of filter_by.categories) {
@@ -329,7 +328,7 @@ export class SqlTransactionRepository implements TransactionRepository {
             let results = await this.db.all(`
                 SELECT 
                     ${this.table_name}.id, 
-                    ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                    ${this.table_account_name}.id as id_account,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
                     ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
                     ${this.table_category_name}.title as category_title, ${this.table_category_name}.icon
                 FROM 
@@ -342,7 +341,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                     ON ${this.table_category_name}.id = ${this.table_name}.id_category
                 ${where}
                 ORDER BY 
-                    ${this.table_record_name}.date ${sort_by!.asc ? 'ASC':'DESC'}
+                    ${this.table_record_name}.date ${sort_by !== null ? (sort_by!.asc ? 'ASC':'DESC') : 'ASC'}
                 LIMIT ${size} OFFSET ${index_start_element_in_page}
                 `
             );
@@ -416,7 +415,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                 filter_id_account.push(`'${account}'`);
             }
 
-            let where_id_account = `account_id in (${filter_id_account})`;
+            let where_id_account = `id_account in (${filter_id_account})`;
 
             let filter_id_cat: string[] = [];
             for (let category of filter_by.categories) {
@@ -523,7 +522,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                 results_credit = await this.db.get(`
                     SELECT 
                         ${this.table_name}.id, 
-                        ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                        ${this.table_account_name}.id as id_account,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
                         ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
                         ${this.table_category_name}.title as category_title, ${this.table_category_name}.icon,
                         SUM(${this.table_record_name}.price) as total_price 
@@ -571,7 +570,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                 results_debit = await this.db.get(`
                     SELECT 
                         ${this.table_name}.id, 
-                        ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                        ${this.table_account_name}.id as id_account,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
                         ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
                         ${this.table_category_name}.title  as category_title, ${this.table_category_name}.icon,
                         SUM(${this.table_record_name}.price) as total_price 

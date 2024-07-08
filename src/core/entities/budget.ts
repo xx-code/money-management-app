@@ -4,7 +4,7 @@ import DateParser from "./date_parser";
 import { Tag } from "./tag";
 import { Transaction } from "./transaction";
 
-export type Period = 'Week' | 'Month' | 'Year';
+export type Period =  'Day' | 'Week' | 'Month' | 'Year' ;
 
 type Budget = {
     id: string;
@@ -67,13 +67,14 @@ export function determined_start_end_date(date: Date, period: Period, period_tim
         let last_day_of_month = new Date(today_year, today_month + 1, 0).getDate();
         end_date = new Date(today_year, month, last_day_of_month);
     }
-    else if (period == "Week") {
+    else if (period === "Week") {
         let day = (date.getDate() + (6 * (period_time - 1)))
         let monday_date = day - today_week_day + (today_week_day === 0 ? -6 : 0);
         let sunday_date = day - (6-today_week_day);
         start_date = new Date(today_year, today_month, monday_date);
         end_date = new Date(today_year, today_month, sunday_date);
-    } else {
+    } 
+    else {
         throw new ValidationError('There a error in field period');
     }
 

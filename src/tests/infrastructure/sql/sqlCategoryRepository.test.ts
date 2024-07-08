@@ -8,6 +8,15 @@ describe('Test Category sql repository', () => {
     let db: any | null = null;
     let table_category_name = 'categories';
 
+    beforeEach(async () => {
+        db = await open({
+            filename: 'test.db',
+            driver: sqlite3.Database
+        })
+
+        await db.exec(`DELETE FROM ${table_category_name}`)
+    })
+
     afterEach(async () => {
         db = await open({
             filename: 'test.db',
@@ -44,7 +53,7 @@ describe('Test Category sql repository', () => {
 
         await category_repo.save(new_category);
 
-        let category = await category_repo.get('cat');
+        let category = await category_repo.get('1');
 
         expect(category).toStrictEqual(new_category);
     });
@@ -80,7 +89,7 @@ describe('Test Category sql repository', () => {
 
         await category_repo.save(new_category);
 
-        let is_deleted = await category_repo.delete('cat');
+        let is_deleted = await category_repo.delete('1');
 
         expect(is_deleted).toBe(true);
 

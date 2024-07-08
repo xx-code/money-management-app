@@ -53,7 +53,6 @@ export class SqlTagRepository implements TagRepository {
                 SELECT title FROM ${this.table_tag_name} WHERE title = ?`,
                 title
             );
-
             if (result != undefined) {
                 resolve(result['title']);
             } else {

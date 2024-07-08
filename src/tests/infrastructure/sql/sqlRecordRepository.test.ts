@@ -9,7 +9,6 @@ describe('Test Record sql repository', () => {
     let db: any | null = null;
     let table_name = 'records';
 
-
     afterEach(async () => {
         db = await open({
             filename: 'test.db',
@@ -24,7 +23,7 @@ describe('Test Record sql repository', () => {
         await record_repo.init('test.db');
 
         let new_record: Record = {
-            id: 'record_1',
+            id: 'record_12',
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
@@ -209,7 +208,7 @@ describe('Test Record sql repository', () => {
         let record_repo = new SqlRecordRepository(table_name);
         await record_repo.init('test.db');
         let new_record: Record = {
-            id: 'record_1',
+            id: 'record_1s',
             date: new DateParser(2024, 4, 4),
             description: 'un blabla',
             price: 15,
@@ -218,7 +217,7 @@ describe('Test Record sql repository', () => {
 
         await record_repo.save(new_record);
 
-        let is_deleted = await record_repo.delete('record_1');
+        let is_deleted = await record_repo.delete('record_1s');
 
         expect(is_deleted).toBe(true);
 

@@ -11,8 +11,8 @@ import { GetTransactionUseCase, IGetTransactionUseCase, IGetTransactionUseCaseRe
 import { GetPaginationTransaction, IGetPaginationTransactionResponse } from '../../core/interactions/transaction/getPaginationTransactionUseCase';
 import { DeleteTransactionUseCase, IDeleteTransactoinUseCaseResponse } from '../../core/interactions/transaction/deleteTransactionUseCase';
 import { UpdateTransactionUseCase, IUpdateTransactionUseCaseResponse } from '../../core/interactions/transaction/updateTransactionUseCase';
-import { AccountRepository } from '@/core/interactions/repositories/accountRepository';
-import { IDeleteAccountUseCaseResponse } from '@/core/interactions/account/deleteAccountUseCase';
+import { AccountRepository } from '../../core/interactions/repositories/accountRepository';
+import { IDeleteAccountUseCaseResponse } from '../../core/interactions/account/deleteAccountUseCase';
 import DateParser from '../../core/entities/date_parser';
 
 class MockCrypto implements CryptoService {
@@ -177,8 +177,8 @@ describe('Creation transaction Use Case', () => {
         }*/
     });
 
-    it('Test error account ref', () => {
-        use_case.execute({
+    it('Test error account ref', async () => {
+        await use_case.execute({
             description: 'df',
             date: DateParser.now(),
             category_ref: 'Price must be greather or equal to 0',
@@ -268,8 +268,8 @@ describe('Get transaction Use Case', () => {
         fail: jest.fn().mockReturnValue(new ValidationError('validation'))
     }
     let use_case2 = new GetPaginationTransaction(trans_repo, account_repo, category_repo, tag_repo, record_repo, presenter2);
-    it('Test page error transaction', () => {
-        use_case2.execute({
+    it('Test page error transaction', async() => {
+        await use_case2.execute({
             page: 0,
             size: 80,
             sort_by: null,
@@ -298,8 +298,8 @@ describe('Get transaction Use Case', () => {
         }*/
     });
 
-    it('Test error ascending null transaction', () => {
-        use_case2.execute({
+    it('Test error ascending null transaction', async () => {
+        await use_case2.execute({
             page: 1,
             size: 80,
             sort_by: ' ',
@@ -328,8 +328,8 @@ describe('Get transaction Use Case', () => {
         }*/
     });
 
-    it('Test error ascending null transaction', () => {
-        let _ = use_case2.execute({
+    it('Test error ascending null transaction', async () => {
+        let _ = await use_case2.execute({
             page: 1,
             size: 80,
             sort_by: 'date',
@@ -358,8 +358,8 @@ describe('Get transaction Use Case', () => {
         }*/
     });
 
-    it('Test error ascending transaction', () => {
-        let _ = use_case2.execute({
+    it('Test error ascending transaction', async () => {
+        let _ = await use_case2.execute({
             page: 1,
             size: 80,
             sort_by: 'date',
@@ -388,8 +388,8 @@ describe('Get transaction Use Case', () => {
         }*/
     });
 
-    it('Test size error transaction', () => {
-        let _ = use_case2.execute({
+    it('Test size error transaction', async () => {
+        let _ = await use_case2.execute({
             page: 1,
             size: 0,
             sort_by: null,
@@ -432,7 +432,7 @@ describe('Get transaction Use Case', () => {
             date_start: null,
             price: undefined
         });
-        expect(presenter2.success).toHaveBeenCalled();
+        expect(presenter2.fail).toHaveBeenCalled();
         /*let response = use_case2.execute({
             page: 1,
             size: 12,

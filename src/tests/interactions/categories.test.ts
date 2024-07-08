@@ -32,12 +32,12 @@ describe('Add category', () => {
 
     let use_case = new CreationCategoryUseCase(repo, presenter, crypto);
 
-    test('test error title', () => {
+    test('test error title', async () => {
         let request =  {
             title: '  ',
             icon: 'icon'
         };
-        use_case.execute(request);
+        await use_case.execute(request);
         expect(presenter.fail).toHaveBeenCalled()
         /*try {
             let request =  {
@@ -51,13 +51,13 @@ describe('Add category', () => {
         }*/
     });
     
-    test('test error icon', () => {
+    test('test error icon', async () => {
         let request =  {
             title: 'title',
             icon: ' '
         };
 
-        use_case.execute(request);
+        await use_case.execute(request);
         expect(presenter.fail).toHaveBeenCalled()
         /*try {
             let request =  {
@@ -79,7 +79,7 @@ describe('Get Category', () => {
         update: jest.fn(),
         save: jest.fn().mockReturnValue('new id'),
         get:jest.fn().mockReturnValue(Promise.resolve(null)),
-        get_all:jest.fn().mockReturnValue(Promise.resolve(["", ""])),
+        get_all:jest.fn().mockReturnValue(Promise.resolve([val, val])),
         delete: jest.fn(),
     };
 
@@ -90,7 +90,7 @@ describe('Get Category', () => {
 
     let use_case = new GetCategoryUseCase(repo, presenter);
     test('Not found category', async () => {
-        await use_case.execute('dfg');
+        await use_case.execute('ff');
         expect(presenter.fail).toHaveBeenCalled();
         /*try {
             use_case.execute('dfg');

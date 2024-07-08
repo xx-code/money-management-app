@@ -21,7 +21,7 @@ describe('Test tag sql repository', () => {
         let tag_repo = new SqlTagRepository(table_tag_name);
         await tag_repo.init('test.db');
         
-        let new_tag: Tag = 'tag';
+        let new_tag: Tag = 'tag--';
 
         let is_save = await tag_repo.save({title: new_tag});
 
@@ -32,11 +32,11 @@ describe('Test tag sql repository', () => {
         let tag_repo = new SqlTagRepository(table_tag_name);
         await tag_repo.init('test.db');
         
-        let new_tag: Tag = 'tag';
+        let new_tag: Tag = 'tag56';
 
         await tag_repo.save({title: new_tag});
 
-        let tag = await tag_repo.get('tag');
+        let tag = await tag_repo.get('tag56');
 
         expect(tag).toStrictEqual(new_tag);
     });
@@ -45,7 +45,7 @@ describe('Test tag sql repository', () => {
         let tag_repo = new SqlTagRepository(table_tag_name);
         await tag_repo.init('test.db');
         
-        let new_tag: Tag = 'tag';
+        let new_tag: Tag = 'taghh';
 
         await tag_repo.save({title: new_tag});
 

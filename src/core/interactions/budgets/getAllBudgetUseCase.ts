@@ -2,7 +2,7 @@ import { ValidationError } from "@/core/errors/validationError";
 import { BudgetWithCategoryDisplay, BudgetWithTagDisplay, compute_current_spend, determined_start_end_date_budget } from "../../entities/budget";
 import { BudgetTagRepository, BudgetCategoryRepository } from "../repositories/budgetRepository";
 import { TransactionRepository } from "../repositories/transactionRepository";
-import { TransactionType } from "@/core/entities/transaction";
+import { TransactionType } from "../../../core/entities/transaction";
 
 export interface IGetAllBudgetUseCase {
     execute(): void;

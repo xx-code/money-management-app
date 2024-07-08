@@ -43,7 +43,7 @@ describe('Budget sql repository', () => {
         let category_repo = new SqlCategoryRepository(table_category_name);
         await category_repo.init('test.db', );
         let new_category: Category = {
-            id: '1',
+            id: '111',
             title: 'cat-2',
             icon: 'ico-cat'
         }
@@ -57,7 +57,7 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Week',
             period_time: 1,
-            categories: [new_category.title]
+            categories: [new_category.id]
         };
 
         let is_saved = await budget_category_repo.save(budget);
@@ -76,7 +76,7 @@ describe('Budget sql repository', () => {
         let category_repo = new SqlCategoryRepository(table_category_name);
         await category_repo.init('test.db', );
         let new_category: Category = {
-            id: '1',
+            id: '1gg',
             title: 'cat',
             icon: 'ico-cat'
         }
@@ -90,13 +90,12 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Week',
             period_time: 1,
-            categories: [new_category.title]
+            categories: [new_category.id]
         };
 
         await budget_category_repo.save(budget);
 
         let budget_got = await budget_category_repo.get(true_response);
-
         expect(budget_got).not.toBeNull();
         expect(budget_got?.categories[0].title).toBe('cat');
         expect(budget_got?.title).toBe('title');
@@ -130,7 +129,7 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Week',
             period_time: 1,
-            categories: [new_category.title]
+            categories: [new_category.id]
         };
 
         await budget_category_repo.save(budget);
@@ -141,7 +140,7 @@ describe('Budget sql repository', () => {
             target: 150,
             period: 'Week',
             period_time: 1,
-            categories: [new_category.title]
+            categories: [new_category.id]
         };
 
         await budget_category_repo.save(budget);
@@ -164,7 +163,7 @@ describe('Budget sql repository', () => {
         let category_repo = new SqlCategoryRepository(table_category_name);
         await category_repo.init('test.db', );
         let new_category: Category = {
-            id: '1',
+            id: '3',
             title: 'cat',
             icon: 'ico-cat'
         }
@@ -178,7 +177,7 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Week',
             period_time: 1,
-            categories: [new_category.title]
+            categories: [new_category.id]
         };
 
         await budget_category_repo.save(budget);
@@ -200,7 +199,7 @@ describe('Budget sql repository', () => {
         let category_repo = new SqlCategoryRepository(table_category_name);
         await category_repo.init('test.db');
         let new_category: Category = {
-            id: '1',
+            id: 'g1',
             title: 'cat0',
             icon: 'ico-cat'
         }
@@ -221,7 +220,7 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Week',
             period_time: 1,
-            categories: [new_category.title]
+            categories: [new_category.id]
         };
 
         await budget_category_repo.save(budget);
@@ -232,7 +231,7 @@ describe('Budget sql repository', () => {
             target: 1530,
             period: 'Month',
             period_time: 3,
-            categories: [new_category.title]
+            categories: [new_category.id]
         });
 
         expect(budget_updated.title).toBe('title1');
@@ -246,7 +245,7 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Week',
             period_time: 1,
-            categories: ['cat0']
+            categories: ['g1']
         };
 
         await budget_category_repo.save(budget);
@@ -257,7 +256,7 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Month',
             period_time: 3,
-            categories: ['cat0', 'cat02']
+            categories: ['g1', '2']
         });
 
         expect(budget_updated.categories.length).toBe(2);
@@ -269,7 +268,7 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Month',
             period_time: 3,
-            categories: ['cat02']
+            categories: ['2']
         });
 
         expect(budget_updated.categories.length).toBe(1);
@@ -290,7 +289,7 @@ describe('Budget sql repository', () => {
         let new_tag: Tag = 'tag';
         await tag_repo.save({title: new_tag});
 
-        let true_response = '1-id';
+        let true_response = '12-id';
 
         let budget: dbBudgetTag = {
             id: true_response,
@@ -464,7 +463,7 @@ describe('Budget sql repository', () => {
 
         budget = {
             id: '2',
-            title: 'title',
+            title: 'title2',
             target: 1500,
             date_start: new DateParser(2024, 4, 2),
             date_end: new DateParser(2024, 4, 3),
@@ -475,7 +474,7 @@ describe('Budget sql repository', () => {
 
         budget_updated = await budget_tag_repo.update({
             id: '2',
-            title: 'title',
+            title: 'title2',
             target: 1500,
             date_start: new DateParser(2024, 4, 2),
             date_end: new DateParser(2024, 4, 3),
@@ -487,7 +486,7 @@ describe('Budget sql repository', () => {
 
         budget_updated = await budget_tag_repo.update({
             id: '2',
-            title: 'title',
+            title: 'title2',
             target: 1500,
             date_start: new DateParser(2024, 4, 2),
             date_end: new DateParser(2024, 4, 3),

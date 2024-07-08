@@ -44,6 +44,10 @@ export default class DateParser {
         return `${this.year}-${month}-${day}`;
     }
 
+    public toDate(): Date {
+        return new Date(this.year, this.month - 1, this.day)
+    }
+
     public getYear(): number {
         return this.year;
     }

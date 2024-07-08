@@ -72,7 +72,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
             for (let i = 0; i < request.account_filter.length; i++) {
                 let account = await this.account_repository.get(request.account_filter[i]);
 
-                if (account == null) {
+                if (account === null) {
                     throw new ValidationError('Account ' + request.account_filter[i] + ' in filter not exist');
                 }
 
@@ -82,7 +82,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
             for (let i = 0; i < request.category_filter.length; i++) {
                 let category = await this.category_repository.get(request.category_filter[i]);
 
-                if (category == null) {
+                if (category === null) {
                     throw new ValidationError('Category ' + request.category_filter[i] + ' in filter not exist');
                 }
 
@@ -92,7 +92,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
             for (let i = 0; i < request.tag_filter.length; i++) {
                 let tag = await this.tag_repository.get(request.tag_filter[i]);
 
-                if (tag == null) {
+                if (tag === null) {
                     throw new ValidationError('Tag ' + request.tag_filter[i] + ' in filter not exist');
                 }
 
@@ -136,7 +136,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
             request.sort_by = 'date';
             request.sort_sense = 'desc'
 
-            if (request.sort_by != null) {
+            if (request.sort_by !== null) {
                 if (is_empty(request.sort_by)) {
                    throw new ValidationError('Sort by is empty field');
                 }

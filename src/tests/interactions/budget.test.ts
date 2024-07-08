@@ -8,9 +8,9 @@ import { NotFoundError } from "../../core/errors/notFoundError";
 import { ValidationError } from "../../core/errors/validationError";
 import { BudgetCategoryRepository, BudgetTagRepository} from "../../core/interactions/repositories/budgetRepository";
 import { CryptoService } from "../../core/adapter/libs";
-import { TagRepository } from "@/core/interactions/repositories/tagRepository";
-import { TransactionRepository } from "@/core/interactions/repositories/transactionRepository";
-import { CategoryRepository } from "@/core/interactions/repositories/categoryRepository";
+import { TagRepository } from "../../core/interactions/repositories/tagRepository";
+import { TransactionRepository } from "../../core/interactions/repositories/transactionRepository";
+import { CategoryRepository } from "../../core/interactions/repositories/categoryRepository";
 import DateParser from "../../core/entities/date_parser";
 
 class MockCrypto implements CryptoService {

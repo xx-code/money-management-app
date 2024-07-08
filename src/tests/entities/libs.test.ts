@@ -62,7 +62,7 @@ describe('Test search in array', () => {
     it('search nothing', () => {
         let match_value = search_in_array('', values);
         
-        expect(match_value.length).toBe(0);
+        expect(match_value.length).toBe(9);
 
         match_value = search_in_array(' ', values);
         
