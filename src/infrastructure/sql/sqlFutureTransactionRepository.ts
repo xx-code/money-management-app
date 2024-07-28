@@ -140,7 +140,6 @@ export class SqlFutureTransactionRepository implements FutureTransactionReposito
                     id_account, 
                     id_category, 
                     id_record,
-                    
                     is_archived,
                     period,
                     period_time,
@@ -275,6 +274,7 @@ export class SqlFutureTransactionRepository implements FutureTransactionReposito
                     ON ${this.table_record_name}.id = ${this.table_name}.id_record
                 JOIN ${this.table_category_name}
                     ON ${this.table_category_name}.id = ${this.table_name}.id_category
+                Where ${this.table_name}.is_archived = 0
                 `
             );
 

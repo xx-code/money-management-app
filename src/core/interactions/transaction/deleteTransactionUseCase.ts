@@ -31,7 +31,7 @@ export class DeleteTransactionUseCase implements IDeleteTransactionUseCase {
 
             let is_deleted_record = await this.record_repo.delete(transaction.record.id);
 
-            if (is_deleted_record) {
+            if (is_deleted_record === false) {
                 throw new NotFoundError('Error while deleting record');
             }
 

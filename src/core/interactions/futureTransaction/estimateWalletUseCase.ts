@@ -6,7 +6,7 @@ import { TransactionRepository, dbFilter } from "../repositories/transactionRepo
 
 export type RecordForEstimation = {
     price: number,
-    date: DateParser,
+    date: string,
     type: TransactionType
 }
 
@@ -14,25 +14,24 @@ export type RequestEstimation = {
     records: RecordForEstimation[];
     // categories_to_estimate: string[];
     // tags_to_estimate: string[];
-    date_end_estimation: DateParser;
 }
 
 export interface IEstimateWalletUseCase {
     execute(request: RequestEstimation): void
 }
 
-export interface EstimateWalletPresenter {
+export interface IEstimateWalletPresenter {
     success(estimation: number): void
     fail(err: Error): void 
 }
 
 
 export class EstimateWalletUseCase implements IEstimateWalletUseCase {
-    private presenter: EstimateWalletPresenter;
+    private presenter: IEstimateWalletPresenter;
     private future_transaction_repository: FutureTransactionRepository;
     private transaction_repository: TransactionRepository;
 
-    constructor(presenter: EstimateWalletPresenter, future_transaction_repo: FutureTransactionRepository, transaction_repo: TransactionRepository) {
+    constructor(presenter: IEstimateWalletPresenter, future_transaction_repo: FutureTransactionRepository, transaction_repo: TransactionRepository) {
         this.presenter = presenter;
         this.future_transaction_repository = future_transaction_repo;
         this.transaction_repository = transaction_repo;
@@ -40,6 +39,14 @@ export class EstimateWalletUseCase implements IEstimateWalletUseCase {
 
     async execute(request: RequestEstimation): Promise<void> {
         try {
+            let dates_estimation: DateParser[] = request.records.map(record => DateParser.from_string(record.date))
+            dates_estimation = dates_estimation.sort((date1, date2) => date1.compare(date2))
+
+            if (dates_estimation[0].compare(DateParser.now()) < 0) {
+                throw new Error("We can't start stimulation before the date now");
+            }
+
+            let date_end_estimation = dates_estimation.reverse()[0]
 
             let future_transactions = await this.future_transaction_repository.get_all();
 
@@ -57,11 +64,12 @@ export class EstimateWalletUseCase implements IEstimateWalletUseCase {
                 }
             }
 
-            future_transactions.filter((val, index) => val.period === 'Day')
+
+            // future_transactions.filter((val, index) => val.period === 'Day')
             
             let today = new Date();
             future_transactions.forEach(future_transaction => {
-                let date_end = future_transaction.date_end !== null ? future_transaction.date_end.toDate() : request.date_end_estimation.toDate()
+                let date_end = future_transaction.date_end !== null ? future_transaction.date_end.toDate() : date_end_estimation.toDate()
                 
                 let diff = 0;
 
@@ -93,6 +101,8 @@ export class EstimateWalletUseCase implements IEstimateWalletUseCase {
                     debit += estimate_price
                 }
             });
+
+            
 
             let filter: dbFilter = {
                 accounts: [],

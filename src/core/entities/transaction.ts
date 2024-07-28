@@ -12,6 +12,15 @@ export function is_Transaction_type(value: string): value is TransactionType {
     return value in TransactionType;
 }
 
+export function mapperTransactionType(value: string) {
+    if (value === TransactionType.Credit)
+        return TransactionType.Credit
+
+    if (value === TransactionType.Debit)
+        return TransactionType.Debit
+}
+
+
 export type Record = {
     id: string;
     price: number;

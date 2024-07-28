@@ -48,6 +48,28 @@ export default class DateParser {
         return new Date(this.year, this.month - 1, this.day)
     }
 
+    public compare(date: DateParser) {
+        if (this.getYear() < date.getYear()) {
+            return -1
+        } else if (this.getYear() > date.getYear()) {
+            return 1
+        }
+
+        if (this.getMonth() < date.getMonth()) {
+            return -1
+        } else if (this.getMonth() > date.getMonth()) {
+            return 1
+        }
+
+        if (this.getDay() < date.getDay()) {
+            return -1
+        } else if (this.getDay() > date.getDay()) {
+            return 1
+        }
+
+        return 0
+    }
+
     public getYear(): number {
         return this.year;
     }

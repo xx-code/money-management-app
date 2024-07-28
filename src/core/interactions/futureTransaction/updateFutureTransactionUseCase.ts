@@ -25,14 +25,14 @@ export type RequestUpdateFutureTransaction = {
     period: string | null | undefined;
     period_time: number | null | undefined;
     repeat: number | null | undefined;
-    date_start: DateParser | null;
+    date_start: string | null;
 }
 
 export interface IUpdateFutureTransactionUseCase {
     execute(request: RequestUpdateFutureTransaction): void
 }
 
-export interface UpdateFutureTransactionPresenter {
+export interface IUpdateFutureTransactionPresenter {
     success(updated_future_trans: FutureTransaction): void;
     fail(err: Error): void;
 }
@@ -43,10 +43,10 @@ export class UpdateFutureTransactionUseCase implements IUpdateFutureTransactionU
     private future_transaction_repository: FutureTransactionRepository;
     private account_repository: AccountRepository;
     private tag_repository: TagRepository;
-    private presenter: UpdateFutureTransactionPresenter;
+    private presenter: IUpdateFutureTransactionPresenter;
 
     constructor(category_repository: CategoryRepository, record_repository: RecordRepository, tag_repository: TagRepository, 
-        future_transaction_repository: FutureTransactionRepository, presenter: UpdateFutureTransactionPresenter, account_repository: AccountRepository) {
+        future_transaction_repository: FutureTransactionRepository, presenter: IUpdateFutureTransactionPresenter, account_repository: AccountRepository) {
             this.category_repository = category_repository;
             this.record_repository = record_repository;
             this.future_transaction_repository = future_transaction_repository;
@@ -141,9 +141,10 @@ export class UpdateFutureTransactionUseCase implements IUpdateFutureTransactionU
                 }
             }
 
+            let date_start: DateParser = future_transaction.date_start
             if (request.date_start !== null && request.date_start !== undefined) {
-                future_transaction.date_start = request.date_start;
-                future_transaction.date_update = determined_end_date_with(request.date_start.toDate(), future_transaction.period, future_transaction.period_time);
+                date_start = DateParser.from_string(request.date_start);
+                future_transaction.date_update = determined_end_date_with(date_start.toDate(), future_transaction.period, future_transaction.period_time);
             }
 
             let is_record_updated = await this.record_repository.update(
@@ -167,11 +168,11 @@ export class UpdateFutureTransactionUseCase implements IUpdateFutureTransactionU
                 future_transaction.repeat = request.repeat;
             }   
 
-            const can_update_date_end = (request.repeat !== null && request.repeat !== undefined) || (request.date_start !== null || request.date_start !== undefined)
+            const can_update_date_end = (request.repeat !== null && request.repeat !== undefined) && (request.date_start !== null && request.date_start !== undefined)
             
             if (can_update_date_end) {
                 if (future_transaction.repeat !== null) {
-                    future_transaction.date_end = determined_end_date_with(request.date_start!.toDate(), future_transaction.period, future_transaction.period_time, future_transaction.repeat)
+                    future_transaction.date_end = determined_end_date_with(date_start!.toDate(), future_transaction.period, future_transaction.period_time, future_transaction.repeat)
                 } 
             }
     
@@ -186,7 +187,7 @@ export class UpdateFutureTransactionUseCase implements IUpdateFutureTransactionU
                 period: future_transaction.period,
                 period_time: future_transaction.period_time,
                 repeat: future_transaction.repeat,
-                date_start: future_transaction.date_start,
+                date_start: date_start,
                 date_update: future_transaction.date_update,
                 date_end: future_transaction.date_end
             }

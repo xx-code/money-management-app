@@ -34,3 +34,5 @@ export function diff_between_date_by(dt2: Date, dt1: Date, period: Period): numb
     return -1;
   
  }
+
+export const periodsFrench = {Month: 'Mois', Week: 'Semaine', Year: 'Année'}

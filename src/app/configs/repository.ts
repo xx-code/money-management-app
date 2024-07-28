@@ -4,6 +4,7 @@ import { SqlTagRepository } from "@/infrastructure/sql/sqlTagRepository";
 import { SqlRecordRepository } from "@/infrastructure/sql/sqlRecordRepository";
 import { SqlTransactionRepository } from "@/infrastructure/sql/sqlTransactionRepository";
 import { SqlBudgetCategoryRepository, SqlBudgetTagRepository } from "@/infrastructure/sql/sqlBudgetRepository";
+import { SqlFutureTransactionRepository } from "@/infrastructure/sql/sqlFutureTransactionRepository";
 
 const DB_FILENAME = process.env.NODE_ENV === 'production' ? 'database.db' : 'testdb.db'; 
 const account_repo = new SqlAccountRepository('accounts');
@@ -13,6 +14,7 @@ const record_repo = new SqlRecordRepository('records');
 const transaction_repo = new SqlTransactionRepository('transactions');
 const budget_categories_repo = new SqlBudgetCategoryRepository('budget_categories');
 const budget_tag_repo = new SqlBudgetTagRepository('budget_tags');
+const future_transaction_repo = new SqlFutureTransactionRepository('future_transactions')
 
 export {
     DB_FILENAME,
@@ -22,5 +24,6 @@ export {
     record_repo,
     transaction_repo,
     budget_categories_repo,
-    budget_tag_repo
+    budget_tag_repo,
+    future_transaction_repo
 }

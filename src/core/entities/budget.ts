@@ -6,6 +6,29 @@ import { Transaction } from "./transaction";
 
 export type Period =  'Day' | 'Week' | 'Month' | 'Year' ;
 
+export type TypePeriod = {
+    value: string,
+    title: string
+}
+export const typePeriods: TypePeriod[] = [
+    {
+        value: 'Day',
+        title: 'Jour'
+    },
+    {
+        value: 'Week',
+        title: 'Semaine'
+    },
+    {
+        value: 'Month',
+        title: 'Mois'
+    },
+    {
+        value: 'Year',
+        title: 'Annee'
+    }
+]
+
 type Budget = {
     id: string;
     title: string;

@@ -20,7 +20,7 @@ export type RequestAddFutureTransaction = {
     description: string;
     price: number;
     type_record: TransactionType;
-    date_start: DateParser;
+    date_start: string;
     period: string;
     period_time: number;
     repeat: number | null;
@@ -30,7 +30,7 @@ export interface IAddFutureTransactionUseCase {
     execute(request: RequestAddFutureTransaction): void
 }
 
-export interface AddFutureTransactionPresenter {
+export interface IAddFutureTransactionPresenter {
     success(id_new_trans: string): void;
     fail(err: Error): void;
 }
@@ -41,10 +41,10 @@ export class AddFutureTransactionUseCase implements IAddFutureTransactionUseCase
     private future_transaction_repository: FutureTransactionRepository;
     private account_repository: AccountRepository;
     private crypto: CryptoService;
-    private presenter: AddFutureTransactionPresenter;
+    private presenter: IAddFutureTransactionPresenter;
 
     constructor(category_repository: CategoryRepository, record_repository: RecordRepository, account_repository: AccountRepository,
-        future_transaction_repository: FutureTransactionRepository, crypto: CryptoService, presenter: AddFutureTransactionPresenter) {
+        future_transaction_repository: FutureTransactionRepository, crypto: CryptoService, presenter: IAddFutureTransactionPresenter) {
             this.category_repository = category_repository;
             this.record_repository = record_repository;
             this.account_repository = account_repository;
@@ -94,12 +94,17 @@ export class AddFutureTransactionUseCase implements IAddFutureTransactionUseCase
                 throw new ValidationError('Period time must be greater than 0');
             }
 
+            if (is_empty(request.date_start)) {
+                throw new ValidationError('Date start is empty')
+            }
+            let date_start: DateParser = DateParser.from_string(request.date_start)
+
             let date_end: DateParser | null = null; 
             if (request.repeat !== null && request.repeat !== undefined ) {
                 if (request.repeat <= 0) {
                     throw new ValidationError('Repeat number must be greater than 0');
                 }
-                date_end = determined_end_date_with(request.date_start.toDate(), <Period>request.period, request.period_time, request.repeat);  
+                date_end = determined_end_date_with(date_start.toDate(), <Period>request.period, request.period_time, request.repeat);  
             }
 
             const period_list = ['Month', 'Week' , 'Year', 'Day']
@@ -115,7 +120,7 @@ export class AddFutureTransactionUseCase implements IAddFutureTransactionUseCase
                     price: request.price,
                     description: request.description,
                     type: request.type_record,
-                    date: request.date_start,
+                    date: date_start,
                 }
             )
 
@@ -125,7 +130,7 @@ export class AddFutureTransactionUseCase implements IAddFutureTransactionUseCase
             }
 
             
-            let date_update = determined_end_date_with(request.date_start.toDate(), <Period>request.period, request.period_time);
+            let date_update = determined_end_date_with(date_start.toDate(), <Period>request.period, request.period_time);
             
              
             let id_new_future_transaction = this.crypto.generate_uuid_to_string()
@@ -139,7 +144,7 @@ export class AddFutureTransactionUseCase implements IAddFutureTransactionUseCase
                 period: request.period,
                 period_time: request.period_time,
                 repeat: request.repeat,
-                date_start: request.date_start,
+                date_start: date_start,
                 date_update: date_update,
                 date_end: date_end,
             }
