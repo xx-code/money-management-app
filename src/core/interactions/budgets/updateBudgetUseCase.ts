@@ -92,7 +92,8 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 }
              
                 for (let i = 0; i < request.categories.length; i++) {
-                    let category = await this.category_repository.get(formatted(request.categories[i]));
+        
+                    let category = await this.category_repository.get(request.categories[i]);
                     if (category == null) {
                         throw new ValidationError('This category not exist');
                     }

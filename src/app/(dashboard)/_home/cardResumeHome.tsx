@@ -9,6 +9,7 @@ import { AccountDisplay } from "@/core/entities/account";
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useEffect, useState } from "react";
 // @ts-ignore
 library.add(fas)
 
@@ -16,6 +17,29 @@ library.add(fas)
 export default function CardResumeHome({account, accounts, onDeleteAccount, onEditAccount, onMakeTransfert, onAddNewAccount, onAddNewTransaction, handleSelectAccount, handleSliderChange, handleSliderRelease}: 
     {account: AccountDisplay|null, accounts: AccountDisplay[], onDeleteAccount: any, onEditAccount:any, onMakeTransfert:any, onAddNewAccount: any, onAddNewTransaction: any,
     handleSelectAccount: any, handleSliderChange: any, handleSliderRelease: any}) {
+
+    const [oldAccount, setOldAccount] = useState(account)
+    const [oldAccounts, setOldAccounts] = useState(accounts)
+
+    const checkSameAccounts = () => {
+        let is_same = false
+        // Todo: optimiser
+        oldAccounts.forEach(acc_1 => {
+            accounts.forEach(acc_2 => {
+                is_same = acc_1.balance === acc_2.balance
+            } )
+        })
+        return is_same
+    }
+
+    useEffect(() => {
+        if (oldAccount?.balance !== account?.balance) {
+            setOldAccount(account)
+        }
+        if (!checkSameAccounts()) {
+            setOldAccounts(accounts)
+        }
+    }, [account, accounts])
 
     return (
         <>
@@ -28,13 +52,13 @@ export default function CardResumeHome({account, accounts, onDeleteAccount, onEd
                     accounts.length > 1 ? 
                     <div className="card-resume-content">
                         <div className="card-resume-dropdown">
-                            <Dropdown values={accounts.map((account: AccountDisplay, key) => account.title)} onChange={handleSelectAccount} backgroundColor={null} color="white" customClassName={""} />
+                            <Dropdown values={oldAccounts.map((account: AccountDisplay, key) => account.title)} onChange={handleSelectAccount} backgroundColor={null} color="white" customClassName={""} />
                         </div>
                         <div className='card-resume-balance'>
                             <h6>
                                 {
-                                    account !== null ?
-                                    <>$ {account.balance}</>
+                                    oldAccount !== null ?
+                                    <>$ {oldAccount.balance}</>
                                     :
                                     <></>
                                 }
@@ -42,13 +66,13 @@ export default function CardResumeHome({account, accounts, onDeleteAccount, onEd
                         </div>
                         <div className="card-resume-slider">
                             {
-                                account !== null ?
+                                oldAccount !== null ?
                                 <>
                                     {
-                                        account.id !== "all" ? 
+                                        oldAccount.id !== "all" ? 
                                         <>
                                             <p>{"Limite d'endettement"}</p>
-                                            <RangeSlider min={0} max={account.credit_value} change_indicator={account.credit_limit} value={account.credit_limit} onChange={handleSliderChange} onRelease={handleSliderRelease}/>
+                                            <RangeSlider min={0} max={oldAccount.credit_value} change_indicator={oldAccount.credit_limit} value={oldAccount.credit_limit} onChange={handleSliderChange} onRelease={handleSliderRelease}/>
                                         </>
                                         :
                                         <></>

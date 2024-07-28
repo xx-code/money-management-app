@@ -42,10 +42,10 @@ export default function Nav() {
             <div className="nav-content">
                 <LogoTitle title="Agni." />
                 <div className="nav-link">
-                    <NavButton className={pathname === '/dashboard/home' ? 'active' : ''} title='Accueil' link='/dashboard/home' icon={["fas", "house"]} />
-                    <NavButton className={pathname === '/dashboard/budget' ? 'active' : ''} title='Budget' link='/dashboard/budget' icon={["fas", "wallet"]}/>
-                    <NavButton className={pathname === '/dashboard/visualisation' ? 'active' : ''} title='Visualisation' link='/dashboard/visualisation' icon={["fas", "chart-pie"]}/>
-                    <NavButton className={pathname === '/dashboard/parameter' ? 'active' : ''} title='Parametre' link='/dashboard/parameter' icon={["fas", "gear"]}/>
+                    <NavButton className={pathname === '/' ? 'active' : ''} title='Accueil' link='/' icon={["fas", "house"]} />
+                    <NavButton className={pathname === '/budget' ? 'active' : ''} title='Budget' link='/budget' icon={["fas", "wallet"]}/>
+                    <NavButton className={pathname === '/visualisation' ? 'active' : ''} title='Visualisation' link='/visualisation' icon={["fas", "chart-pie"]}/>
+                    <NavButton className={pathname === '/parameter' ? 'active' : ''} title='Parametre' link='/parameter' icon={["fas", "gear"]}/>
                 </div>
             </div>
         </div>

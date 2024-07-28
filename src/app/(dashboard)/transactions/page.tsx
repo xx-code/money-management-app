@@ -1,14 +1,14 @@
 'use client';
 
 import Dropdown from "@/app/components/dropdown";
-import ListTransaction from "../home/listTransaction";
+import ListTransaction from "../_home/listTransaction";
 import Button from "@/app/components/button";
 import CardInfoResume from "./cardInfoResume";
 
 import './page.css';
 import Tag from "@/app/components/tag";
 import TextInput from "@/app/components/textInput";
-import TransactionPagination from "../home/transactionPagination";
+import TransactionPagination from "../_home/transactionPagination";
 import { useEffect, useState } from "react";
 import { Transaction } from "@/core/entities/transaction";
 import { AccountDisplay } from "@/core/entities/account";
@@ -16,6 +16,7 @@ import axios from "axios";
 import DateParser from "@/core/entities/date_parser";
 import { Category } from "@/core/entities/category";
 import { search_in_array } from "@/core/entities/libs";
+import { ModalAddNewTransaction } from "@/app/components/modalAddNewTransaction";
 
 export default function Transactions() {
     const [pagination, setPagination] = useState({current: 1, max_pages: 1});
@@ -39,6 +40,20 @@ export default function Transactions() {
 
     const [total_spend, setTotalSpend] = useState<number|null>(null);
     const [total_gains, setTotalGains] = useState<number|null>(null); 
+
+    const [selectedTransaction, setUpdateTransaction] = useState<Transaction|null>(null);
+    const [openTransactionModal, setOpenTransactionModal] = useState(false);
+
+    function updateTransaction(transaction: Transaction) {
+        setUpdateTransaction(transaction);
+        setOpenTransactionModal(true);
+    }
+
+    function closeModalTransaction() {
+        setup_data();
+        setOpenTransactionModal(false);
+        setUpdateTransaction(null);
+      }
 
     function change_list_transaction(page: number) {
         if (page >= 1 || page <= pagination.max_pages) {
@@ -248,59 +263,62 @@ export default function Transactions() {
     }, [account, selectedCategories, selectedTags, dateStart, dateEnd])
 
     return (
-        <div className="transactions">
-            <div className="top-info">
-                <Dropdown values={accounts.map(account => account.title)} customClassName="dropdown-account" backgroundColor="#313343" color="white" onChange={handleDropDownChange} />
-                <div className="list-info"> 
-                    <CardInfoResume total_spend={total_spend} total_earning={total_gains} /> 
-                    <div>
-                        <Dropdown values={['Prix decroissant', 'Prix croissant']} customClassName="" backgroundColor="white" color="#6755D7" onChange={undefined} />
+        <>
+            <div className="transactions">
+                <div className="top-info">
+                    <Dropdown values={accounts.map(account => account.title)} customClassName="dropdown-account" backgroundColor="#313343" color="white" onChange={handleDropDownChange} />
+                    <div className="list-info"> 
+                        <CardInfoResume total_spend={total_spend} total_earning={total_gains} /> 
+                        <div>
+                            <Dropdown values={['Prix decroissant', 'Prix croissant']} customClassName="" backgroundColor="white" color="#6755D7" onChange={undefined} />
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className="transactions-content">
-                <div className="left-content">
-                    <div className="list">
-                        <ListTransaction transactions={transactions} onEdit={undefined} onDelete={delete_transaction} />
-                        <TransactionPagination 
-                            current_page={pagination.current} 
-                            max_page={pagination.max_pages} 
-                            precedent={() => change_list_transaction(pagination.current - 1)} 
-                            next={() => change_list_transaction(pagination.current + 1)}
-                        />
+                <div className="transactions-content">
+                    <div className="left-content">
+                        <div className="list">
+                            <ListTransaction transactions={transactions} onEdit={updateTransaction} onDelete={delete_transaction} />
+                            <TransactionPagination 
+                                current_page={pagination.current} 
+                                max_page={pagination.max_pages} 
+                                precedent={() => change_list_transaction(pagination.current - 1)} 
+                                next={() => change_list_transaction(pagination.current + 1)}
+                            />
+                        </div>
                     </div>
-                </div>
-                <div className="right-content">
-                    <div className="filter-part">
-                        <div className="filter-part-content">
-                            <div className="filter-title-content">
-                                <h3>Filtrage</h3>
-                                <Button backgroundColor="transparent" colorText="#6755D7" title="reintialise" onClick={cleanFilter}/>
-                            </div>
-                            <div className="filter-dropdown-content">
-                                <TextInput type="text" title={"Categorie"} value={filter.category} name="category" onChange={handleFilter} options={searchingCategories.map(cat => cat.title)} onClickOption={handleSelect} error={null} overOnBlur={undefined} />
-                                <div className="flex flex-wrap">
-                                    {
-                                        selectedCategories.map((category, index) => <Tag key={index} title={category.title} onDelete={() => removeSelected('category', category.title)} color={undefined}/> )
-                                    }
+                    <div className="right-content">
+                        <div className="filter-part">
+                            <div className="filter-part-content">
+                                <div className="filter-title-content">
+                                    <h3>Filtrage</h3>
+                                    <Button backgroundColor="transparent" colorText="#6755D7" title="reintialise" onClick={cleanFilter}/>
                                 </div>
-                            </div>
-                            <div className="filter-dropdown-content">
-                                <TextInput type="text" title={"Tag"} value={filter.tag} name={"tag"} onChange={handleFilter} options={searchingTags} onClickOption={handleSelect} error={null} overOnBlur={undefined} />
-                                <div className="flex flex-wrap">
-                                    {
-                                        selectedTags.map((tag, index) => <Tag key={index} title={tag} onDelete={() => removeSelected('tag', tag)} color={undefined}/> )
-                                    }
+                                <div className="filter-dropdown-content">
+                                    <TextInput type="text" title={"Categorie"} value={filter.category} name="category" onChange={handleFilter} options={searchingCategories.map(cat => cat.title)} onClickOption={handleSelect} error={null} overOnBlur={undefined} />
+                                    <div className="flex flex-wrap">
+                                        {
+                                            selectedCategories.map((category, index) => <Tag key={index} title={category.title} onDelete={() => removeSelected('category', category.title)} color={undefined}/> )
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-                                <TextInput type={"date"} title={"Date de debut"} value={dateStart} name={"date_start"} onChange={(event: any) => setDateStart(event.target.value)} options={[]} onClickOption={undefined} error={null} overOnBlur={undefined} />
-                                <TextInput type={"date"} title={"Date de fin"} value={dateEnd} name={"date_end"} onChange={(event: any) => setDateEnd(event.target.value)} options={[]} onClickOption={undefined} error={null} overOnBlur={undefined} />
+                                <div className="filter-dropdown-content">
+                                    <TextInput type="text" title={"Tag"} value={filter.tag} name={"tag"} onChange={handleFilter} options={searchingTags} onClickOption={handleSelect} error={null} overOnBlur={undefined} />
+                                    <div className="flex flex-wrap">
+                                        {
+                                            selectedTags.map((tag, index) => <Tag key={index} title={tag} onDelete={() => removeSelected('tag', tag)} color={undefined}/> )
+                                        }
+                                    </div>
+                                </div>
+                                <div>
+                                    <TextInput type={"date"} title={"Date de debut"} value={dateStart} name={"date_start"} onChange={(event: any) => setDateStart(event.target.value)} options={[]} onClickOption={undefined} error={null} overOnBlur={undefined} />
+                                    <TextInput type={"date"} title={"Date de fin"} value={dateEnd} name={"date_end"} onChange={(event: any) => setDateEnd(event.target.value)} options={[]} onClickOption={undefined} error={null} overOnBlur={undefined} />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <ModalAddNewTransaction accounts={accounts.filter(account => account.id !== 'all')} isOpen={openTransactionModal} onClose={closeModalTransaction} onAdd={async () => await setup_data()} tags={tags} categories={categories} transaction={selectedTransaction} />
+        </>
     )
 }

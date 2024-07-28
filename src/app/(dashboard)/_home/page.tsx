@@ -229,8 +229,8 @@ export default function Home() {
     setUpdateTransaction(null);
   }
 
-  function closeModalAccount() {
-    setup_data(true);
+  async function closeModalAccount() {
+    await setup_data(false);
     setOpenAccountModal(false);
   }
 
@@ -283,7 +283,7 @@ export default function Home() {
             <div style={{ marginTop: '2em' }}>
               <div className="flex justify-between items-center">
                 <Title value="Historique de transactions" />
-                <a style={{color: "#6755d7", textDecoration: "underline"}} href='/dashboard/transactions'>Voir tout</a>
+                <a style={{color: "#6755d7", textDecoration: "underline"}} href='/transactions'>Voir tout</a>
               </div>
               <ListTransaction transactions={transactions} onEdit={updateTransaction} onDelete={delete_transaction} />
               <TransactionPagination 
@@ -296,9 +296,9 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <ModalTransfertTransaction isOpen={openTransfertModal} accounts={accounts.filter(account => account.id !== 'all')} onClose={closeModalTransfert} onAdd={closeModalTransfert} />
-      <ModalAddNewAccount isOpen={openAccountModal} onClose={closeModalAccount} onAdd={closeModalAccount} />
-      <ModalAddNewTransaction accounts={accounts.filter(account => account.id !== 'all')} isOpen={openTransactionModal} onClose={closeModalTransaction} onAdd={closeModalTransaction} tags={tags} categories={categories} transaction={selectedTransaction} />
+      <ModalTransfertTransaction isOpen={openTransfertModal} accounts={accounts.filter(account => account.id !== 'all')} onClose={closeModalTransfert} onAdd={() => {}} />
+      <ModalAddNewAccount isOpen={openAccountModal} onClose={closeModalAccount} onAdd={() => {}} />
+      <ModalAddNewTransaction accounts={accounts.filter(account => account.id !== 'all')} isOpen={openTransactionModal} onClose={closeModalTransaction} onAdd={() => {}} tags={tags} categories={categories} transaction={selectedTransaction} />
     </>
   );
 }

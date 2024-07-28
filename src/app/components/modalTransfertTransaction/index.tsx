@@ -76,6 +76,7 @@ export default function ModalAddNewAccount ({isOpen, accounts, onClose, onAdd}:
                 };
             
                 await axios.post('/api/transaction/transfert', new_transaction);
+                await onAdd()
                 closeModal();
             } else {
                 // @ts-ignore

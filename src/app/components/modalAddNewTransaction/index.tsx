@@ -164,7 +164,7 @@ export function ModalAddNewTransaction({isOpen, transaction, onClose, onAdd, acc
                 } else {
                   await axios.post('/api/transaction', request_transaction);
                 }
-                onAdd();
+                await onAdd();
                 closeModalTransaction();
             } else {
                 // @ts-ignore

@@ -39,6 +39,7 @@ export default function ModalAddNewAccount ({isOpen, onClose, onAdd}:
                 };
             
                 await axios.post('/api/account', new_account);
+                await onAdd()
                 closeModalAccountInput();
             } else {
                 // @ts-ignore
