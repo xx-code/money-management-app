@@ -6,7 +6,6 @@ export function CardResumeSpend({title, last_month='------', current_month='----
     let color = 'white';
 
     if (!isNaN(Number(last_month))) {
-        console.log(current_month)
         let diff = Number(current_month) - Number(last_month) * 100;
         let value_percent =  Number(last_month) !== 0 ? diff/Number(last_month) : 100;
         percent = (Math.round(value_percent * 100)/100).toString();

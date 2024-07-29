@@ -50,7 +50,7 @@ export class EstimateWalletUseCase implements IEstimateWalletUseCase {
 
             let future_transactions = await this.future_transaction_repository.get_all();
 
-            future_transactions = future_transactions.filter((val, index) => val.date_end === null ? true : val.date_end.toDate() > DateParser.now().toDate() )
+            future_transactions = future_transactions.filter((val, index) => val.date_end === null ? true : val.date_end.compare(DateParser.now()) >= 0 )
 
             let credit: number = 0;
             let debit: number = 0;
@@ -92,7 +92,7 @@ export class EstimateWalletUseCase implements IEstimateWalletUseCase {
                     diff = diff_between_date_by(today, date_end, 'Day')
                 }
 
-                let num_count = Math.floor(diff/future_transaction.period_time);
+                let num_count = Math.ceil(diff/future_transaction.period_time);
                 let estimate_price = num_count*future_transaction.record.price
 
                 if (future_transaction.record.type === TransactionType.Credit) {
@@ -115,6 +115,10 @@ export class EstimateWalletUseCase implements IEstimateWalletUseCase {
             }
 
             let balances = await this.transaction_repository.get_balance(filter)
+
+            console.log(debit + ' + ' + credit)
+            console.log(balances)
+
             let estimation = debit - credit;
 
             let estimate_balance = balances - estimation
