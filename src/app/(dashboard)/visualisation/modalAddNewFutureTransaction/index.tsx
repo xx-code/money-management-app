@@ -183,8 +183,7 @@ export function ModalAddNewFutureTransaction({isOpen, future_transaction, onClos
             if  (do_submit) {
                 let account = accounts.find((account) => account?.title === inputTransaction.account);
                 let period = Object.entries(periodsFrench).find(key => key[1] === inputTransaction.period);
-            
-  
+                  
                 if (future_transaction !== null) {
                     let request_update_future_transaction: RequestUpdateFutureTransaction = {
                         id: future_transaction.id,
@@ -210,7 +209,7 @@ export function ModalAddNewFutureTransaction({isOpen, future_transaction, onClos
                         type_record: mapperTransactionType(inputTransaction.type)!,
                         tags_ref: selectedTagList,
                         category_ref: category!.id,
-                        period: period![1],
+                        period: period![0],
                         period_time: inputTransaction.periodTime,
                         repeat: isRepeat ? inputTransaction.repeat : null
                     }

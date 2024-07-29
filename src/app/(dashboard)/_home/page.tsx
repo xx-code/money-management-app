@@ -296,9 +296,9 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <ModalTransfertTransaction isOpen={openTransfertModal} accounts={accounts.filter(account => account.id !== 'all')} onClose={closeModalTransfert} onAdd={() => {}} />
-      <ModalAddNewAccount isOpen={openAccountModal} onClose={closeModalAccount} onAdd={() => {}} />
-      <ModalAddNewTransaction accounts={accounts.filter(account => account.id !== 'all')} isOpen={openTransactionModal} onClose={closeModalTransaction} onAdd={() => {}} tags={tags} categories={categories} transaction={selectedTransaction} />
+      <ModalTransfertTransaction isOpen={openTransfertModal} accounts={accounts.filter(account => account.id !== 'all')} onClose={closeModalTransfert} onAdd={async () => { await setup_data(false)}} />
+      <ModalAddNewAccount isOpen={openAccountModal} onClose={closeModalAccount} onAdd={async () => { await setup_data(false)}} />
+      <ModalAddNewTransaction accounts={accounts.filter(account => account.id !== 'all')} isOpen={openTransactionModal} onClose={closeModalTransaction} onAdd={async () => { await setup_data(false)}} tags={tags} categories={categories} transaction={selectedTransaction} />
     </>
   );
 }
