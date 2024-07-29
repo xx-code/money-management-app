@@ -95,7 +95,7 @@ export default function Simulation() {
                 })
             }
 
-            let res = await axios.post('/api/future-transactions/stimulation', request)
+            let res = await axios.post('/api/future-transactions/simulation', request)
 
             setEstimation(res.data.estimation)
         } catch (err: any) {
@@ -106,7 +106,7 @@ export default function Simulation() {
 
     return (
         <>
-            <TopNav title='Sisualiation'/>
+            <TopNav title='Simulation'/>
             <div style={{ marginTop: '2rem' }}>
                 <div>
                     <div style={{display: 'flex'}}>

@@ -133,7 +133,7 @@ export default function Visualisation() {
                         <h5>Depense fix: {fixBalances.spend} $</h5>
                     </div>
                     <div>
-                        <Button title='Faire une simulation' backgroundColor='#6755d7' colorText='white' onClick={() => router.push('/dashboard/visualisation/simulation')} />
+                        <Button title='Faire une simulation' backgroundColor='#6755d7' colorText='white' onClick={() => router.push('/visualisation/simulation')} />
                     </div>
                 </div>
 
