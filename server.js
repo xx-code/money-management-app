@@ -17,7 +17,7 @@ app.prepare().then(async () => {
     const server = express();
     const httpServer = http.createServer(server);
 
-    const PORT = process.env.PORT || 3000;
+    const PORT = 3000;
 
     // Scheduler
     const runScheduler = async () => {
