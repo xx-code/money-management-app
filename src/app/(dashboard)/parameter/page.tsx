@@ -2,6 +2,7 @@
 
 import TopNav from "../topNav";
 import { SectionCategory } from "./sectionCategory";
+import SectionTags from "./sectionTags";
 
 
 export default function Parameter() {
@@ -12,6 +13,7 @@ export default function Parameter() {
       <div style={{ marginTop: '2rem' }}>
           <div>
             <SectionCategory />
+            <SectionTags />
           </div>
       </div>
     </>

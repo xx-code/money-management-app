@@ -24,7 +24,12 @@ export class GetAllTagUseCase implements IGetAllTagUseCase {
         try {
             let results = await this.repository.get_all();
 
-            this.presenter.success(results);
+            let tags: Tag[] = []
+            for(let result of results) {
+                tags.push(reverseFormatted(result))
+            }  
+
+            this.presenter.success(tags);
         } catch(err) {
             this.presenter.fail(err as Error);
         }

@@ -27,7 +27,7 @@ export class GetTagUseCase implements IGetTagUseCase {
             if (tag == null) {
                 throw new NotFoundError('Tag no found');
             }
-            
+
             this.presenter.success(tag);
         } catch(err) {
             this.presenter.fail(err as Error)
