@@ -41,7 +41,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                 id_tag TEXT NOT NULL,
                 FOREIGN KEY (id_transaction) REFERENCES ${this.table_name}(id)
                     ON DELETE CASCADE
-                FOREIGN KEY (id_tag) REFERENCES ${table_tag_name}(title)  
+                FOREIGN KEY (id_tag) REFERENCES ${table_tag_name}(title) 
             )
         `);
         
@@ -426,7 +426,7 @@ export class SqlTransactionRepository implements TransactionRepository {
 
             let filter_id_tag: string[] = [];
             for (let tag of filter_by.tags) {
-                filter_id_tag.push(`'${tag}'`);
+                filter_id_tag.push(tag);
             }
 
             let result_filter_by_tag = await this.db.all(`
@@ -442,8 +442,9 @@ export class SqlTransactionRepository implements TransactionRepository {
 
             let filter_id_transaction_tag: string[] = [];
             for(let result of result_filter_by_tag) {
-                filter_id_transaction_tag.push(`"${result['id_tag']}"`);
+                filter_id_transaction_tag.push(`"${result['id_transaction']}"` );
             }
+            
             let where_id_transaction_tag = `${this.table_name}.id in (${filter_id_transaction_tag})`;
 
             let where_debit = '';
@@ -601,6 +602,7 @@ export class SqlTransactionRepository implements TransactionRepository {
     delete(id: string): Promise<boolean> {
         return new Promise(async (resolve, reject) => {
             let result = await this.db.run(`DELETE FROM ${this.table_name} WHERE id = ?`, id);
+            let result_2 = await this.db.run(`DELETE FROM ${this.table_tag_name}_tags WHERE id_transaction = ?`, id);
 
             if (result['changes'] == 0) {
                 resolve(false);

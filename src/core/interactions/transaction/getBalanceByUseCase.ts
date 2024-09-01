@@ -3,6 +3,7 @@ import { ValidationError } from "@/core/errors/validationError";
 import { TransactionRepository, dbFilter } from "../repositories/transactionRepository";
 import { TransactionType, is_Transaction_type } from "@/core/entities/transaction";
 import { is_empty } from "@/core/entities/verify_empty_value";
+import { formatted } from "@/core/entities/formatted";
 
 export type RequestGetBalanceBy = {
     accounts_id: string[] | null | undefined,
@@ -41,7 +42,7 @@ export class GetBalanceByUseCase implements IGetBalanceByUseCase {
 
             let tags_filter: string[] = [];
             if (request.tags_filter !== undefined) {
-                tags_filter = request.tags_filter;
+                tags_filter = request.tags_filter.map(format => formatted(format));
             }
 
             let categories_filter: string[] = [];

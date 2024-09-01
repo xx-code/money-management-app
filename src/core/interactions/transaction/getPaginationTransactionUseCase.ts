@@ -90,13 +90,13 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
             }
 
             for (let i = 0; i < request.tag_filter.length; i++) {
-                let tag = await this.tag_repository.get(request.tag_filter[i]);
+                let tag = await this.tag_repository.get(formatted(request.tag_filter[i]));
 
                 if (tag === null) {
                     throw new ValidationError('Tag ' + request.tag_filter[i] + ' in filter not exist');
                 }
 
-                tags_to_filter.push(tag!)
+                tags_to_filter.push(formatted(tag)!)
             }
 
             if ((request.date_start !== null && request.date_start !== undefined) && ((request.date_end !== null && request.date_end !== undefined))) {
