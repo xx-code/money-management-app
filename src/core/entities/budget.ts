@@ -38,12 +38,16 @@ type Budget = {
 export type BudgetWithCategory = Budget & {
     period: Period;
     period_time: number;
+    is_archived: boolean
+    date_start: DateParser
+    date_to_update: DateParser
     categories: Array<Category>
 }
 
 export type BudgetWithTag = Budget & {
     date_start: DateParser;
     date_end: DateParser;
+    is_archived: boolean
     tags: Array<Tag>;
 }
 
@@ -51,6 +55,8 @@ export type BudgetWithCategoryDisplay = Budget & {
     current: number;
     period: string;
     period_time: number;
+    date_start: DateParser
+    date_to_update: DateParser
     categories: Array<Category>
 }
 

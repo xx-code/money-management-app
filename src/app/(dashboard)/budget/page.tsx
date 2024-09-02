@@ -15,6 +15,7 @@ import Tag from "@/app/components/tag";
 import { is_empty } from "@/core/entities/verify_empty_value";
 import DateParser from "@/core/entities/date_parser";
 import TopNav from "../topNav";
+import { RequestpdateCategoryBudget } from "@/core/interactions/budgets/updateBudgetUseCase";
 
 export default function Budget() {
     const [currentModal, setCurrentModal] = useState({category: false, tag: false});
@@ -24,8 +25,8 @@ export default function Budget() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [categoriesSearching, setCategoriesSearching] = useState<Category[]>([]);
     const [categoriesSelected, setCategoriesSelected] = useState<Category[]>([]);
-    const [inputBudgetCategory, setInputBudgetCategory] = useState({title: '', category: '', target: 0, period: '', period_time: 0});
-    const [errorValidationBudgetCategory, setErrorValidationBudgetCategory] = useState<{title: string|null, category: string|null, period: string|null, period_time: string|null, target: string|null}>({title: null, category: null, period: null, period_time: null, target: null});
+    const [inputBudgetCategory, setInputBudgetCategory] = useState({title: '', category: '', target: 0, date_start: DateParser.now().toString(), period: '', period_time: 0});
+    const [errorValidationBudgetCategory, setErrorValidationBudgetCategory] = useState<{title: string|null, category: string|null, period: string|null, period_time: string|null, date_start: string|null, target: string|null}>({title: null, category: null, period: null, period_time: null, date_start: null, target: null});
     const periods = {Mois: 'Month', Semaine: 'Week', Année: 'Year'}
 
     const [tags, setTags] = useState<string[]>([]);
@@ -58,8 +59,8 @@ export default function Budget() {
         setCategoriesSelected(categories);
     }
     function cleanCategoryInput() {
-        setInputBudgetCategory({title: '', category: '', period: '', period_time: 0, target: 0});
-        setErrorValidationBudgetCategory({title: null, category: null, period: null, period_time: null, target: null});
+        setInputBudgetCategory({title: '', category: '', period: '', period_time: 0, target: 0, date_start: DateParser.now().toString()});
+        setErrorValidationBudgetCategory({title: null, category: null, period: null, period_time: null, target: null, date_start: ""});
         setCategoriesSelected([]);
     }
 
@@ -72,7 +73,7 @@ export default function Budget() {
     }
 
     function handleSelectTagClick(name: any, value: any) {
-        setInputBudgetTag({...inputBudgetTag, [name]: value});
+        setInputBudgetTag({...inputBudgetTag, [name]: ""});
         if (!tagsSelected.includes(value) && !is_empty(value)){
             setTagsSelected([...tagsSelected, value]);
         }
@@ -93,6 +94,9 @@ export default function Budget() {
         try {
             const response_budget_category = await axios.get('/api/budget_with_category');
             const budgets_category = response_budget_category.data.budgets;
+            for(let i = 0; i < budgets_category.length; i++ ) {
+                budgets_category[i].date_start = new DateParser(budgets_category[i].date_start['year'], budgets_category[i].date_start['month'], budgets_category[i].date_start['day']);
+            }
 
             const response_budgets_tag = await axios.get('/api/budget_with_tag');
             const budgets_tag = response_budgets_tag.data.budgets;
@@ -114,6 +118,7 @@ export default function Budget() {
             const response_categories = await axios.get('/api/category');
             let categories: Category[] = response_categories.data.categories;
             setCategories(categories)
+            setCategoriesSearching(categories)
         } catch(error) {
             console.log(error);
         }
@@ -124,6 +129,7 @@ export default function Budget() {
             const response_categories = await axios.get('/api/tag');
             let tags: string[] = response_categories.data.tags;
             setTags(tags)
+            setTagsSearching(tags)
         } catch(error) {
             console.log(error);
         }
@@ -153,11 +159,13 @@ export default function Budget() {
             setCurrentModal({...currentModal, category: true, tag: false});
             let budget_cat = budget as BudgetWithCategoryDisplay
             let period = Object.entries(periods).find(key => key[1] === budget_cat.period);
+            console.log(budget_cat)
             setInputBudgetCategory({
                 title: budget_cat.title,
                 period: period![0],
                 period_time: budget_cat.period_time,
                 target: budget_cat.target,
+                date_start: budget_cat.date_start.toString(),
                 category: ""
             });
             setCategoriesSelected(budget_cat.categories);
@@ -241,6 +249,7 @@ export default function Budget() {
                     title: inputBudgetCategory.title,
                     categories: categoriesSelected.map(cat => cat.id),
                     period: period![1],
+                    date_start: inputBudgetCategory.date_start,
                     period_time: inputBudgetCategory.period_time,
                     target: inputBudgetCategory.target
                 };
@@ -372,6 +381,7 @@ export default function Budget() {
                         }
                     </div>
                     <TextInput title="Periode" name="period" type="text" value={inputBudgetCategory.period} onChange={() => {}} options={Object.keys(periods)} onClickOption={handleSelectClickCategoriesModal} error={errorValidationBudgetCategory.period}  overOnBlur={undefined} />
+                    <TextInput title="Date" name="date_start" type="date" value={inputBudgetCategory.date_start} onChange={handleSelectClickCategoriesModal} options={[]} onClickOption={undefined} error={errorValidationBudgetCategory.date_start}  overOnBlur={undefined} />
                     <div style={{width: '45%'}}>
                         <TextInput title="Nb Periode" name="period_time" type="number" value={inputBudgetCategory.period_time} onChange={handleChangeCategories} options={[]} onClickOption={undefined} error={errorValidationBudgetCategory.period_time}  overOnBlur={undefined} />  
                     </div>

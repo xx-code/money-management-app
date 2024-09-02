@@ -57,6 +57,7 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Week',
             period_time: 1,
+            date_start: DateParser.now(),
             categories: [new_category.id]
         };
 
@@ -90,6 +91,7 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Week',
             period_time: 1,
+            date_start: DateParser.now(),
             categories: [new_category.id]
         };
 
@@ -129,6 +131,7 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Week',
             period_time: 1,
+            date_start: DateParser.now(),
             categories: [new_category.id]
         };
 
@@ -140,6 +143,7 @@ describe('Budget sql repository', () => {
             target: 150,
             period: 'Week',
             period_time: 1,
+            date_start: DateParser.now(),
             categories: [new_category.id]
         };
 
@@ -177,6 +181,7 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Week',
             period_time: 1,
+            date_start: DateParser.now(),
             categories: [new_category.id]
         };
 
@@ -220,6 +225,7 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Week',
             period_time: 1,
+            date_start: DateParser.now(),
             categories: [new_category.id]
         };
 
@@ -231,6 +237,7 @@ describe('Budget sql repository', () => {
             target: 1530,
             period: 'Month',
             period_time: 3,
+            date_start: DateParser.now(),
             categories: [new_category.id]
         });
 
@@ -244,6 +251,7 @@ describe('Budget sql repository', () => {
             title: 'title',
             target: 1500,
             period: 'Week',
+            date_start: DateParser.now(),
             period_time: 1,
             categories: ['g1']
         };
@@ -256,6 +264,7 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Month',
             period_time: 3,
+            date_start: DateParser.now(),
             categories: ['g1', '2']
         });
 
@@ -268,6 +277,7 @@ describe('Budget sql repository', () => {
             target: 1500,
             period: 'Month',
             period_time: 3,
+            date_start: DateParser.now(),
             categories: ['2']
         });
 

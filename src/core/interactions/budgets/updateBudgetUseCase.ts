@@ -8,11 +8,13 @@ import { TagRepository } from "../repositories/tagRepository";
 import { CategoryRepository } from "../repositories/categoryRepository";
 import { formatted } from "../../../core/entities/formatted";
 import DateParser from "@/core/entities/date_parser";
+import { determined_end_date_with } from "@/core/entities/future_transaction";
 
 export type RequestUpdateTagBudget = {
     id: string;
     title: string|null;
     target: number|null;
+    is_archived: boolean|null;
     date_start: DateParser|null;
     date_end: DateParser|null;
     tags: Array<string>|null;
@@ -24,6 +26,8 @@ export type RequestpdateCategoryBudget = {
     target: number|null;
     period: Period|null;
     period_time: number|null;
+    date_start: DateParser|null;
+    is_archived: boolean|null;
     categories: Array<string>|null;
 }
 
@@ -86,6 +90,10 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 budget.period = request.period;
             }
 
+            if (request.is_archived !== null) {
+                budget.is_archived = request.is_archived
+            }
+
             if (request.categories != null) {
                 if (request.categories.length <= 0){
                     throw new ValidationError('Budget categories must have at least 1 value');
@@ -107,6 +115,11 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 }
             }
 
+            if (request.date_start !== null && request.date_start !== undefined) {
+                budget.date_start = request.date_start;
+                budget.date_to_update = determined_end_date_with(request.date_start.toDate(), budget.period, budget.period_time);
+            }
+
             let categories_ref = budget.categories.map(cat => cat.id);
             
             let budget_updated = await this.budget_repository.update({
@@ -114,7 +127,10 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 title: budget.title,
                 target: budget.target,
                 period: budget.period,
+                is_archived: budget.is_archived,
                 period_time: budget.period_time,
+                date_to_update: budget.date_to_update,
+                date_start: budget.date_start,
                 categories: categories_ref
             });
 
@@ -138,6 +154,8 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 title: budget_updated.title,
                 categories: budget_updated.categories,
                 current: balance,
+                date_start: budget.date_start,
+                date_to_update: budget.date_to_update,
                 period: budget_updated.period,
                 period_time: budget_updated.period_time,
                 target: budget_updated.target
@@ -195,6 +213,10 @@ export class UpdateBudgetTagUseCase implements IUpdateBudgetUseCase {
                 budget.date_end = request.date_end;
             }
 
+            if (request.is_archived !== null) {
+                budget.is_archived = request.is_archived
+            }
+
             if (request.tags != null) {
                 if (request.tags.length <= 0){
                     throw new ValidationError('Tags must have at least 1 value');
@@ -208,6 +230,16 @@ export class UpdateBudgetTagUseCase implements IUpdateBudgetUseCase {
                 }
             }
 
+            let budget_updated = await this.budget_repository.update({
+                id: budget.id,
+                date_start: budget.date_start,
+                date_end: budget.date_end,
+                tags: budget.tags,
+                target: budget.target,
+                title: budget.title,
+                is_archived: budget.is_archived
+            });
+
             let balance = await this.transaction_repository.get_balance({
                 categories: [],
                 accounts: [],
@@ -217,8 +249,6 @@ export class UpdateBudgetTagUseCase implements IUpdateBudgetUseCase {
                 end_date: budget.date_end,
                 price: null
             });
-
-            let budget_updated = await this.budget_repository.update(budget);
 
             let budget_display: BudgetWithTagDisplay = {
                 id: budget_updated.id,

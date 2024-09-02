@@ -49,6 +49,8 @@ export class GetBudgetCategoryUseCase implements IGetBudgetUseCase {
             
             let budget_display: BudgetWithCategoryDisplay = {
                 id: budget.id,
+                date_start: budget.date_start,
+                date_to_update: budget.date_to_update,
                 title: budget.title,
                 categories: budget.categories,
                 current: balance,

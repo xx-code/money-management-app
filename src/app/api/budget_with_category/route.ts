@@ -1,5 +1,6 @@
 import { DB_FILENAME, account_repo, budget_categories_repo, category_repo, record_repo, tag_repo, transaction_repo } from "@/app/configs/repository";
 import { BudgetWithCategoryDisplay, BudgetWithTagDisplay } from "@/core/entities/budget";
+import { is_empty } from "@/core/entities/verify_empty_value";
 import { CreationBudgetCategoryUseCase, CreationBudgetCategoryUseCaseRequest } from "@/core/interactions/budgets/creationBudgetUseCase";
 import { GetAllBudgetCategoryUseCase, IGetAllBudgetUseCaseResponse } from "@/core/interactions/budgets/getAllBudgetUseCase";
 import { ICreationCategoryUseCaseResponse } from "@/core/interactions/category/creationCategoryUseCase";

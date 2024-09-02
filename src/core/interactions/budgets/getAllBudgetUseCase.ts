@@ -3,6 +3,7 @@ import { BudgetWithCategoryDisplay, BudgetWithTagDisplay, compute_current_spend,
 import { BudgetTagRepository, BudgetCategoryRepository } from "../repositories/budgetRepository";
 import { TransactionRepository } from "../repositories/transactionRepository";
 import { TransactionType } from "../../../core/entities/transaction";
+import { determined_end_date_with } from "@/core/entities/future_transaction";
 
 export interface IGetAllBudgetUseCase {
     execute(): void;
@@ -32,10 +33,8 @@ export class GetAllBudgetCategoryUseCase implements IGetAllBudgetUseCase {
             for (let i = 0; i < budgets.length; i++) {
                 let budget = budgets[i];
                 
-                let current_date_budget = determined_start_end_date_budget(budget);
-
-                let start_date = current_date_budget.start_date;
-                let end_date = current_date_budget.end_date;
+                let start_date = budget.date_start
+                let update_date = budget.date_to_update
 
                 let balance = await this.transaction_repository.get_balance({
                     categories: budget.categories.map(cat => cat.id),
@@ -43,7 +42,7 @@ export class GetAllBudgetCategoryUseCase implements IGetAllBudgetUseCase {
                     tags: [],
                     type: TransactionType.Debit,
                     start_date: start_date,
-                    end_date: end_date,
+                    end_date: update_date,
                     price: null
                 });
                 
@@ -54,7 +53,9 @@ export class GetAllBudgetCategoryUseCase implements IGetAllBudgetUseCase {
                     current: Math.abs(balance),
                     period: budget.period,
                     period_time: budget.period_time,
-                    target: budget.target
+                    target: budget.target,
+                    date_start: budget.date_start,
+                    date_to_update: budget.date_to_update
                 };
                 budgets_display.push(budget_display);
             }
@@ -90,7 +91,7 @@ export class GetAllBudgetTagUseCase implements IGetAllBudgetUseCase {
                     categories: [],
                     accounts: [],
                     tags: budget.tags,
-                    type: null,
+                    type: TransactionType.Debit,
                     start_date: budget.date_start,
                     end_date: budget.date_end,
                     price: null
@@ -99,7 +100,7 @@ export class GetAllBudgetTagUseCase implements IGetAllBudgetUseCase {
                 let budget_display: BudgetWithTagDisplay = {
                     id: budget.id,
                     title: budget.title,
-                    current: balance,
+                    current: Math.abs(balance),
                     date_start: budget.date_start,
                     date_end: budget.date_end,
                     target: budget.target,

@@ -7,12 +7,14 @@ import { CategoryRepository } from "../repositories/categoryRepository";
 import { TagRepository } from "../repositories/tagRepository";
 import { formatted } from "../../../core/entities/formatted";
 import DateParser from "@/core/entities/date_parser";
+import { determined_end_date_with } from "@/core/entities/future_transaction";
 
 export type CreationBudgetCategoryUseCaseRequest = {
     title: string;
     target: number;
     period: Period;
     period_time: number;
+    date_start: string
     categories: Array<string>;
 } 
 
@@ -78,20 +80,30 @@ export class CreationBudgetCategoryUseCase implements ICreationBudgetUseCase {
                 throw new ValidationError('Period field is empty');
             }
 
+            if (is_empty(request.date_start)) {
+                throw new ValidationError('Date start is empty')
+            }
+
+            let date_start: DateParser = DateParser.from_string(request.date_start)
+
             const period_list = ['Month', 'Week' , 'Year']
             if (!period_list.includes(request.period)) {
                 throw new ValidationError('Period must be Week, Month or year');
             }
 
             let new_id = this.crypto.generate_uuid_to_string();
-
+            
+            let date_to_update = determined_end_date_with(date_start.toDate(), request.period, request.period_time)
 
             let response = await this.budget_repository.save({
                 id: new_id,
                 title: request.title,
                 target: request.target,
                 period: request.period,
+                date_start: date_start,
+                date_to_update: date_to_update,
                 period_time: request.period_time,
+                is_archived: false,
                 categories: categories
             });
 
@@ -150,6 +162,7 @@ export class CreationBudgetTagUseCase implements ICreationBudgetUseCase {
                 target: request.target,
                 date_start: request.date_start,
                 date_end: request.date_end,
+                is_archived: false,
                 tags: tags
             });
             this.presenter.success(response);
