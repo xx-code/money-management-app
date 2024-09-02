@@ -12,7 +12,5 @@ pnpm dev
 bun dev
 
 ```
-adoc mod
-dfdf bdfgfg:
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
