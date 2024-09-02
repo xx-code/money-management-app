@@ -4,7 +4,7 @@ import Modal from '../modal';
 import Tag from '../tag';
 import TextInput from '../textInput';
 import './index.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DateParser from '@/core/entities/date_parser';
 import { is_empty } from '@/core/entities/verify_empty_value';
 import { search_in_array } from '@/core/entities/libs';
@@ -179,6 +179,11 @@ export function ModalAddNewTransaction({isOpen, transaction, onClose, onAdd, acc
             alert(err.data);
         }
     }
+    
+    useEffect(() => {
+        setSearchingCategories(categories)
+        setSearchingTags(tags)
+    }, [categories, tags])
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>

@@ -87,12 +87,14 @@ export default function ModalAddNewAccount ({isOpen, accounts, onClose, onAdd}:
             alert(err.response.data);
         }
     }
+    
 
     function closeModal() {
         onClose();
         setErrorInput({account_from: null, account_to: null, price: null, date: null});
         setInput({account_from: '', account_to: '', price: 0, date: DateParser.now().toString()});
     }
+    
 
     return (
         <Modal isOpen={isOpen} onClose={() => {}}>
