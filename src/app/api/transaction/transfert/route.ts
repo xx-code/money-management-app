@@ -38,13 +38,11 @@ export async function POST(
     }
 
 
-    let [year, month, day] = new_transaction.date.split('-');
-
     let request_new_transaction: RequestTransfertTransactionUseCase = {
         account_id_from: new_transaction.account_id_from,
         account_id_to: new_transaction.account_id_to,
         price: new_transaction.price,
-        date: new DateParser(parseInt(year), parseInt(month), parseInt(day))
+        date: DateParser.from_date(new_transaction.date)
     }
 
     let uuid = new UUIDMaker(); 

@@ -46,15 +46,12 @@ export async function POST(
             {status: 400}
         );
     }
-
-    let [year_start, month_start, day_start] = new_budget.date_start.split('-');
-    let [year_end, month_end, day_end] = new_budget.date_end.split('-');
     
     let request_budget_Tag: CreationBudgetTagUseCaseRequest = {
         title: new_budget.title,
         target: new_budget.target,
-        date_start: new DateParser(Number(year_start), Number(month_start), Number(day_start)),
-        date_end: new DateParser(Number(year_end), Number(month_end), Number(day_end)),
+        date_start: DateParser.from_string(new_budget.date_start),
+        date_end: DateParser.from_string(new_budget.date_end),
         tags: new_budget.tags
     }
 

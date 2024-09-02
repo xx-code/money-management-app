@@ -88,12 +88,11 @@ export class SqlTransactionRepository implements TransactionRepository {
             icon: result_db['icon']
         }
 
-        let [year, month, day] = result_db['date'].split('-');
 
         let record: Record = {
             id: result_db['record_id'],
             price: result_db['price'],
-            date: new DateParser(parseInt(year), parseInt(month), parseInt(day)),
+            date: DateParser.from_string(result_db['date']),
             description: result_db['description'],
             type: result_db['type']
         } 
@@ -341,7 +340,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                     ON ${this.table_category_name}.id = ${this.table_name}.id_category
                 ${where}
                 ORDER BY 
-                    ${this.table_record_name}.date ${sort_by !== null ? (sort_by!.asc ? 'ASC':'DESC') : 'ASC'}
+                    date(${this.table_record_name}.date) ${sort_by !== null ? (sort_by!.asc ? 'ASC':'DESC') : 'ASC'}
                 LIMIT ${size} OFFSET ${index_start_element_in_page}
                 `
             );

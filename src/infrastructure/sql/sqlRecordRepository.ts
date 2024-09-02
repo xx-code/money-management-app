@@ -27,7 +27,7 @@ export class SqlRecordRepository implements RecordRepository {
         return new Promise(async (resolve, rejects) => {
             let result = await this.db.run(`
                 INSERT INTO ${this.table_record_name} (id, price, date, description, type) VALUES (?, ?, ?, ?, ?)`,
-                request.id, request.price, request.date.toString(), request.description, request.type
+                request.id, request.price, request.date.toString('datetime'), request.description, request.type
             );
 
             if (result != undefined) {
@@ -42,11 +42,10 @@ export class SqlRecordRepository implements RecordRepository {
             let result = await this.db.get(`SELECT id, price, date, description, type FROM ${this.table_record_name} WHERE id = ?`, id);
             
             if (result != undefined) {
-                let [year, month, day] = result['date'].split('-')
 
                 resolve({
                     id: result['id'],
-                    date: new DateParser(Number(year), Number(month), Number(day)),
+                    date: DateParser.from_string(result['date']),
                     description: result['description'],
                     price: result['price'],
                     type: result['type']
@@ -62,10 +61,9 @@ export class SqlRecordRepository implements RecordRepository {
             
             let records: Record[] = [];
             for (let result of results) {
-                let [year, month, day] = result['date'].split('-')
                 records.push({
                     id: result['id'],
-                    date: new DateParser(Number(year), Number(month), Number(day)),
+                    date: DateParser.from_string(result['date']),
                     description: result['description'],
                     price: result['price'],
                     type: result['type']

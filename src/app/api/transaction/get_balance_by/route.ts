@@ -31,15 +31,13 @@ export async function POST(
     let presenter = new GetBalanceByPresenter();
     
     if (!is_empty(get_balance_by.date_start)) {
-        let [year_start, month_start, day_start] = get_balance_by.date_start.split('-');
-        request_get_balance.date_start = new DateParser(Number(year_start), Number(month_start), Number(day_start));
+        request_get_balance.date_start = DateParser.from_string(get_balance_by.date_start)
     } else {
         request_get_balance.date_start = null;
     }
     
     if (!is_empty(get_balance_by.date_end)) {
-        let [year_end, month_end, day_end] = get_balance_by.date_end.split('-');
-        request_get_balance.date_end = new DateParser(Number(year_end),Number( month_end), Number(day_end));
+        request_get_balance.date_end = DateParser.from_string(get_balance_by.date_end) 
     } else {
         request_get_balance.date_end = null;
     }

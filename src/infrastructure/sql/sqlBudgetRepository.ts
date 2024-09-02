@@ -288,11 +288,9 @@ export class SqlBudgetTagRepository implements BudgetTagRepository {
             
             if (result != undefined) {
                 
-                let [year, month, day] = result['date_start'].split('-')
-                let date_start = new DateParser(Number(year), Number(month), Number(day));
+                let date_start = DateParser.from_string(result['date_start'])
 
-                [year, month, day] = result['date_end'].split('-')
-                let date_end = new DateParser(Number(year), Number(month), Number(day));
+                let date_end = DateParser.from_string(result['date_end'])
 
 
                 resolve({
@@ -316,11 +314,9 @@ export class SqlBudgetTagRepository implements BudgetTagRepository {
             let budgets: BudgetWithTag[] = [];
 
             for (let result of results) {
-                let [year, month, day] = result['date_start'].split('-')
-                let date_start = new DateParser(Number(year), Number(month), Number(day));
+                let date_start = DateParser.from_string('date_start')
 
-                [year, month, day] = result['date_end'].split('-')
-                let date_end = new DateParser(Number(year), Number(month), Number(day));
+                let date_end = DateParser.from_string('date_end')
 
                 budgets.push({
                     id: result['id'],

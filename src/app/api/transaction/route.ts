@@ -59,7 +59,7 @@ export async function POST(
         );
     }
 
-    let [year, month, day] = new_transaction.date.split('-');
+    console.log(new_transaction)
 
     let request_new_transaction: RequestAddTransactionUseCase = {
         account_ref: new_transaction.account_ref,
@@ -68,7 +68,7 @@ export async function POST(
         description: new_transaction.description,
         price: new_transaction.price,
         type: type,
-        date: new DateParser(parseInt(year), parseInt(month), parseInt(day))
+        date: DateParser.from_string(new_transaction.date)
     }
 
     let uuid = new UUIDMaker(); 

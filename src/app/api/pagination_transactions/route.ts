@@ -33,15 +33,13 @@ export async function POST(
 
     
     if (!is_empty(pagination.date_start)) {
-        let [year_start, month_start, day_start] = pagination.date_start.split('-');
-        request_get_pagination.date_start = new DateParser(Number(year_start), Number(month_start), Number(day_start));
+        request_get_pagination.date_start = DateParser.from_string(pagination.date_start)
     } else {
         request_get_pagination.date_start = null;
     }
     
     if (!is_empty(pagination.date_end)) {
-        let [year_end, month_end, day_end] = pagination.date_end.split('-');
-        request_get_pagination.date_end = new DateParser(Number(year_end),Number( month_end), Number(day_end));
+        request_get_pagination.date_end = DateParser.from_string(pagination.date_end) 
     } else {
         request_get_pagination.date_end = null;
     }

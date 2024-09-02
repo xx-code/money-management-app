@@ -147,12 +147,16 @@ export function ModalAddNewTransaction({isOpen, transaction, onClose, onAdd, acc
             }
   
             if  (do_submit) {
+
                 let account = accounts.find((account) => account?.title === inputTransaction.account);
                 
+                let datenow = new Date()
+                let time = DateParser.formatTime(datenow.getHours()) + ":" + DateParser.formatTime(datenow.getMinutes()) + ":" + DateParser.formatTime(datenow.getSeconds())
+
                 let request_transaction = {
                   account_ref: account!.id,
                   description: inputTransaction.description,
-                  date: inputTransaction.date,
+                  date: inputTransaction.date + " " + time,
                   price: inputTransaction.price,
                   type: inputTransaction.type,
                   tag_ref: selectedTagList,

@@ -82,13 +82,11 @@ export async function PUT(
     request_budget.id = id;
 
     if (!is_empty(budget.date_start)) {
-        let [year_start, month_start, day_start] = budget.date_start.split('-');
-        request_budget.date_start = new DateParser(Number(year_start), Number(month_start), Number(day_start));
+        request_budget.date_start = DateParser.from_string(budget.date_start)
     }
 
     if (!is_empty(budget.date_end)) {
-        let [year_end, month_end, day_end] = budget.date_end.split('-');
-        request_budget.date_end = new DateParser(Number(year_end),Number( month_end), Number(day_end));
+        request_budget.date_end = DateParser.from_string(budget.date_end)
     }
 
     await account_repo.init(DB_FILENAME);

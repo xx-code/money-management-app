@@ -93,24 +93,17 @@ export class SqlFutureTransactionRepository implements FutureTransactionReposito
             icon: result_db['icon']
         }
 
-        let [year, month, day] = result_db['record_date'].split('-');
-
         let record: Record = {
             id: result_db['record_id'],
             price: result_db['price'],
-            date: new DateParser(parseInt(year), parseInt(month), parseInt(day)),
+            date: DateParser.from_string(result_db['record_date']),
             description: result_db['description'],
             type: result_db['type']
         } 
 
-        let [year_start, month_start, day_start] = result_db['date_start'].split('-');
-        let [year_update, month_update, day_update] = result_db['date_update'].split('-');
-        
-
         let date_end = null;
         if (result_db['date_end'] !== null && result_db['date_end'] !== undefined) {
-            let [year_end, month_end, day_end] = result_db['date_end'].split('-');
-            date_end = new DateParser(parseInt(year_end), parseInt(month_end), parseInt(day_end)) 
+            date_end = DateParser.from_string(result_db['date_end'] )
         }
 
         let future_transact: FutureTransaction = {
@@ -122,8 +115,8 @@ export class SqlFutureTransactionRepository implements FutureTransactionReposito
             period: result_db['period'],
             period_time: result_db['period_time'],
             repeat: result_db['repeat'],
-            date_start: new DateParser(parseInt(year_start), parseInt(month_start), parseInt(day_start)),
-            date_update: new DateParser(parseInt(year_update), parseInt(month_update), parseInt(day_update)),
+            date_start: DateParser.from_string(result_db['date_start']),
+            date_update: DateParser.from_string(result_db['date_update']),
             date_end: date_end,
             tags: tags
         }

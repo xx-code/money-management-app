@@ -100,8 +100,7 @@ export async function PUT(
     request_transaction.id = id;
 
     if (transaction.date !== undefined) {
-        let [year, month, day] = transaction.date.split('-');
-        request_transaction.date = new DateParser(parseInt(year), parseInt(month), parseInt(day));
+        request_transaction.date = DateParser.from_date(transaction.date)
     }
     
 
