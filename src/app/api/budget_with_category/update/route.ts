@@ -30,7 +30,7 @@ export async function POST(request: Request) {
             
             let presenter: AutoUpdateBudgetPresenter = new AutoUpdateBudgetPresenter()
             const repositories = await initRepository() 
-            let auto_update_budget_usecase = new AutoUpdateBudgetUseCase(presenter, repositories.budgetCategoryRepo, uuid)
+            let auto_update_budget_usecase = new AutoUpdateBudgetUseCase(presenter, repositories.budgetCategoryRepo, repositories.transactionRepo, uuid)
             await auto_update_budget_usecase.execute() 
             if (presenter.model_view.error !== null) {
                 console.log(presenter.model_view.error)
