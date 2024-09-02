@@ -27,13 +27,21 @@
     font-weight: 600;
 }
 
-.card-budget .card-budget-content .card-budget-info .card-budget-title .target {
+.card-budget .card-budget-content .card-budget-info .card-budget-title .money-info {
     margin-right: 1rem;
 }
 
 .card-budget .card-budget-content .card-budget-info .card-budget-title .money-info h6 {
     color: #7E7E7E;
     font-size: 0.7em;
+}
+
+ .money-good p {
+    color: #2ecc71 !important;
+}
+
+ .money-bad p {
+    color: #e74c3c !important;
 }
 
 .card-budget .card-budget-content .card-budget-info .card-budget-title .money-info p {

@@ -61,6 +61,10 @@ export default function CardBudget({budget, onUpdate, onDelete} : {budget: Budge
                                 <h6>Actuel</h6>
                                 <p>$ {budget.current}</p>
                             </div>
+                            <div className={`money-info ${budget.target - budget.current >= 0 ? 'money-good' : 'money-bad'}`}>
+                                <h6>Reste</h6>
+                                <p>$ {budget.target - budget.current }</p>
+                            </div>
                         </div>
                     </div>
                 </div>
