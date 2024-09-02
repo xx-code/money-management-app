@@ -22,7 +22,7 @@ app.prepare().then(async () => {
     // Scheduler
     const runScheduler = async () => {
         try {
-            const _ = await axios.post(`http://localhost:${PORT}/api/future-transactions/update`,
+            let _ = await axios.post(`http://localhost:${PORT}/api/future-transactions/update`,
                 {
                     headers: {
                         "Content-Type": "application/json"

@@ -16,7 +16,7 @@ export type RequestUpdateTransactionUseCase = {
     category_ref: string|null;
     type: TransactionType|null;
     description: string|null;
-    date: DateParser|null;
+    date: string|null;
     price: number|null;
 }
 
@@ -81,8 +81,9 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
                 record.type = request.type;
             }
 
-            if (request.date != null) {
-                record.date = request.date;
+            let date: DateParser = transaction.record.date
+            if (request.date !== null && request.date !== undefined && !is_empty(request.date)) {
+                date = DateParser.from_string(request.date);
             }
 
             if (request.category_ref != null) {
@@ -119,7 +120,7 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
                 id: record.id,
                 price: record.price,
                 description: record.description,
-                date: record.date,
+                date: date,
                 type: record.type
             });
 

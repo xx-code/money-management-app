@@ -198,7 +198,7 @@ export default class DateParser {
             return new DateParser(Number(year), Number(month), Number(date))
         } 
         
-        let new_date = date.slice(-2)
+        let new_date = date.slice(0, 2)
         let times = date.slice(3)
 
         let [hours, minutes, seconds] = times.split(':');

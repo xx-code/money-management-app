@@ -98,10 +98,6 @@ export async function PUT(
 
     let request_transaction: RequestUpdateTransactionUseCase = transaction;
     request_transaction.id = id;
-
-    if (transaction.date !== undefined) {
-        request_transaction.date = DateParser.from_date(transaction.date)
-    }
     
 
     await account_repo.init(DB_FILENAME);
