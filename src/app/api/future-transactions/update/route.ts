@@ -21,17 +21,21 @@ class AutoUpdateFutureTransactionPresenter implements IAutoUpdateFutureTransacti
     }
 }
 
+async function executeAutoUpdate() {
+    let presenter: AutoUpdateFutureTransactionPresenter = new AutoUpdateFutureTransactionPresenter()
+    const repositories = await initRepository() 
+    let auto_update_future_trans_usecase = new AutoUpdateFutureTransactionUseCase(presenter, repositories.transactionFutreRepo, repositories.transactionRepo)
+    await auto_update_future_trans_usecase.execute() 
+    if (presenter.model_view.error !== null) {
+        console.log(presenter.model_view.error)
+    }
+}
+
 
 export async function POST(request: Request) { 
     try {
         cron.schedule('0 23 * * *', async () => {
-            let presenter: AutoUpdateFutureTransactionPresenter = new AutoUpdateFutureTransactionPresenter()
-            const repositories = await initRepository() 
-            let auto_update_future_trans_usecase = new AutoUpdateFutureTransactionUseCase(presenter, repositories.transactionFutreRepo, repositories.transactionRepo)
-            await auto_update_future_trans_usecase.execute() 
-            if (presenter.model_view.error !== null) {
-                console.log(presenter.model_view.error)
-            }
+            executeAutoUpdate()
         })
         return NextResponse.json({ data: 'Updated', status: 200 });
     } catch(err: any) {

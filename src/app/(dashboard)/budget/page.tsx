@@ -381,7 +381,7 @@ export default function Budget() {
                         }
                     </div>
                     <TextInput title="Periode" name="period" type="text" value={inputBudgetCategory.period} onChange={() => {}} options={Object.keys(periods)} onClickOption={handleSelectClickCategoriesModal} error={errorValidationBudgetCategory.period}  overOnBlur={undefined} />
-                    <TextInput title="Date" name="date_start" type="date" value={inputBudgetCategory.date_start} onChange={handleSelectClickCategoriesModal} options={[]} onClickOption={undefined} error={errorValidationBudgetCategory.date_start}  overOnBlur={undefined} />
+                    <TextInput title="Date" name="date_start" type="date" value={inputBudgetCategory.date_start} onChange={handleChangeCategories} options={[]} onClickOption={undefined} error={errorValidationBudgetCategory.date_start}  overOnBlur={undefined} />
                     <div style={{width: '45%'}}>
                         <TextInput title="Nb Periode" name="period_time" type="number" value={inputBudgetCategory.period_time} onChange={handleChangeCategories} options={[]} onClickOption={undefined} error={errorValidationBudgetCategory.period_time}  overOnBlur={undefined} />  
                     </div>

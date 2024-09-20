@@ -22,19 +22,23 @@ class AutoUpdateBudgetPresenter implements IAutoUpdateBudgetPresenter {
     }
 }
 
+async function executeAutoUpdate() {
+    let uuid = new UUIDMaker();
+            
+    let presenter: AutoUpdateBudgetPresenter = new AutoUpdateBudgetPresenter()
+    const repositories = await initRepository() 
+    let auto_update_budget_usecase = new AutoUpdateBudgetUseCase(presenter, repositories.budgetCategoryRepo, repositories.transactionRepo, uuid)
+    await auto_update_budget_usecase.execute() 
+    if (presenter.model_view.error !== null) {
+        console.log(presenter.model_view.error)
+    }
+}
 
 export async function POST(request: Request) { 
     try {
+        await executeAutoUpdate()
         cron.schedule('0 23 * * *', async () => {
-            let uuid = new UUIDMaker();
-            
-            let presenter: AutoUpdateBudgetPresenter = new AutoUpdateBudgetPresenter()
-            const repositories = await initRepository() 
-            let auto_update_budget_usecase = new AutoUpdateBudgetUseCase(presenter, repositories.budgetCategoryRepo, repositories.transactionRepo, uuid)
-            await auto_update_budget_usecase.execute() 
-            if (presenter.model_view.error !== null) {
-                console.log(presenter.model_view.error)
-            }
+            await executeAutoUpdate()
         })
         return NextResponse.json({ data: 'Updated', status: 200 });
     } catch(err: any) {
