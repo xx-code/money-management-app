@@ -1,15 +1,14 @@
-import { NextResponse } from "next/server";
+import { initRepository } from "@/app/api/libs/init_repo"
+import { AutoDeleteFreezeBalanceUseCase, IAutoDeleteFreezeBalancePresenter } from "@/core/interactions/freezerBalance/autoDeleteFreezeBalanceUseCase"
+import { NextResponse } from "next/server"
 import cron from 'node-cron'
-import { initRepository } from "../../libs/init_repo";
-import { AutoUpdateBudgetUseCase, IAutoUpdateBudgetPresenter } from "@/core/interactions/budgets/autoUpdateBudgetUseCase";
-import UUIDMaker from "@/services/crypto";
 
 type UpdateModelView = {
     response: string | null,
     error: Error | null
 }
 
-class AutoUpdateBudgetPresenter implements IAutoUpdateBudgetPresenter {
+class AutoDeleteFreezeBalancePresenter implements IAutoDeleteFreezeBalancePresenter {
     model_view: UpdateModelView = {response: null, error: null}
 
     success(message: string): void {
@@ -22,13 +21,11 @@ class AutoUpdateBudgetPresenter implements IAutoUpdateBudgetPresenter {
     }
 }
 
-async function executeAutoUpdate() {
-    let uuid = new UUIDMaker();
-            
-    let presenter: AutoUpdateBudgetPresenter = new AutoUpdateBudgetPresenter()
+async function executeAutoDelete() {  
+    let presenter: AutoDeleteFreezeBalancePresenter = new AutoDeleteFreezeBalancePresenter()
     const repositories = await initRepository() 
-    let auto_update_budget_usecase = new AutoUpdateBudgetUseCase(presenter, repositories.budgetCategoryRepo, repositories.transactionRepo, uuid)
-    await auto_update_budget_usecase.execute() 
+    let auto_delete_freeze_usecase = new AutoDeleteFreezeBalanceUseCase(repositories.transactionRepo, presenter)
+    await auto_delete_freeze_usecase.execute() 
     if (presenter.model_view.error !== null) {
         console.log(presenter.model_view.error)
     } else {
@@ -38,9 +35,9 @@ async function executeAutoUpdate() {
 
 export async function POST(request: Request) { 
     try {
-        await executeAutoUpdate()
+        await executeAutoDelete()
         cron.schedule('0 23 * * *', async () => {
-            await executeAutoUpdate()
+            await executeAutoDelete()
         })
         return NextResponse.json({ data: 'Updated', status: 200 });
     } catch(err: any) {

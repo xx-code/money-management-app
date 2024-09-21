@@ -3,8 +3,7 @@ import { Account } from "@/core/entities/account";
 export type dbAccount = {
     id: string;
     title: string;
-    credit_value: number;
-    credit_limit: number;
+    is_saving: boolean
 }
 
 

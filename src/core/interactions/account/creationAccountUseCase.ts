@@ -5,8 +5,6 @@ import { is_empty } from '../../entities/verify_empty_value';
 
 export type CreationAccountUseCaseRequest = {
   title: string;
-  credit_value: number;
-  credit_limit: number;
 }
 
 interface ICreationAccountUseCase {
@@ -41,19 +39,10 @@ export class CreationAccountUseCase implements ICreationAccountUseCase {
         throw new ValidationError('Account name already exist');
       }
 
-      if (request.credit_value < 0) {
-        throw new ValidationError('Credit value must be greater than 0');
-      }
-
-      if (request.credit_limit < 0) {
-        throw new ValidationError('Credit limit must be greater than 0');
-      }
-
       let is_saved = await this.repository.save({
         id: id,
         title: request.title,
-        credit_limit: request.credit_limit,
-        credit_value: request.credit_value
+        is_saving: false
       });
 
       if (!is_saved) {

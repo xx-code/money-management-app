@@ -78,6 +78,8 @@ export default class DateParser {
     }
 
     public compare(date: DateParser) {
+        // -1 this inferior at date
+        // 1 this supperior at date
         if (this.getYear() < date.getYear()) {
             return -1
         } else if (this.getYear() > date.getYear()) {

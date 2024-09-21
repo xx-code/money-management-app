@@ -36,6 +36,14 @@ app.prepare().then(async () => {
                     }
                 }
             )
+
+            _ = await axios.post(`http://localhost:${PORT}/api/transaction/auto/deleteFreeze`,
+                {
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }
+            )
         } catch (error) {
             console.log(error)
         }

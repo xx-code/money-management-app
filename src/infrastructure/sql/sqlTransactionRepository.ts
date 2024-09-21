@@ -78,8 +78,7 @@ export class SqlTransactionRepository implements TransactionRepository {
         let account: Account = {
             id: result_db['id_account'],
             title: result_db['account_title'],
-            credit_limit: result_db['credit_limit'],
-            credit_value: result_db['credit_value'],
+            is_saving: result_db['is_saving']
         }
 
         let category: Category = {
@@ -341,7 +340,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                 ${where}
                 ORDER BY 
                     date(${this.table_record_name}.date) ${sort_by !== null ? (sort_by!.asc ? 'ASC':'DESC') : 'ASC'}
-                LIMIT ${size} OFFSET ${index_start_element_in_page}
+                ${page > 0 ? `LIMIT ${size} OFFSET ${index_start_element_in_page}` : ""}
                 `
             );
 
@@ -613,8 +612,8 @@ export class SqlTransactionRepository implements TransactionRepository {
     update(request: dbTransaction): Promise<Transaction> {
         return new Promise(async (resolve, reject) => {
             await this.db.run(`
-                UPDATE ${this.table_name} SET id_category = ? WHERE id = ? 
-            `, request.category_ref, request.id);
+                UPDATE ${this.table_name} SET id_account = ?, id_category = ? WHERE id = ? 
+            `, request.account_ref, request.category_ref, request.id);
 
             let result_filter_by_tag = await this.db.all(`
                 SELECT id_transaction, id_tag

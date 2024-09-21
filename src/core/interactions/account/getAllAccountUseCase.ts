@@ -3,7 +3,7 @@ import { AccountRepository } from "../repositories/accountRepository";
 import { TransactionRepository } from "../repositories/transactionRepository";
 
 interface IGetAllAccountUseCase {
-    execute(): void
+    execute(is_saving:boolean): void
 }
 
 export interface IGetAllAccountUseCaseResponse {
@@ -22,9 +22,10 @@ export class GetAllAccountUseCase implements IGetAllAccountUseCase{
         this.presenter = presenter;
     }
 
-    async execute(): Promise<void> {
+    async execute(is_saving:boolean=false): Promise<void> {
         try {
             let accounts = await this.repository.get_all();
+            accounts = accounts.filter(account => account.is_saving === is_saving)
             let accounts_display: AccountDisplay[] = [];
             for (let account of accounts) {
                 let balance = await this.transaction_repository.get_balance({

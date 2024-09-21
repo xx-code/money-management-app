@@ -83,8 +83,7 @@ export class SqlFutureTransactionRepository implements FutureTransactionReposito
         let account: Account = {
             id: result_db['account_id'],
             title: result_db['account_title'],
-            credit_limit: result_db['credit_limit'],
-            credit_value: result_db['credit_value'],
+            is_saving: result_db['is_saving']
         }
 
         let category: Category = {

@@ -12,6 +12,7 @@ import DateParser from "@/core/entities/date_parser";
 
 export type RequestUpdateTransactionUseCase = {
     id: string;
+    account_ref: string|null;
     tag_ref: string|null;
     category_ref: string|null;
     type: TransactionType|null;
@@ -59,6 +60,16 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
             let category_ref = transaction.category.id;
             let tags: string[] = [];
 
+            let account_ref = transaction.account.id
+            if (request.account_ref !== null) {
+                let account = await this.account_repository.get(request.account_ref)
+
+                if (account === null) {
+                    throw new ValidationError('The account do not exist')
+                }
+                account_ref = request.account_ref                
+            }
+            
             if (request.description != null) {
                 if (is_empty(request.description)) {
                     throw new ValidationError('Description ref field is emtpy');
@@ -126,7 +137,7 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
 
             let response = await this.transaction_repository.update({
                 id: transaction.id,
-                account_ref: transaction.account.id,
+                account_ref: account_ref,
                 category_ref: category_ref,
                 tag_ref: tags,
                 record_ref: record_updated.id
