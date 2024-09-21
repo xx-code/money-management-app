@@ -19,6 +19,7 @@ import DateParser from "@/core/entities/date_parser";
 import { Category } from "@/core/entities/category";
 import CardResumeHome from './cardResumeHome';
 import TopNav from '../topNav';
+import ModalAddFreezeTrans from '@/app/components/modelAddFreezeTransaction';
 
 
 export default function Home() {
@@ -31,6 +32,7 @@ export default function Home() {
   const [openAccountModal, setOpenAccountModal] = useState(false);
   const [openTransactionModal, setOpenTransactionModal] = useState(false);
   const [openTransfertModal, setOpenTransfertModal] = useState(false);
+  const [openFreezeModal, setOpenFreezeModal] = useState(false)
 
   const [selectedTransaction, setUpdateTransaction] = useState<Transaction|null>(null);
 
@@ -125,7 +127,7 @@ export default function Home() {
         let response = await axios.put(`/api/account/${account!.id}`, account);    
         let updated = response.data;
 
-        setAccount({...account!, credit_limit: updated.credit_limit});
+        setAccount({...account!});
     } catch (error) {
         console.log(error);
     }       
@@ -147,7 +149,7 @@ export default function Home() {
 
   const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       let value = parseInt(event.target.value);
-      setAccount({...account!, id: account!.id, credit_limit: value});
+      setAccount({...account!, id: account!.id});
   };
 
   const handleSliderRelease = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,13 +209,11 @@ export default function Home() {
       .then((res) => res.json())
       .then((data) => {
           let accounts = Object.assign([], data.accounts);
-        
+
           let balance = accounts.reduce((sum:number, current:AccountDisplay) => sum + current.balance, 0)
           accounts.unshift({
               id: "all",
               title: "Tous les comptes",
-              credit_limit: 0,
-              credit_value: 0,
               balance: Math.round(balance * 100)/100
           });
           if (!do_refresh)  {
@@ -227,6 +227,11 @@ export default function Home() {
     setup_data(true);
     setOpenTransactionModal(false);
     setUpdateTransaction(null);
+  }
+
+  function closeModalFreeze() {
+    setup_data(true);
+    setOpenFreezeModal(false);
   }
 
   async function closeModalAccount() {
@@ -263,6 +268,7 @@ export default function Home() {
             account={account}
             accounts={accounts}
             onAddNewTransaction={() => setOpenTransactionModal(true)}
+            onAddFreezeTransaction={() => setOpenFreezeModal(true)}
             handleSelectAccount={handleDropDownChange}
             handleSliderChange={handleSliderChange}
             handleSliderRelease={handleSliderRelease} 
@@ -298,7 +304,15 @@ export default function Home() {
       </div>
       <ModalTransfertTransaction isOpen={openTransfertModal} accounts={accounts.filter(account => account.id !== 'all')} onClose={closeModalTransfert} onAdd={async () => { await setup_data(false)}} />
       <ModalAddNewAccount isOpen={openAccountModal} onClose={closeModalAccount} onAdd={async () => { await setup_data(false)}} />
-      <ModalAddNewTransaction accounts={accounts.filter(account => account.id !== 'all')} isOpen={openTransactionModal} onClose={closeModalTransaction} onAdd={async () => { await setup_data(false)}} tags={tags} categories={categories} transaction={selectedTransaction} />
+      <ModalAddNewTransaction 
+        accounts={accounts.filter(account => account.id !== 'all')} 
+        isOpen={openTransactionModal} onClose={closeModalTransaction} 
+        onAdd={async () => { await setup_data(false)}} 
+        tags={tags} 
+        categories={categories} 
+        transaction={selectedTransaction} 
+      />
+      <ModalAddFreezeTrans isOpen={openFreezeModal} accounts={accounts.filter(account => account.id !== 'all')} onClose={closeModalFreeze} onAdd={async () => { await setup_data(false)}} />
     </>
   );
 }

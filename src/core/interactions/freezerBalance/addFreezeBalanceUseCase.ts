@@ -70,7 +70,7 @@ export class AddFreezeBalanceUseCase implements IAddFreezeBalanceUseCase {
                 id: this.crypto.generate_uuid_to_string(),
                 date: date,
                 description: `freeze`,
-                type: TransactionType.Credit,
+                type: TransactionType.Debit,
                 price: request.price
             }
 

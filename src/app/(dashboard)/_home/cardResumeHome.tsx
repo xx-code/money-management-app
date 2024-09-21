@@ -14,9 +14,20 @@ import { useEffect, useState } from "react";
 library.add(fas)
 
 
-export default function CardResumeHome({account, accounts, onDeleteAccount, onEditAccount, onMakeTransfert, onAddNewAccount, onAddNewTransaction, handleSelectAccount, handleSliderChange, handleSliderRelease}: 
+export default function CardResumeHome({
+    account, 
+    accounts, 
+    onDeleteAccount, 
+    onEditAccount, 
+    onMakeTransfert, 
+    onAddNewAccount, 
+    onAddNewTransaction, 
+    onAddFreezeTransaction,
+    handleSelectAccount, 
+    handleSliderChange, 
+    handleSliderRelease}: 
     {account: AccountDisplay|null, accounts: AccountDisplay[], onDeleteAccount: any, onEditAccount:any, onMakeTransfert:any, onAddNewAccount: any, onAddNewTransaction: any,
-    handleSelectAccount: any, handleSliderChange: any, handleSliderRelease: any}) {
+    handleSelectAccount: any, handleSliderChange: any, onAddFreezeTransaction:any, handleSliderRelease: any}) {
 
     const [oldAccount, setOldAccount] = useState(account)
     const [oldAccounts, setOldAccounts] = useState(accounts)
@@ -64,28 +75,13 @@ export default function CardResumeHome({account, accounts, onDeleteAccount, onEd
                                 }
                             </h6>
                         </div>
-                        <div className="card-resume-slider">
-                            {
-                                oldAccount !== null ?
-                                <>
-                                    {
-                                        oldAccount.id !== "all" ? 
-                                        <>
-                                            <p>{"Limite d'endettement"}</p>
-                                            <RangeSlider min={0} max={oldAccount.credit_value} change_indicator={oldAccount.credit_limit} value={oldAccount.credit_limit} onChange={handleSliderChange} onRelease={handleSliderRelease}/>
-                                        </>
-                                        :
-                                        <></>
-                                    }
-                                </>
-                                    :
-                                <></>
-                            }
-                        </div>
                         <div className="flex justify-between mt-2">
                             <div className="flex">
                                 <div className="card-resume-btn-icon" style={{backgroundColor: "#4FDC4C"}} onClick={onAddNewTransaction}>
                                     <FontAwesomeIcon icon={["fas", "plus"]} />
+                                </div>
+                                <div className="card-resume-btn-icon"  style={{backgroundColor: "#b2bac4"}} onClick={onAddFreezeTransaction}>
+                                    <FontAwesomeIcon icon={["fas", "snowflake"]} />
                                 </div>
                                 <div className="card-resume-btn-icon"  style={{backgroundColor: "#6755D7"}} onClick={onMakeTransfert}>
                                     <FontAwesomeIcon icon={["fas", "right-left"]} />

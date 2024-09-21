@@ -18,10 +18,10 @@ export class SqlSavingRepository implements SavingRepository {
         this.create_table_query = `
             CREATE TABLE IF NOT EXISTS ${this.table_saving_name} (
                 id TEXT PRIMARY KEY,
-                account_ref TEXT NOT NULL
-                title TEXT NOT NULL
-                description TEXT
-                target INTERGER NOT NULL
+                id_account TEXT NOT NULL,
+                title TEXT NOT NULL,
+                description TEXT,
+                target INTERGER NOT NULL,
                 FOREIGN KEY (id_account) REFERENCES ${table_account_name}(id)
             )
         `
@@ -31,7 +31,7 @@ export class SqlSavingRepository implements SavingRepository {
     create(save_goal: dbSaveGoal): Promise<boolean> {
         return new Promise(async (resolve, reject) => {
             let result = await this.db.run(
-                `INSERT INTO ${this.table_saving_name} (id, account_ref, title, description, target) VALUES (?, ?, ?, ?, ?)`,
+                `INSERT INTO ${this.table_saving_name} (id, id_account, title, description, target) VALUES (?, ?, ?, ?, ?)`,
                 save_goal.id, save_goal.account_ref, save_goal.title, save_goal.description, save_goal.target
             )
 
@@ -46,14 +46,14 @@ export class SqlSavingRepository implements SavingRepository {
     get(save_goal_id: string): Promise<SaveGoal|null> {
         return new Promise(async (resolve, reject) => {
             let result = await this.db.run(
-                `Select id, account_ref, title, description, target From ${this.table_saving_name} Where id = ?`,
+                `Select id, id_account, title, description, target From ${this.table_saving_name} Where id = ?`,
                 save_goal_id
             )
 
             if(result != undefined) {
                 let save_goal: SaveGoal = {
                     id: result['id'],
-                    account_ref: result['account_ref'],
+                    account_ref: result['id_account'],
                     description: result['title'],
                     target: result['description'],
                     title: result['target']
@@ -69,7 +69,7 @@ export class SqlSavingRepository implements SavingRepository {
     getAll(): Promise<SaveGoal[]> {
         return new Promise(async (resolve, reject) => {
             let results = await this.db.run(
-                `Select id, account_ref, title, description, target From ${this.table_saving_name}`
+                `Select id, id_account, title, description, target From ${this.table_saving_name}`
             )
 
             let save_goals = [];
@@ -77,7 +77,7 @@ export class SqlSavingRepository implements SavingRepository {
             for (let result of results) {
                 let save_goal: SaveGoal = {
                     id: result['id'],
-                    account_ref: result['account_ref'],
+                    account_ref: result['id_account'],
                     description: result['title'],
                     target: result['description'],
                     title: result['target']

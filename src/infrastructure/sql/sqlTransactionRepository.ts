@@ -136,7 +136,7 @@ export class SqlTransactionRepository implements TransactionRepository {
             let result = await this.db.get(`
                 SELECT 
                     ${this.table_name}.id, 
-                    ${this.table_account_name}.id as id_account,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                    ${this.table_account_name}.id as id_account,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.is_saving, 
                     ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
                     ${this.table_category_name}.title as category_title, ${this.table_category_name}.icon
                 FROM 
@@ -219,7 +219,7 @@ export class SqlTransactionRepository implements TransactionRepository {
             let results = await this.db.all(`
                 SELECT 
                     ${this.table_name}.id, 
-                    ${this.table_account_name}.id as id_account,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                    ${this.table_account_name}.id as id_account,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.is_saving, 
                     ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
                     ${this.table_category_name}.title  as category_title, ${this.table_category_name}.icon
                 FROM 
@@ -326,7 +326,7 @@ export class SqlTransactionRepository implements TransactionRepository {
             let results = await this.db.all(`
                 SELECT 
                     ${this.table_name}.id, 
-                    ${this.table_account_name}.id as id_account,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                    ${this.table_account_name}.id as id_account,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.is_saving, 
                     ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
                     ${this.table_category_name}.title as category_title, ${this.table_category_name}.icon
                 FROM 
@@ -521,7 +521,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                 results_credit = await this.db.get(`
                     SELECT 
                         ${this.table_name}.id, 
-                        ${this.table_account_name}.id as id_account,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                        ${this.table_account_name}.id as id_account,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.is_saving, 
                         ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
                         ${this.table_category_name}.title as category_title, ${this.table_category_name}.icon,
                         SUM(${this.table_record_name}.price) as total_price 
@@ -569,7 +569,7 @@ export class SqlTransactionRepository implements TransactionRepository {
                 results_debit = await this.db.get(`
                     SELECT 
                         ${this.table_name}.id, 
-                        ${this.table_account_name}.id as id_account,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                        ${this.table_account_name}.id as id_account,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.is_saving, 
                         ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
                         ${this.table_category_name}.title  as category_title, ${this.table_category_name}.icon,
                         SUM(${this.table_record_name}.price) as total_price 
@@ -600,7 +600,7 @@ export class SqlTransactionRepository implements TransactionRepository {
     delete(id: string): Promise<boolean> {
         return new Promise(async (resolve, reject) => {
             let result = await this.db.run(`DELETE FROM ${this.table_name} WHERE id = ?`, id);
-            let result_2 = await this.db.run(`DELETE FROM ${this.table_tag_name}_tags WHERE id_transaction = ?`, id);
+            let result_2 = await this.db.run(`DELETE FROM ${this.table_name}_tags WHERE id_transaction = ?`, id);
 
             if (result['changes'] == 0) {
                 resolve(false);

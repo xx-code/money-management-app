@@ -25,6 +25,7 @@ export class GetAllAccountUseCase implements IGetAllAccountUseCase{
     async execute(is_saving:boolean=false): Promise<void> {
         try {
             let accounts = await this.repository.get_all();
+            
             accounts = accounts.filter(account => account.is_saving === is_saving)
             let accounts_display: AccountDisplay[] = [];
             for (let account of accounts) {

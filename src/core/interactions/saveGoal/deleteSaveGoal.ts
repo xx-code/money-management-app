@@ -46,7 +46,7 @@ export class DeleteSaveGoalUseCase implements IDeleteSaveGoalUseCase {
                 throw new ValidationError('Account do not exist')
             }
 
-            let transactions_saving = await this.transaction_repo.get_paginations(-1, 0, null, {
+            let transactions_saving = await this.transaction_repo.get_paginations(-1, 1, null, {
                 accounts: [saving_goal.account_ref],
                 categories: [],
                 tags: [],

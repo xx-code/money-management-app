@@ -224,7 +224,7 @@ export class SqlFutureTransactionRepository implements FutureTransactionReposito
             let result = await this.db.get(`
                 SELECT 
                     ${this.table_name}.id, ${this.table_name}.is_archived, ${this.table_name}.period, ${this.table_name}.period_time, ${this.table_name}.repeat, ${this.table_name}.date_start, ${this.table_name}.date_update, ${this.table_name}.date_end,
-                    ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                    ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.is_saving, 
                     ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date as record_date, ${this.table_record_name}.description, ${this.table_record_name}.type,
                     ${this.table_category_name}.title as category_title, ${this.table_category_name}.icon
                 FROM 
@@ -255,7 +255,7 @@ export class SqlFutureTransactionRepository implements FutureTransactionReposito
             let results = await this.db.all(`
                 SELECT 
                     ${this.table_name}.id, ${this.table_name}.is_archived, ${this.table_name}.period, ${this.table_name}.period_time, ${this.table_name}.repeat, ${this.table_name}.date_start, ${this.table_name}.date_update, ${this.table_name}.date_end,
-                    ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
+                    ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.is_saving, 
                     ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date as record_date, ${this.table_record_name}.description, ${this.table_record_name}.type,
                     ${this.table_category_name}.title as category_title, ${this.table_category_name}.icon
                 FROM 

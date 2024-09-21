@@ -38,7 +38,7 @@ export class AutoDeleteFreezeBalanceUseCase  implements IAutoDeleteFreezeBalance
 
             let sort_by: dbSortBy|null = null;
       
-            let response = await this.transaction_repository.get_paginations(-1, 0, sort_by, filters);
+            let response = await this.transaction_repository.get_paginations(-1, 1, sort_by, filters);
 
             for (let i = 0; i < response.transactions.length ; i++) {
                 if (DateParser.now().compare(response.transactions[i].record.date) >= 0) {

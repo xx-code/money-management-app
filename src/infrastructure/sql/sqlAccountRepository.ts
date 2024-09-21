@@ -36,7 +36,7 @@ export class SqlAccountRepository implements AccountRepository {
             for(let result of results) {
                 await this.db.run(`
                 INSERT INTO ${this.table_account_name} (id, title, is_saving) VALUES (?, ?, ?)`,
-                result['id'], result['title'], result['is_saving']
+                result['id'], result['title'], 0
             );
             await this.db.exec(`DELETE FROM ${this.table_account_name}_old`)
             }
@@ -47,7 +47,7 @@ export class SqlAccountRepository implements AccountRepository {
         return new Promise( async (resolve, reject) => {    
             let result = await this.db.run(`
                 INSERT INTO ${this.table_account_name} (id, title, is_saving) VALUES (?, ?, ?)`,
-                account.id, account.title, account.is_saving
+                account.id, account.title, account.is_saving ? 1 : 0
             );
 
             if (result['changes'] == 0) {
@@ -76,7 +76,7 @@ export class SqlAccountRepository implements AccountRepository {
                 resolve({
                     id: result['id'],
                     title: result['title'],
-                    is_saving: result['is_saving']
+                    is_saving: result['is_saving'] === 0 ? false : true
                 });
             } else {
                 resolve(null);
@@ -92,7 +92,7 @@ export class SqlAccountRepository implements AccountRepository {
                 all_accounts.push({
                     id: result['id'],
                     title: result['title'],
-                    is_saving: result['is_saving']
+                    is_saving: result['is_saving'] === 0 ? false : true
                 })
             } 
             

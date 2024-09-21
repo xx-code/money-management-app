@@ -10,6 +10,7 @@ import { search_in_array } from '@/core/entities/libs';
 import Button from '@/app/components/button';
 import Modal from '@/app/components/modal';
 import { is_empty } from '@/core/entities/verify_empty_value';
+import matchSystemIcon from '@/app/_utils/matchSystemIcon';
 
 
 export function SectionCategory() {
@@ -119,6 +120,7 @@ export function SectionCategory() {
         get_all_category();
     }, [])
 
+
     //TODO: find away to fix with of modal
 
     return (
@@ -137,7 +139,7 @@ export function SectionCategory() {
                     searchingCategories.map((category, index) => <TagIcon 
                         onClick={category.icon === 'transfert' ? undefined :() => clickUpdateModal(category)}
                         key={index} title={category.title} 
-                        icon={category.icon === 'transfert' ? 'fa-solid fa-right-left' : category.icon } 
+                        icon={matchSystemIcon(category.icon) } 
                         onDelete={category.icon === 'transfert' ? undefined : () => delete_category(category.id)}/>)
                 }
             </div>

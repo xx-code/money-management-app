@@ -4,6 +4,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Tag from '../tag';
+import matchSystemIcon from '@/app/_utils/matchSystemIcon';
 // @ts-ignore
 library.add(fas);
 
@@ -16,11 +17,8 @@ export default function CardTransaction({transaction, onEdit, onDelete} : {trans
                     <div className="card-transaction-icon">
                         <div className="icon">
                             {
-                                transaction.category.title === 'Transfert' ?
-                                <FontAwesomeIcon className="icon-in" icon={["fas", "right-left"]} />
-                                :
                                 // @ts-ignore
-                                <FontAwesomeIcon className="icon-in" icon={transaction.category.icon} />
+                                <FontAwesomeIcon className="icon-in" icon={matchSystemIcon(transaction.category.icon)} />
                             }
                         </div>
                     </div>
