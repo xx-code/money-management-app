@@ -7,7 +7,7 @@ interface IGetAllAccountUseCase {
 }
 
 export interface IGetAllAccountUseCaseResponse {
-    success(all_account: Array<Account>): void
+    success(all_account: Array<AccountDisplay>): void
     fail(err: Error): void
 }
 

@@ -400,7 +400,7 @@ export class SqlTransactionRepository implements TransactionRepository {
 
             let debit = result_debit['total_price'];
 
-            let balance_account = debit - credit;
+            let balance_account = credit - debit;
 
             resolve(balance_account);
         });

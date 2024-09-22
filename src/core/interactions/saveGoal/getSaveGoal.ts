@@ -1,21 +1,14 @@
 import { ValidationError } from "@/core/errors/validationError"
 import { SavingRepository } from "../repositories/savingRepository"
 import { TransactionRepository } from "../repositories/transactionRepository"
-
-export type ResponseGetSaveGoal = {
-    id: string
-    title: string
-    description: string
-    target: number
-    balance: number
-}
+import { SaveGoalDisplay } from "@/core/entities/save_goal";
 
 export interface IGetSaveGoalUseCase {
     execute(id: string): void
 }
 
 export interface IGetSaveGoalPresenter {
-    success(response: ResponseGetSaveGoal): void;
+    success(response: SaveGoalDisplay): void;
     fail(err: Error): void;
 }
 
@@ -40,7 +33,7 @@ export class GetSaveGoalUseCase implements IGetSaveGoalUseCase {
 
             let balance = await this.transaction_repository.get_account_balance(save_goal.account_ref)
 
-            let response: ResponseGetSaveGoal = {
+            let response: SaveGoalDisplay = {
                 id: save_goal.id,
                 title: save_goal.title,
                 description: save_goal.description,

@@ -16,7 +16,7 @@ const transaction_repo = new SqlTransactionRepository('transactions');
 const budget_categories_repo = new SqlBudgetCategoryRepository('budget_categories');
 const budget_tag_repo = new SqlBudgetTagRepository('budget_tags');
 const future_transaction_repo = new SqlFutureTransactionRepository('future_transactions')
-const saving_repo = new SqlSavingRepository('saving_repo')
+const saving_repo = new SqlSavingRepository('savings')
 
 export {
     DB_FILENAME,

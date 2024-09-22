@@ -45,6 +45,7 @@ export default function Nav() {
                     <NavButton className={pathname === '/' ? 'active' : ''} title='Accueil' link='/' icon={["fas", "house"]} />
                     <NavButton className={pathname === '/budget' ? 'active' : ''} title='Budget' link='/budget' icon={["fas", "wallet"]}/>
                     <NavButton className={pathname === '/visualisation' ? 'active' : ''} title='Visualisation' link='/visualisation' icon={["fas", "chart-pie"]}/>
+                    <NavButton className={pathname === '/saving' ? 'active' : ''} title="But d'epargne" link='/saving' icon={["fas", "piggy-bank"]}/>
                     <NavButton className={pathname === '/parameter' ? 'active' : ''} title='Parametre' link='/parameter' icon={["fas", "gear"]}/>
                 </div>
             </div>

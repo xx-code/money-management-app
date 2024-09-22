@@ -7,3 +7,11 @@ export type SaveGoal = {
     description: string
     target: number
 }
+
+export type SaveGoalDisplay = {
+    id: string
+    title: string
+    description: string
+    target: number
+    balance: number
+}

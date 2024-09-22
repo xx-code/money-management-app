@@ -5,5 +5,8 @@ export default function matchSystemIcon(icon: string) {
     if (icon === 'freeze')
         return "fa-solid fa-snowflake"
 
+    if (icon === 'Saving')
+        return "fa-solid fa-piggy-bank"
+
     return icon
 }

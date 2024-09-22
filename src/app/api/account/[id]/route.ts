@@ -6,7 +6,7 @@ import { DeleteAccountUseCase, IDeleteAccountUseCaseResponse } from '@/core/inte
 import { IUpdateAccountUseCaseResponse, RequestUpdateAccountUseCase, UpdateAccountUseCase } from '@/core/interactions/account/updateAccountUseCase';
 
 type CreationAccountModelView = {
-    response: {title: string, credit_value: number, credit_limit: number, balance: number} | null,
+    response: {title: string, balance: number} | null,
     error: Error | null
     }
    
@@ -15,7 +15,7 @@ class GetAccountApiResponse implements IGetAccountUseCaseResponse {
     model_view: CreationAccountModelView = {response: null, error: null};
 
     success(account: AccountDisplay): void {
-        this.model_view.response = {title: account.title, credit_value: account.credit_value, balance: 0, credit_limit: account.credit_limit};
+        this.model_view.response = {title: account.title,  balance: 0};
         this.model_view.error = null;
     }
     fail(error: Error): void {
@@ -92,7 +92,7 @@ export async function DELETE(
 }
 
 type UpdateAccountModelView = {
-    response: {title: string, credit_value: number, credit_limit: number, balance: number} | null,
+    response: {title: string, balance: number} | null,
     error: Error | null
 }
 
@@ -100,7 +100,7 @@ class UpdateAccountPresenter implements IUpdateAccountUseCaseResponse {
     model_view: UpdateAccountModelView = {response: null, error: null};
 
     success(account_updated: Account): void {
-        this.model_view.response = { title: account_updated.title, credit_value: account_updated.credit_value, credit_limit: account_updated.credit_limit, balance: 0 };
+        this.model_view.response = { title: account_updated.title, balance: 0 };
         this.model_view.error = null;
     }
     fail(err: Error): void {

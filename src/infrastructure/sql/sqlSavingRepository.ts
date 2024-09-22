@@ -45,7 +45,7 @@ export class SqlSavingRepository implements SavingRepository {
 
     get(save_goal_id: string): Promise<SaveGoal|null> {
         return new Promise(async (resolve, reject) => {
-            let result = await this.db.run(
+            let result = await this.db.get(
                 `Select id, id_account, title, description, target From ${this.table_saving_name} Where id = ?`,
                 save_goal_id
             )
@@ -54,9 +54,9 @@ export class SqlSavingRepository implements SavingRepository {
                 let save_goal: SaveGoal = {
                     id: result['id'],
                     account_ref: result['id_account'],
-                    description: result['title'],
-                    target: result['description'],
-                    title: result['target']
+                    description: result['description'],
+                    target: result['target'],
+                    title: result['title']
                 }
 
                 resolve(save_goal);
@@ -68,7 +68,7 @@ export class SqlSavingRepository implements SavingRepository {
 
     getAll(): Promise<SaveGoal[]> {
         return new Promise(async (resolve, reject) => {
-            let results = await this.db.run(
+            let results = await this.db.all(
                 `Select id, id_account, title, description, target From ${this.table_saving_name}`
             )
 
@@ -78,9 +78,9 @@ export class SqlSavingRepository implements SavingRepository {
                 let save_goal: SaveGoal = {
                     id: result['id'],
                     account_ref: result['id_account'],
-                    description: result['title'],
-                    target: result['description'],
-                    title: result['target']
+                    description: result['description'],
+                    target: result['target'],
+                    title: result['title']
                 }
                 save_goals.push(save_goal);
             }

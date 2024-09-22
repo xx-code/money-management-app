@@ -56,6 +56,8 @@ export class IncreaseSaveGoalUseCase implements IIncreaseSaveGoalUseCase {
 
             let saving_goal = await this.saving_repository.get(request.saving_goal_ref)
 
+            console.log(saving_goal)
+
             if (saving_goal === null) {
                 throw new ValidationError('Saving goal dont exist')
             }
@@ -67,6 +69,20 @@ export class IncreaseSaveGoalUseCase implements IIncreaseSaveGoalUseCase {
             let account = await this.account_repository.get(request.account_ref)
             if (account === null) {
                 throw new ValidationError('Account do not exist')
+            }
+
+            let account_balance = await this.transaction_repository.get_balance({
+                accounts: [account.id],
+                categories: [],
+                tags: [],
+                start_date: undefined,
+                end_date: undefined,
+                price: undefined,
+                type: undefined
+            })
+
+            if (account_balance < request.price) {
+                throw new ValidationError('Price must be smaller than account')
             }
 
             let category = await this.category_repository.get_by_title(formatted('Saving'));

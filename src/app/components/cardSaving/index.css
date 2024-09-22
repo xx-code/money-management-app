@@ -1,0 +1,76 @@
+.card-saving {
+    margin: 1rem;
+}
+
+.card-saving .card-saving-content {
+    display: flex;
+    background-color: #F5F6F8;
+    justify-content: space-between;
+    border-radius: 1em;
+    padding: 1em;
+}
+
+.card-saving .card-saving-content .card-saving-info {
+    display: flex;
+    align-items: center;
+}
+
+.card-saving .card-saving-content .card-saving-info .card-saving-subtitle {
+    display: flex;
+}
+
+.card-saving .card-saving-content .card-saving-info .card-saving-title {
+    margin-left: 1rem;
+}
+
+.card-saving .card-saving-content .card-saving-info .card-saving-title h3 {
+    font-weight: 600;
+}
+
+.card-saving .card-saving-content .card-saving-info .card-saving-title .money-info {
+    margin-right: 1rem;
+}
+
+.card-saving .card-saving-content .card-saving-info .card-saving-title .money-info h6 {
+    color: #7E7E7E;
+    font-size: 0.7em;
+}
+
+.money-rest p {
+    color: #7E7E7E !important;
+}
+
+.card-saving .card-saving-content .card-saving-info .card-saving-title .money-info p {
+    color: #313343;
+    font-weight: 500;
+    font-size: 1em;
+}
+
+.card-saving .card-saving-content .card-saving-edit-button {
+    display: flex;
+    align-items: center;
+}
+
+.card-saving .card-saving-content .card-saving-edit-button .icon-modif {
+    width: 1.3rem;
+    height: 1.3rem;
+    color: #313343;
+    margin-right: 1.5rem;
+    cursor: pointer;
+}
+
+.card-saving .card-saving-content .card-saving-edit-button .icon-modif:hover {
+    opacity: 0.7;
+}
+
+.card-saving .card-saving-content .card-saving-edit-button .icon-delete {
+    width: 1.3rem;
+    height: 1.3rem;
+    color: #DC4C4C;
+    cursor: pointer;
+}
+
+.card-saving .card-saving-content .card-saving-edit-button .icon-delete:hover {
+    opacity: 0.7;
+}
+
