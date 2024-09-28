@@ -106,7 +106,7 @@ class UpdateSaveGoalPresenter implements IUpdateSaveGoalPresenter {
     }
 }
 
-export async function UPDATE(
+export async function PUT(
     request: Request,
     { params }: { params: {id: string} }
 ) {

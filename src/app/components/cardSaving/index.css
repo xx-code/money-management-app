@@ -3,11 +3,15 @@
 }
 
 .card-saving .card-saving-content {
-    display: flex;
-    background-color: #F5F6F8;
-    justify-content: space-between;
-    border-radius: 1em;
     padding: 1em;
+    background-color: #F5F6F8;
+    border-radius: 1em;
+}
+
+.card-value {
+    display: flex;
+    justify-content: space-between;
+    
 }
 
 .card-saving .card-saving-content .card-saving-info {
@@ -74,3 +78,15 @@
     opacity: 0.7;
 }
 
+.card-saving .card-propress .progress-bar {
+    width: 100%;
+    margin-top: 10px;
+    background-color: #bdbdbd;
+    border-radius: 0.5rem;
+}
+
+.card-saving .card-propress .progress-bar .bar {
+    background-color: chartreuse;
+    height: 10px;
+    border-radius: 0.5rem;
+}

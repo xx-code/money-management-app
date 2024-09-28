@@ -1,18 +1,19 @@
 import { NextResponse } from "next/server"
 import { initRepository } from "../libs/init_repo"
-import { GetAllSaveGoal, IGetAllSaveGoalPresenter, ResponseSaveGoal } from "@/core/interactions/saveGoal/getAllSaveGoal"
+import { GetAllSaveGoal, IGetAllSaveGoalPresenter } from "@/core/interactions/saveGoal/getAllSaveGoal"
 import { AddSaveGoalUseCase, IAddSaveGoalPresenter, RequestNewSaveGoal } from "@/core/interactions/saveGoal/addSaveGoal"
 import UUIDMaker from "@/services/crypto"
+import { SaveGoalDisplay } from "@/core/entities/save_goal"
 
 type ModelView = {
-    response: ResponseSaveGoal[] | null,
+    response: SaveGoalDisplay[] | null,
     error: Error | null
 }
 
 class GetAllGoalPresenter implements IGetAllSaveGoalPresenter {
     model_view: ModelView = {response: null, error: null}
 
-    success(response: ResponseSaveGoal[]): void {
+    success(response: SaveGoalDisplay[]): void {
         this.model_view.response = response 
         this.model_view.error = null
     }

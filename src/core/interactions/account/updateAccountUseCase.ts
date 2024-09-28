@@ -44,19 +44,6 @@ export class UpdateAccountUseCase implements IUpdateAccountUseCase {
                 account.title = request.title;
             }
 
-            if (request.credit_limit != null) {
-                if (request.credit_limit < 0) {
-                    throw new ValidationError('Credit limit must be greater than 0');
-                }
-                account.credit_limit = request.credit_limit;
-            } 
-
-            if (request.credit_value != null) {
-                if (request.credit_value < 0) {
-                    throw new ValidationError('Credit value must be greater than 0')
-                }
-                account.credit_value = request.credit_value;
-            }
 
             let account_updated = await this.repository.update(account);
 

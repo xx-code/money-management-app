@@ -42,7 +42,7 @@ export async function POST(
         account_id_from: new_transaction.account_id_from,
         account_id_to: new_transaction.account_id_to,
         price: new_transaction.price,
-        date: DateParser.from_date(new_transaction.date)
+        date: DateParser.from_string(new_transaction.date)
     }
 
     let uuid = new UUIDMaker(); 
