@@ -63,41 +63,24 @@ export class AutoUpdateBudgetUseCase implements IAutoUpdateBudgetUseCase {
                     let new_date_to_start: DateParser = budget.date_to_update
                     let new_date_to_update: DateParser = determined_end_date_with(budget.date_to_update.toDate(), budget.period, budget.period_time)
 
-                    let last_id = ""
+                    let new_id = this.crypto.generate_uuid_to_string()
 
                     while (new_date_to_update.compare(DateParser.now()) < 0) {
-                        if (!is_empty(last_id)) {
-                            let balance = await this.transaction_repo.get_balance({
-                                categories: budget.categories.map(cat => cat.id),
-                                tags: [],
-                                accounts: [],
-                                type: TransactionType.Debit,
-                                start_date: budget.date_start,
-                                end_date: budget.date_to_update,
-                                price: null
-                            });
-        
-                            await this.budget_repo.archived(last_id, balance)
-                        }
                         new_date_to_start = new_date_to_update
                         new_date_to_update = determined_end_date_with(new_date_to_update.toDate(), budget.period, budget.period_time)
-                    
-                        let new_id = this.crypto.generate_uuid_to_string()
-
-                        await this.budget_repo.save({
-                            id: new_id,
-                            title: budget.title,
-                            target: budget.target,
-                            period: budget.period,
-                            is_archived: false,
-                            date_start: new_date_to_start,
-                            date_to_update: new_date_to_update,
-                            categories: budget.categories.map(category => category.id),
-                            period_time: budget.period_time,
-                        })
-                        
-                        last_id = new_id
                     }
+
+                    await this.budget_repo.save({
+                        id: new_id,
+                        title: budget.title,
+                        target: budget.target + (budget.target - balance),
+                        period: budget.period,
+                        is_archived: false,
+                        date_start: new_date_to_start,
+                        date_to_update: new_date_to_update,
+                        categories: budget.categories.map(category => category.id),
+                        period_time: budget.period_time,
+                    })
                 }
                 
                 resolve(true)
