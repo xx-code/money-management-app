@@ -10,10 +10,13 @@ import CardSaving from "@/app/components/cardSaving";
 import ModalIncreaseSavingGoal from "@/app/components/modalIncreaseSaveGoal";
 import { Account } from "@/core/entities/account";
 import { RequestDeleteSaveGoal } from "@/core/interactions/saveGoal/deleteSaveGoal";
+import ModalDeleteSavingGoal from "@/app/components/modalDeleteSaveGoal";
+import { SavingRepository } from "@/core/interactions/repositories/savingRepository";
 
 export default function Saving() {
     const [openSavingGoal, setOpenSavingGoal] = useState(false)
     const [openIncreaseSaveGoal, setOpenIncreaseSaveGoal] = useState(false)
+    const [openDeleteSaveGoal, setOpenDeteleSaveGoal] = useState(false)
     const [saveGoals, setSaveGoals] = useState<SaveGoalDisplay[]>([])
     const [saveGoal, setSaveGoal] = useState<SaveGoalDisplay|null>(null)
     const [accounts, setAccounts] = useState<Account[]>([])
@@ -59,6 +62,11 @@ export default function Saving() {
         setOpenIncreaseSaveGoal(true)
     }
 
+    const onpenModaldeleteSaveGoald = (saveGoal: SaveGoalDisplay) => {
+        setSaveGoal(saveGoal)
+        setOpenDeteleSaveGoal(true)
+    }
+
     const setup = async () => {
         await getAllAccount()
         await getAllSaveGoal()
@@ -81,7 +89,7 @@ export default function Saving() {
                         {
                             saveGoals.map((val, index) => {
                                 return (
-                                    <CardSaving key={index} savingGoald={val} onIncrease={() => openModalIncreaseSaving(val)} onTransfert={() => {}} onUpdate={() => {}} onDelete={() => {}} />
+                                    <CardSaving key={index} savingGoald={val} onIncrease={() => openModalIncreaseSaving(val)} onTransfert={() => {}} onUpdate={() => {}} onDelete={() => onpenModaldeleteSaveGoald(val)} />
                                 )
                             })
                         }
@@ -90,6 +98,7 @@ export default function Saving() {
             </div>
             <ModalAddSavingGoal isOpen={openSavingGoal} onClose={()  => setOpenSavingGoal(false)} onAdd={getAllSaveGoal} />
             <ModalIncreaseSavingGoal isOpen={openIncreaseSaveGoal}  onClose={()  => setOpenIncreaseSaveGoal(false)} onAdd={getAllSaveGoal} accounts={accounts} saveGoal={saveGoal} />
+            <ModalDeleteSavingGoal isOpen={openDeleteSaveGoal}onClose={() => setOpenDeteleSaveGoal(false)} onAdd={getAllSaveGoal} accounts={accounts} saveGoal={saveGoal} />
         </>
     )
 }

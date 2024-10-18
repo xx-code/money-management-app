@@ -2,6 +2,10 @@ import { ValidationError } from "@/core/errors/validationError";
 import { AccountRepository } from "../repositories/accountRepository";
 import { SavingRepository } from "../repositories/savingRepository";
 import { TransactionRepository } from "../repositories/transactionRepository";
+import { RecordRepository } from "../repositories/recordRepository";
+import { TransactionType } from "@/core/entities/transaction";
+import { CryptoService } from "@/core/adapter/libs";
+import { SAVING_CATEGORY_ID } from "./increaseSaveGoal";
 
 export type RequestDeleteSaveGoal = {
     save_goal_ref: string
@@ -22,13 +26,17 @@ export class DeleteSaveGoalUseCase implements IDeleteSaveGoalUseCase {
     private transaction_repo: TransactionRepository
     private account_repo: AccountRepository
     private saving_repo: SavingRepository
+    private record_repo: RecordRepository
     private presenter: IDeleteSaveGoalPresenter
+    private crypto: CryptoService
 
-    constructor(presenter: IDeleteSaveGoalPresenter, transaction_repo: TransactionRepository, account_repo: AccountRepository, saving_repo: SavingRepository) {
+    constructor(presenter: IDeleteSaveGoalPresenter, uiid: CryptoService, transaction_repo: TransactionRepository, account_repo: AccountRepository, saving_repo: SavingRepository, record_repo: RecordRepository) {
         this.presenter = presenter
         this.transaction_repo = transaction_repo
         this.account_repo = account_repo
         this.saving_repo = saving_repo
+        this.record_repo = record_repo
+        this.crypto = uiid
     }
 
     async execute(request: RequestDeleteSaveGoal): Promise<void> {
@@ -60,8 +68,8 @@ export class DeleteSaveGoalUseCase implements IDeleteSaveGoalUseCase {
                 await this.transaction_repo.update(
                     {
                         id: trans.id,
-                        account_ref: request.account_tranfert_ref,
-                        category_ref: trans.category.id,
+                        account_ref: account_tranfert.id,
+                        category_ref: SAVING_CATEGORY_ID,
                         record_ref: trans.record.id,
                         tag_ref: []
                     }
