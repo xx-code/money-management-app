@@ -10,6 +10,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from "react";
+import roundPrice from "@/app/lib/roundPrice";
 // @ts-ignore
 library.add(fas)
 
@@ -69,7 +70,7 @@ export default function CardResumeHome({
                             <h6>
                                 {
                                     oldAccount !== null ?
-                                    <>$ {oldAccount.balance}</>
+                                    <>$ {roundPrice(oldAccount.balance)}</>
                                     :
                                     <></>
                                 }
