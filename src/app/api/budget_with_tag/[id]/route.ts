@@ -6,6 +6,7 @@ import { DeleteBudgetTagUseCase, IDeleteBudgetUseCaseResponse } from "@/core/int
 import { GetBudgetTagUseCase, IGetBudgetUseCaseResponse } from "@/core/interactions/budgets/getBudgetUseCase"
 import { RequestUpdateTagBudget, UpdateBudgetTagUseCase } from "@/core/interactions/budgets/updateBudgetUseCase"
 import { NextResponse } from "next/server"
+import { initRepository } from "../../libs/init_repo";
 
 type GetBudgetWithTag = {
     response: {
@@ -81,22 +82,9 @@ export async function PUT(
     // request_budget.tags = JSON.parse(budget.tags);
     request_budget.id = id;
 
-    if (!is_empty(budget.date_start)) {
-        request_budget.date_start = DateParser.from_string(budget.date_start)
-    }
+    let repo = await initRepository()
 
-    if (!is_empty(budget.date_end)) {
-        request_budget.date_end = DateParser.from_string(budget.date_end)
-    }
-
-    await account_repo.init(DB_FILENAME);
-    await category_repo.init(DB_FILENAME);
-    await tag_repo.init(DB_FILENAME);
-    await record_repo.init(DB_FILENAME);
-    await transaction_repo.init(DB_FILENAME, account_repo.table_account_name, category_repo.table_category_name, tag_repo.table_tag_name, record_repo.table_record_name);
-    await budget_tag_repo.init(DB_FILENAME, tag_repo.table_tag_name); 
-
-    let use_case = new UpdateBudgetTagUseCase(budget_tag_repo, transaction_repo, presenter, tag_repo);
+    let use_case = new UpdateBudgetTagUseCase(repo.budgetTagRepo, repo.transactionRepo, presenter, repo.tagRepo);
     await use_case.execute(request_budget);
 
     if (presenter.model_view.error !== null) {

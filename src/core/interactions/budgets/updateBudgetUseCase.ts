@@ -15,8 +15,8 @@ export type RequestUpdateTagBudget = {
     title: string|null;
     target: number|null;
     is_archived: boolean|null;
-    date_start: DateParser|null;
-    date_end: DateParser|null;
+    date_start: string|null;
+    date_end: string|null;
     tags: Array<string>|null;
 }
 
@@ -26,7 +26,7 @@ export type RequestpdateCategoryBudget = {
     target: number|null;
     period: Period|null;
     period_time: number|null;
-    date_start: DateParser|null;
+    date_start: string|null;
     is_archived: boolean|null;
     categories: Array<string>|null;
 }
@@ -115,9 +115,12 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 }
             }
 
+            let date_start: DateParser = budget.date_start
+            console.log(request.date_start)
             if (request.date_start !== null && request.date_start !== undefined) {
-                budget.date_start = request.date_start;
-                budget.date_to_update = determined_end_date_with(request.date_start.toDate(), budget.period, budget.period_time);
+                
+                date_start = DateParser.from_string(request.date_start)
+                budget.date_to_update = determined_end_date_with(date_start.toDate(), budget.period, budget.period_time);
             }
 
             let categories_ref = budget.categories.map(cat => cat.id);
@@ -130,7 +133,7 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 is_archived: budget.is_archived,
                 period_time: budget.period_time,
                 date_to_update: budget.date_to_update,
-                date_start: budget.date_start,
+                date_start: date_start,
                 categories: categories_ref
             });
 
@@ -205,12 +208,13 @@ export class UpdateBudgetTagUseCase implements IUpdateBudgetUseCase {
                 budget.target = request.target;
             }
 
-            if ( request.date_end != null && request.date_start != null) {
+            if (request.date_end != null && request.date_start != null) {
+                budget.date_start = DateParser.from_string(request.date_start);
+                budget.date_end = DateParser.from_string(request.date_end);
+
                 if (request.date_start >= request.date_end) {
                     throw new ValidationError('Date start must be inferiour at Date of end');
                 }
-                budget.date_start = request.date_start;
-                budget.date_end = request.date_end;
             }
 
             if (request.is_archived !== null) {

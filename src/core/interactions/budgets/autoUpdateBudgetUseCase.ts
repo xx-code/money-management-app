@@ -47,11 +47,11 @@ export class AutoUpdateBudgetUseCase implements IAutoUpdateBudgetUseCase {
         return new Promise(async (resolve, reject) => {
             try {
                 
-                if (budget.date_to_update.compare(DateParser.now()) < 0) {
+                if (budget.date_to_update.compare(DateParser.now()) <= 0) {
                     let balance = await this.transaction_repo.get_balance({
                         categories: budget.categories.map(cat => cat.id),
-                        tags: [],
                         accounts: [],
+                        tags: [],
                         type: TransactionType.Debit,
                         start_date: budget.date_start,
                         end_date: budget.date_to_update,
@@ -73,7 +73,7 @@ export class AutoUpdateBudgetUseCase implements IAutoUpdateBudgetUseCase {
                     await this.budget_repo.save({
                         id: new_id,
                         title: budget.title,
-                        target: budget.target + (budget.target - balance),
+                        target: budget.target + (budget.target - Math.abs(balance)),
                         period: budget.period,
                         is_archived: false,
                         date_start: new_date_to_start,

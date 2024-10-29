@@ -1,10 +1,10 @@
-import { DB_FILENAME, account_repo, budget_categories_repo, category_repo, record_repo, tag_repo, transaction_repo } from "@/app/configs/repository"
 import { BudgetWithCategoryDisplay, BudgetWithTagDisplay } from "@/core/entities/budget"
 import { DeleteBudgetCategoryUseCase, IDeleteBudgetUseCaseResponse } from "@/core/interactions/budgets/deleteBudgetUseCase"
 import { GetBudgetCategoryUseCase, IGetBudgetUseCaseResponse } from "@/core/interactions/budgets/getBudgetUseCase"
 import { RequestpdateCategoryBudget, UpdateBudgetCategoryUseCase } from "@/core/interactions/budgets/updateBudgetUseCase"
 import { json } from "body-parser"
 import { NextResponse } from "next/server"
+import { initRepository } from "../../libs/init_repo"
 
 type GetBudgetWithCategory = {
     response: {
@@ -45,15 +45,8 @@ export async function GET(
 ) {
     const id = params.id;
     let presenter = new GetBudgetWithCategoryPresenter();
-
-    await account_repo.init(DB_FILENAME);
-    await category_repo.init(DB_FILENAME);
-    await tag_repo.init(DB_FILENAME);
-    await record_repo.init(DB_FILENAME);
-    await transaction_repo.init(DB_FILENAME, account_repo.table_account_name, category_repo.table_category_name, tag_repo.table_tag_name, record_repo.table_record_name);
-    await budget_categories_repo.init(DB_FILENAME, category_repo.table_category_name); 
-
-    let use_case = new GetBudgetCategoryUseCase(budget_categories_repo, transaction_repo, presenter);
+    let repo = await initRepository()
+    let use_case = new GetBudgetCategoryUseCase(repo.budgetCategoryRepo, repo.transactionRepo, presenter);
     await use_case.execute(id);
 
     if (presenter.model_view.error !== null) {
@@ -78,14 +71,9 @@ export async function PUT(
     request_budget.categories = Object.assign([], request_obj.categories);
     request_budget.id = id;
 
-    await account_repo.init(DB_FILENAME);
-    await category_repo.init(DB_FILENAME);
-    await tag_repo.init(DB_FILENAME);
-    await record_repo.init(DB_FILENAME);
-    await transaction_repo.init(DB_FILENAME, account_repo.table_account_name, category_repo.table_category_name, tag_repo.table_tag_name, record_repo.table_record_name);
-    await budget_categories_repo.init(DB_FILENAME, category_repo.table_category_name); 
-
-    let use_case = new UpdateBudgetCategoryUseCase(budget_categories_repo, transaction_repo, category_repo, presenter);
+    let repo = await initRepository()
+    
+    let use_case = new UpdateBudgetCategoryUseCase(repo.budgetCategoryRepo, repo.transactionRepo, repo.categoryRepo, presenter);
     await use_case.execute(request_budget);
 
     if (presenter.model_view.error !== null) {
@@ -127,10 +115,9 @@ export async function DELETE(
 
     let presenter = new DeleteBudgetWithCategoryResponse();
 
-    await category_repo.init(DB_FILENAME);
-    await budget_categories_repo.init(DB_FILENAME, category_repo.table_category_name); 
+    let repo = await initRepository()
 
-    let use_case = new DeleteBudgetCategoryUseCase(budget_categories_repo, presenter);
+    let use_case = new DeleteBudgetCategoryUseCase(repo.budgetCategoryRepo, presenter);
     await use_case.execute(id);
 
     if (presenter.model_view.error !== null) {

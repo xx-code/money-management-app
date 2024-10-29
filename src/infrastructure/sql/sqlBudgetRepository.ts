@@ -181,8 +181,8 @@ export class SqlBudgetCategoryRepository implements BudgetCategoryRepository {
     }
     update(request: dbBudgetCategory): Promise<BudgetWithCategory> {
         return new Promise(async (resolve, reject) => {
-            await this.db.run(`UPDATE ${this.table_name} SET title = ?, target = ?, period = ?, period_time = ?, date_start = ?, date_end = ?, is_archived = ? WHERE id = ? `, 
-            request.title, request.target, request.period, request.period_time, request.date_start, request.date_to_update,  Number(request.is_archived), request.id);
+            await this.db.run(`UPDATE ${this.table_name} SET title = ?, target = ?, period = ?, period_time = ?, date_start = ?, date_to_update = ? WHERE id = ? `, 
+            request.title, request.target, request.period, request.period_time, request.date_start.toString(), request.date_to_update.toString(), request.id);
 
             let result_category = await this.db.all(`
                 SELECT * 
@@ -416,8 +416,8 @@ export class SqlBudgetTagRepository implements BudgetTagRepository {
     }
     update(request: dbBudgetTag): Promise<BudgetWithTag> {
         return new Promise(async (resolve, reject) => {
-            await this.db.run(`UPDATE ${this.table_name} SET title = ?, target = ?, date_start = ?, date_end = ?, is_archived = ? WHERE id = ? `, 
-            request.title, request.target, request.date_start.toString(), request.date_end.toString(), Number(request.is_archived), request.id);
+            await this.db.run(`UPDATE ${this.table_name} SET title = ?, target = ?, date_start = ?, date_end = ? WHERE id = ? `, 
+            request.title, request.target, request.date_start.toString(), request.date_end.toString(), request.id);
 
             let result_tag = await this.db.all(`
                 SELECT * 
