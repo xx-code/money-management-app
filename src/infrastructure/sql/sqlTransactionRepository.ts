@@ -267,7 +267,7 @@ export class SqlTransactionRepository implements TransactionRepository {
 
             let filter_id_tag: string[] = [];
             for (let tag of filter_by.tags) {
-                filter_id_tag.push(tag);
+                filter_id_tag.push(`'${tag}'`);
             }
 
             let result_filter_by_tag = await this.db.all(`
@@ -276,9 +276,8 @@ export class SqlTransactionRepository implements TransactionRepository {
                     ${this.table_name}_tags
                 JOIN ${this.table_tag_name}
                     ON ${this.table_tag_name}.title = ${this.table_name}_tags.id_tag
-                WHERE ${this.table_name}_tags.id_tag in (?)
-                `,
-                filter_id_tag.toString()
+                WHERE ${this.table_name}_tags.id_tag in (${filter_id_tag})
+                `
             ); 
 
             let filter_id_transaction_tag: string[] = [];
@@ -424,7 +423,7 @@ export class SqlTransactionRepository implements TransactionRepository {
 
             let filter_id_tag: string[] = [];
             for (let tag of filter_by.tags) {
-                filter_id_tag.push(tag);
+                filter_id_tag.push(`'${tag}'`);
             }
 
             let result_filter_by_tag = await this.db.all(`
@@ -433,10 +432,11 @@ export class SqlTransactionRepository implements TransactionRepository {
                     ${this.table_name}_tags
                 JOIN ${this.table_tag_name}
                     ON ${this.table_tag_name}.title = ${this.table_name}_tags.id_tag
-                WHERE ${this.table_name}_tags.id_tag in (?)
-                `,
-                filter_id_tag.toString()
+                WHERE ${this.table_name}_tags.id_tag in (${filter_id_tag})
+                `
             ); 
+
+            console.log(result_filter_by_tag)
 
             let filter_id_transaction_tag: string[] = [];
             for(let result of result_filter_by_tag) {
@@ -444,6 +444,8 @@ export class SqlTransactionRepository implements TransactionRepository {
             }
             
             let where_id_transaction_tag = `${this.table_name}.id in (${filter_id_transaction_tag})`;
+
+            
 
             let where_debit = '';
             let where_credit = '';
@@ -488,6 +490,8 @@ export class SqlTransactionRepository implements TransactionRepository {
                     where_debit = "WHERE "  + value_where.join(' AND ');  
                 }
             }
+
+            console.log(where_credit)
 
             // TODO: Refactor transfert in compute balance
 
