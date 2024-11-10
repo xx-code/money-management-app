@@ -43,36 +43,32 @@ export default function CardBudget({budget, onUpdate, onDelete} : {budget: Budge
         <div className='card-budget'>
             <div className='card-budget-content'>
                 <div className='card-budget-info'>
-                    <div className='percent'>
-                    <svg width="60" height="60" viewBox="0 0 60 60" >
-                        <text x={20} y={35} fontSize={10} >{percent}%</text>
-                        <circle cx={size/2} cy={size/2} r={radius} strokeWidth={stroke} fill='none' strokeLinecap='round' className="bg"></circle>
-                        <Cirbl cx={size/2} cy={size/2} r={radius} strokeWidth={stroke} fill='none' strokeLinecap='round'></Cirbl>
-                    </svg>
+                    <div className='card-budget-info-text'>
+                        <div className='card-budget-info-img'>
+                            <div ></div>
+                        </div>
+                        <div className='card-budget-info-title'>
+                            <h1>{budget.title}</h1>
+                            <p>df</p>
+                        </div>
                     </div>
-                    <div className='card-budget-title'>
-                        <h3>{budget.title}</h3>
-                        <div className='card-budget-subtitle'>
-                            <div className='money-info target'>
-                                <h6>Cible</h6>
-                                <p>$ {budget.target}</p>
-                            </div>
-                            <div className='money-info'>
-                                <h6>Actuel</h6>
-                                <p>$ {budget.current}</p>
-                            </div>
-                            <div className={`money-info ${budget.target - budget.current >= 0 ? 'money-good' : 'money-bad'}`}>
-                                <h6>Reste</h6>
-                                <p>$ {budget.target - budget.current }</p>
-                            </div>
+                    <div className='card-budget-info-bar'>
+                        <div className='card-budget-info-bar-sild'>
+                            <p className='current'>${budget.current}</p>
+                            <div className='bar-load' style={{width: `${percent}%`, height: '100%'}}></div>
+                            <p className='target'>${budget.target}</p>
                         </div>
                     </div>
                 </div>
                 
                 <div className='card-budget-edit-button'>
-                    <FontAwesomeIcon className='icon-modif' onClick={() => onUpdate(budget)} icon={["fas", "pen"]} />
-                    <FontAwesomeIcon className='icon-delete' onClick={() => onDelete(budget.id, isBudgetCategory(budget))}  icon={["fas", "trash"]} />
-                </div>
+                    <div className='edit-btn' style={{backgroundColor: '#34495e'}} onClick={() => onUpdate(budget)}>
+                        <FontAwesomeIcon  icon={["fas", "pen"]} />
+                    </div>
+                    <div className='edit-btn' style={{backgroundColor: '#f34d4d'}} onClick={() => onDelete(budget.id, isBudgetCategory(budget))} >
+                        <FontAwesomeIcon icon={["fas", "trash"]} />
+                    </div>
+                </div> 
             </div>
         </div>
     )

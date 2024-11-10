@@ -4,77 +4,105 @@
 
 .card-budget .card-budget-content {
     display: flex;
+    position: relative;
     background-color: #F5F6F8;
     justify-content: space-between;
     border-radius: 1em;
     padding: 1em;
+    width: 350px;
 }
 
-.card-budget .card-budget-content .card-budget-info {
+.card-budget-content .card-budget-info {
+    width: 100%;
+}
+.card-budget-content .card-budget-info-text .card-budget-info-img {
+    width: 50px;
+    height: 50px;
+    background-color: gainsboro;
+    border-radius: 12px;
+}
+
+.card-budget-content .card-budget-info-text {
     display: flex;
+}
+
+.card-budget-content .card-budget-info-text .card-budget-info-title {
+    margin-left: 15px
+}
+
+.card-budget-content .card-budget-info-text .card-budget-info-title h1 {
+    font-weight: bold;
+}
+
+.card-budget-content .card-budget-info-text .card-budget-info-title p {
+    font-weight: 300;
+    color: #b4b4b4;
+}
+
+.card-budget-content .card-budget-info-bar {
+    margin-top: 15px;
+    width: 100%;
+}
+
+
+.card-budget-content .card-budget-info-bar .card-budget-info-bar-sild {
+    position: relative;
+    width: 100%;
+    height: 24px;
+    background-color:  gainsboro;
+    border-radius: 8px;
+}
+
+.card-budget-content .card-budget-info-bar .card-budget-info-bar-sild .current{
+    position: absolute;
+    left: 2px;
+}
+
+.card-budget-content .card-budget-info-bar .card-budget-info-bar-sild .bar-load {
+    background-color: #483f8f9f;
+    border-radius: 8px;
+
+}
+
+.card-budget-content .card-budget-info-bar .card-budget-info-bar-sild .target{
+    position: absolute;
+    top: 0;
+    right:2px;
+}
+
+.card-budget-content .card-budget-edit-button {
+    position: absolute;
+    top:-18px;
+    right: 0;
+    display: flex;
+}
+
+
+
+.card-budget-content .card-budget-edit-button .icon-delete {
+    background-color: #f34d4d;
+    border-radius: 100%;
+}
+
+.card-budget-content:hover .card-budget-edit-button .edit-btn {
+    opacity: 1;
+}
+
+
+.card-budget-content .card-budget-edit-button .edit-btn {
+    background-color: aliceblue;
+    width: 25px;
+    height: 25px;
+    margin: 8px;
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
     align-items: center;
-}
-
-.card-budget .card-budget-content .card-budget-info .card-budget-subtitle {
-    display: flex;
-}
-
-.card-budget .card-budget-content .card-budget-info .card-budget-title {
-    margin-left: 1rem;
-}
-
-.card-budget .card-budget-content .card-budget-info .card-budget-title h3 {
-    font-weight: 600;
-}
-
-.card-budget .card-budget-content .card-budget-info .card-budget-title .money-info {
-    margin-right: 1rem;
-}
-
-.card-budget .card-budget-content .card-budget-info .card-budget-title .money-info h6 {
-    color: #7E7E7E;
-    font-size: 0.7em;
-}
-
- .money-good p {
-    color: #2ecc71 !important;
-}
-
- .money-bad p {
-    color: #e74c3c !important;
-}
-
-.card-budget .card-budget-content .card-budget-info .card-budget-title .money-info p {
-    color: #313343;
-    font-weight: 500;
-    font-size: 1em;
-}
-
-.card-budget .card-budget-content .card-budget-edit-button {
-    display: flex;
-    align-items: center;
-}
-
-.card-budget .card-budget-content .card-budget-edit-button .icon-modif {
-    width: 1.3rem;
-    height: 1.3rem;
-    color: #313343;
-    margin-right: 1.5rem;
+    color: white;
     cursor: pointer;
-}
-
-.card-budget .card-budget-content .card-budget-edit-button .icon-modif:hover {
-    opacity: 0.7;
-}
-
-.card-budget .card-budget-content .card-budget-edit-button .icon-delete {
-    width: 1.3rem;
-    height: 1.3rem;
-    color: #DC4C4C;
-    cursor: pointer;
-}
-
-.card-budget .card-budget-content .card-budget-edit-button .icon-delete:hover {
-    opacity: 0.7;
+    opacity: 0;
+    transition: 150ms linear;
+    position: relative;
+    font-size: 12px;
 }
 
