@@ -110,9 +110,7 @@ export class CreationBudgetUseCase implements ICreationBudgetUseCase {
             } else {
                 date_end = DateParser.from_string(request.date_end)
             }
-
            
-
             
             let new_id = this.crypto.generate_uuid_to_string();
             
