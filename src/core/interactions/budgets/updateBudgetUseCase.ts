@@ -1,59 +1,54 @@
-import { BudgetWithCategoryDisplay, BudgetWithTagDisplay, Period, compute_current_spend, determined_start_end_date_budget } from "../../entities/budget";
+import { BudgetDisplay, Period, determined_start_end_date_budget } from "../../entities/budget";
 import { NotFoundError } from "../../errors/notFoundError";
 import { ValidationError } from "../../errors/validationError";
-import { BudgetCategoryRepository, BudgetTagRepository } from "../repositories/budgetRepository";
+import { BudgetRepository } from "../repositories/budgetRepository";
 import { is_empty } from "../../entities/verify_empty_value";
 import { TransactionRepository } from "../repositories/transactionRepository";
 import { TagRepository } from "../repositories/tagRepository";
 import { CategoryRepository } from "../repositories/categoryRepository";
-import { formatted } from "../../../core/entities/formatted";
+import { formatted, reverseFormatted } from "../../../core/entities/formatted";
 import DateParser from "@/core/entities/date_parser";
 import { determined_end_date_with } from "@/core/entities/future_transaction";
 
-export type RequestUpdateTagBudget = {
+export type RequestUpdateBudget = {
     id: string;
     title: string|null;
     target: number|null;
     is_archived: boolean|null;
     date_start: string|null;
     date_end: string|null;
-    tags: Array<string>|null;
-}
-
-export type RequestpdateCategoryBudget = {
-    id: string;
-    title: string|null;
-    target: number|null;
     period: Period|null;
     period_time: number|null;
-    date_start: string|null;
-    is_archived: boolean|null;
+    tags: Array<string>|null;
     categories: Array<string>|null;
 }
 
+
 export interface IUpdateBudgetUseCase {
-    execute(request: RequestpdateCategoryBudget|RequestUpdateTagBudget): void
+    execute(request: RequestUpdateBudget): void
 }
 
 export interface IUpdateBudgetUseCaseResponse {
-    success(budget: BudgetWithCategoryDisplay | BudgetWithTagDisplay): void;
+    success(budget: BudgetDisplay): void;
     fail(err: Error): void;
 }
 
 export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
-    private budget_repository: BudgetCategoryRepository;
+    private budget_repository: BudgetRepository;
     private category_repository: CategoryRepository;
     private transaction_repository: TransactionRepository;
+    private tag_repository: TagRepository;
     private presenter: IUpdateBudgetUseCaseResponse;
 
-    constructor(budget_repository: BudgetCategoryRepository, transaction_repository: TransactionRepository, category_repository: CategoryRepository, presenter: IUpdateBudgetUseCaseResponse) {
+    constructor(budget_repository: BudgetRepository, transaction_repository: TransactionRepository, category_repository: CategoryRepository, tag_repository: TagRepository, presenter: IUpdateBudgetUseCaseResponse) {
         this.budget_repository = budget_repository;
+        this.tag_repository = tag_repository;
         this.category_repository = category_repository;
         this.transaction_repository = transaction_repository;
         this.presenter = presenter;
     }
 
-    async execute(request: RequestpdateCategoryBudget): Promise<void> {
+    async execute(request: RequestUpdateBudget): Promise<void> {
         try { 
             let budget = await this.budget_repository.get(request.id);
 
@@ -115,12 +110,25 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 }
             }
 
+            if (request.tags != null) {
+                if (request.tags.length <= 0){
+                    throw new ValidationError('Tags must have at least 1 value');
+                } 
+                for (let i = 0; i < request.tags.length; i++) {
+                    let tag = await this.tag_repository.get(request.tags[i]);
+                    if (tag == null) {
+                        await this.tag_repository.save({title: formatted(request.tags[i]) });
+                        budget.tags.push(request.tags[i]);
+                    }
+                }
+            }
+
             let date_start: DateParser = budget.date_start
             console.log(request.date_start)
             if (request.date_start !== null && request.date_start !== undefined) {
                 
                 date_start = DateParser.from_string(request.date_start)
-                budget.date_to_update = determined_end_date_with(date_start.toDate(), budget.period, budget.period_time);
+                budget.date_to_update = determined_end_date_with(date_start.toDate(), budget.period!, budget.period_time!);
             }
 
             let categories_ref = budget.categories.map(cat => cat.id);
@@ -134,10 +142,13 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 period_time: budget.period_time,
                 date_to_update: budget.date_to_update,
                 date_start: date_start,
-                categories: categories_ref
+                categories: categories_ref,
+                is_periodic: false,
+                date_end: null,
+                tags: budget.tags.map(tag => formatted(tag))
             });
 
-            let current_date_budget = determined_start_end_date_budget(budget)
+            let current_date_budget = determined_start_end_date_budget(budget.period!, budget.period_time!)
 
             let start_date = current_date_budget.start_date;
             let end_date = current_date_budget.end_date;
@@ -152,7 +163,7 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 price: null
             });
 
-            let budget_display: BudgetWithCategoryDisplay = {
+            let budget_display: BudgetDisplay = {
                 id: budget_updated.id,
                 title: budget_updated.title,
                 categories: budget_updated.categories,
@@ -161,107 +172,10 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 date_to_update: budget.date_to_update,
                 period: budget_updated.period,
                 period_time: budget_updated.period_time,
-                target: budget_updated.target
-            };
-
-
-            this.presenter.success(budget_display);
-        } catch(err) {
-            this.presenter.fail(err as Error);
-        }
-    }
-}
-
-export class UpdateBudgetTagUseCase implements IUpdateBudgetUseCase {
-    private budget_repository: BudgetTagRepository;
-    private transaction_repository: TransactionRepository;
-    private tag_repository: TagRepository;
-    private presenter: IUpdateBudgetUseCaseResponse;
-
-    constructor(budget_repository: BudgetTagRepository, transaction_repository: TransactionRepository, presenter: IUpdateBudgetUseCaseResponse, tag_repository: TagRepository) {
-        this.budget_repository = budget_repository;
-        this.transaction_repository = transaction_repository;
-        this.tag_repository = tag_repository;
-        this.presenter = presenter;
-    }
-
-    //TODO: check tag creation 
-    async execute(request: RequestUpdateTagBudget): Promise<void> {
-        try {
-            let budget = await this.budget_repository.get(request.id);
-
-            if (budget == null) {
-                throw new NotFoundError('Budget not found');
-            }
-
-            if (request.title != null) {
-                if (request.title.replace(' ', '').length == 0) {
-                    throw new ValidationError('Title field is empty');
-                }
-                budget.title = request.title;
-            }
-
-            if (request.target != null) {
-                if (request.target <= 0) {
-                    throw new ValidationError('Target price must be greather than 0');
-                }
-                budget.target = request.target;
-            }
-
-            if (request.date_end != null && request.date_start != null) {
-                budget.date_start = DateParser.from_string(request.date_start);
-                budget.date_end = DateParser.from_string(request.date_end);
-
-                if (request.date_start >= request.date_end) {
-                    throw new ValidationError('Date start must be inferiour at Date of end');
-                }
-            }
-
-            if (request.is_archived !== null) {
-                budget.is_archived = request.is_archived
-            }
-
-            if (request.tags != null) {
-                if (request.tags.length <= 0){
-                    throw new ValidationError('Tags must have at least 1 value');
-                } 
-                for (let i = 0; i < request.tags.length; i++) {
-                    let tag = await this.tag_repository.get(request.tags[i]);
-                    if (tag == null) {
-                        await this.tag_repository.save({title: formatted(request.tags[i]) });
-                        budget.tags.push(request.tags[i]);
-                    }
-                }
-            }
-
-            let budget_updated = await this.budget_repository.update({
-                id: budget.id,
-                date_start: budget.date_start,
-                date_end: budget.date_end,
-                tags: budget.tags,
-                target: budget.target,
-                title: budget.title,
-                is_archived: budget.is_archived
-            });
-
-            let balance = await this.transaction_repository.get_balance({
-                categories: [],
-                accounts: [],
-                tags: budget.tags,
-                type: null,
-                start_date: budget.date_start,
-                end_date: budget.date_end,
-                price: null
-            });
-
-            let budget_display: BudgetWithTagDisplay = {
-                id: budget_updated.id,
-                title: budget_updated.title,
-                current: balance,
-                date_start: budget_updated.date_start,
-                date_end: budget_updated.date_end,
                 target: budget_updated.target,
-                tags: budget_updated.tags
+                is_periodic: false,
+                date_end: null,
+                tags: budget_updated.tags.map(tag => reverseFormatted(tag))
             };
 
             this.presenter.success(budget_display);

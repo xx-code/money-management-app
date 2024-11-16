@@ -29,42 +29,34 @@ export const typePeriods: TypePeriod[] = [
     }
 ]
 
-type Budget = {
+export type Budget = {
     id: string;
+    is_archived: boolean
+    is_periodic: boolean
     title: string;
     target: number;
-}
-
-export type BudgetWithCategory = Budget & {
-    period: Period;
-    period_time: number;
-    is_archived: boolean
-    date_start: DateParser
-    date_to_update: DateParser
-    categories: Array<Category>
-}
-
-export type BudgetWithTag = Budget & {
     date_start: DateParser;
-    date_end: DateParser;
-    is_archived: boolean
-    tags: Array<Tag>;
-}
-
-export type BudgetWithCategoryDisplay = Budget & {
-    current: number;
-    period: string;
-    period_time: number;
-    date_start: DateParser
-    date_to_update: DateParser
+    date_to_update: DateParser|null
+    date_end: DateParser | null;
+    period: Period | null
+    period_time: number | null
     categories: Array<Category>
+    tags: Array<Tag>
 }
 
-export type BudgetWithTagDisplay = Budget & {
-    current: number;
+export type BudgetDisplay = {
+    id: string;
+    is_periodic: boolean
+    title: string;
+    target: number;
     date_start: DateParser;
-    date_end: DateParser;
-    tags: Array<Tag>;
+    date_to_update: DateParser|null
+    date_end: DateParser | null;
+    period: Period | null
+    period_time: number | null
+    categories: Array<Category>
+    tags: Array<Tag>
+    current: number;
 }
 
 export type CurrentDateBudget = {
@@ -113,9 +105,9 @@ export function determined_start_end_date(date: Date, period: Period, period_tim
     };
 }
 
-export function determined_start_end_date_budget(budget: BudgetWithCategory): CurrentDateBudget {
+export function determined_start_end_date_budget(period: Period, period_time: number): CurrentDateBudget {
     let today = new Date();
-    return determined_start_end_date(today, budget.period, budget.period_time)
+    return determined_start_end_date(today, period, period_time)
 }
 
 export function compute_current_spend(transactions: Transaction[]): number {

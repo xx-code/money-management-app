@@ -1,7 +1,7 @@
-import { ValidationError } from "@/core/errors/validationError";
-import { BudgetWithCategoryDisplay, BudgetWithTagDisplay, compute_current_spend, determined_start_end_date_budget } from "../../entities/budget";
+import { reverseFormatted } from "@/core/entities/formatted";
+import { BudgetDisplay, determined_start_end_date_budget } from "../../entities/budget";
 import { NotFoundError } from "../../errors/notFoundError";
-import { BudgetCategoryRepository, BudgetTagRepository } from "../repositories/budgetRepository";
+import { BudgetRepository } from "../repositories/budgetRepository";
 import { TransactionRepository } from "../repositories/transactionRepository";
 
 export interface IGetBudgetUseCase {
@@ -9,16 +9,16 @@ export interface IGetBudgetUseCase {
 }
 
 export interface IGetBudgetUseCaseResponse {
-    success(budget: BudgetWithCategoryDisplay| BudgetWithTagDisplay): void;
+    success(budget: BudgetDisplay): void;
     fail(err: Error): void;
 }
 
 export class GetBudgetCategoryUseCase implements IGetBudgetUseCase {
-    private budget_repository: BudgetCategoryRepository;
+    private budget_repository: BudgetRepository;
     private transaction_repository: TransactionRepository;
     private presenter: IGetBudgetUseCaseResponse;
 
-    constructor(budget_repository: BudgetCategoryRepository, transaction_repository: TransactionRepository, presenter: IGetBudgetUseCaseResponse) {
+    constructor(budget_repository: BudgetRepository, transaction_repository: TransactionRepository, presenter: IGetBudgetUseCaseResponse) {
         this.budget_repository = budget_repository;
         this.presenter = presenter;
         this.transaction_repository = transaction_repository;
@@ -32,10 +32,15 @@ export class GetBudgetCategoryUseCase implements IGetBudgetUseCase {
                 throw new NotFoundError('Budget not found');
             }
 
-            let current_date_budget = determined_start_end_date_budget(budget)
-
-            let start_date = current_date_budget.start_date;
-            let end_date = current_date_budget.end_date;
+        
+            let start_date = budget.date_start;
+            let end_date = budget.date_end;
+            if (budget.is_periodic)  {
+                let current_date_budget = determined_start_end_date_budget(budget.period!, budget.period_time!)
+                start_date = current_date_budget.start_date
+                end_date = current_date_budget.end_date
+            }
+                
 
             let balance = await this.transaction_repository.get_balance({
                 categories: budget.categories.map(cat => cat.id),
@@ -47,62 +52,19 @@ export class GetBudgetCategoryUseCase implements IGetBudgetUseCase {
                 price: null
             });
             
-            let budget_display: BudgetWithCategoryDisplay = {
+            let budget_display: BudgetDisplay = {
                 id: budget.id,
-                date_start: budget.date_start,
-                date_to_update: budget.date_to_update,
                 title: budget.title,
-                categories: budget.categories,
-                current: balance,
+                categories: budget.categories.map(cat => ({ id: cat.id, title: reverseFormatted(cat.title), icon: cat.icon })),
+                current: Math.abs(balance),
                 period: budget.period,
                 period_time: budget.period_time,
-                target: budget.target
-            };
-
-            this.presenter.success(budget_display);
-        } catch(err) {
-            this.presenter.fail(err as Error);
-        }
-    }
-}
-
-export class GetBudgetTagUseCase implements IGetBudgetUseCase {
-    private budget_repository: BudgetTagRepository;
-    private transaction_repository: TransactionRepository;
-    private presenter: IGetBudgetUseCaseResponse;
-
-    constructor(budget_repository: BudgetTagRepository, transaction_repository: TransactionRepository, presenter: IGetBudgetUseCaseResponse) {
-        this.budget_repository = budget_repository;
-        this.transaction_repository = transaction_repository;
-        this.presenter = presenter;
-    }
-
-    async execute(id: string): Promise<void> {
-        try {
-            let budget = await this.budget_repository.get(id);
-
-            if (budget == null) {
-                throw new NotFoundError('Budget not found');
-            }
-
-            let balance = await this.transaction_repository.get_balance({
-                categories: [],
-                accounts: [],
-                tags: budget.tags,
-                type: null,
-                start_date: budget.date_start,
-                end_date: budget.date_end,
-                price: null
-            });
-
-            let budget_display: BudgetWithTagDisplay = {
-                id: budget.id,
-                title: budget.title,
-                current: balance,
-                date_start: budget.date_start,
-                date_end: budget.date_end,
                 target: budget.target,
-                tags: budget.tags
+                date_start: budget.date_start,
+                date_to_update: budget.date_to_update,
+                is_periodic: budget.is_periodic,
+                date_end: budget.date_end,
+                tags: budget.tags.map((tag => reverseFormatted(tag)))
             };
 
             this.presenter.success(budget_display);

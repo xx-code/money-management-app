@@ -1,25 +1,24 @@
-import { ValidationError } from "@/core/errors/validationError";
-import { BudgetWithCategoryDisplay, BudgetWithTagDisplay, compute_current_spend, determined_start_end_date_budget } from "../../entities/budget";
-import { BudgetTagRepository, BudgetCategoryRepository } from "../repositories/budgetRepository";
+import { BudgetDisplay } from "../../entities/budget";
+import { BudgetRepository } from "../repositories/budgetRepository";
 import { TransactionRepository } from "../repositories/transactionRepository";
 import { TransactionType } from "../../../core/entities/transaction";
-import { determined_end_date_with } from "@/core/entities/future_transaction";
+import { reverseFormatted } from "@/core/entities/formatted";
 
 export interface IGetAllBudgetUseCase {
     execute(): void;
 }
 
 export interface IGetAllBudgetUseCaseResponse { 
-    success(budgets: Array<BudgetWithCategoryDisplay|BudgetWithTagDisplay>): void;
+    success(budgets: Array<BudgetDisplay>): void;
     fail(err: Error): void;
 }
 
 export class GetAllBudgetCategoryUseCase implements IGetAllBudgetUseCase {
-    private budget_repository: BudgetCategoryRepository;
+    private budget_repository: BudgetRepository;
     private transaction_repository: TransactionRepository;
     private presenter: IGetAllBudgetUseCaseResponse;
     
-    constructor(budget_repository: BudgetCategoryRepository, transaction_repository: TransactionRepository, presenter: IGetAllBudgetUseCaseResponse) {
+    constructor(budget_repository: BudgetRepository, transaction_repository: TransactionRepository, presenter: IGetAllBudgetUseCaseResponse) {
         this.budget_repository = budget_repository;
         this.transaction_repository = transaction_repository;
         this.presenter = presenter;
@@ -46,71 +45,24 @@ export class GetAllBudgetCategoryUseCase implements IGetAllBudgetUseCase {
                     price: null
                 });
                 
-                let budget_display: BudgetWithCategoryDisplay = {
+                let budget_display: BudgetDisplay = {
                     id: budget.id,
                     title: budget.title,
-                    categories: budget.categories,
+                    categories: budget.categories.map(cat => ({id: cat.id, title: reverseFormatted(cat.title), icon: cat.icon })),
                     current: Math.abs(balance),
                     period: budget.period,
                     period_time: budget.period_time,
                     target: budget.target,
                     date_start: budget.date_start,
-                    date_to_update: budget.date_to_update
+                    date_to_update: budget.date_to_update,
+                    is_periodic: budget.is_periodic,
+                    date_end: budget.date_end,
+                    tags: budget.tags.map((tag => reverseFormatted(tag)))
                 };
                 budgets_display.push(budget_display);
             }
  
             this.presenter.success(budgets_display)
-        } catch(err) {
-            this.presenter.fail(err as Error);
-        }
-    }
-}
-
-
-export class GetAllBudgetTagUseCase implements IGetAllBudgetUseCase {
-    private budget_repository: BudgetTagRepository;
-    private transaction_repository: TransactionRepository;
-    private presenter: IGetAllBudgetUseCaseResponse;
-
-    constructor(budget_repository: BudgetTagRepository, transaction_repository: TransactionRepository, presenter: IGetAllBudgetUseCaseResponse) {
-        this.budget_repository = budget_repository;
-        this.transaction_repository = transaction_repository;
-        this.presenter = presenter;
-    }
-
-    async execute(): Promise<void> {
-        try {
-            let budgets = await this.budget_repository.get_all();
-
-            let budgets_display = [];
-            for (let i = 0; i < budgets.length; i++) {
-                let budget = budgets[i];
-
-                let balance = await this.transaction_repository.get_balance({
-                    categories: [],
-                    accounts: [],
-                    tags: budget.tags,
-                    type: TransactionType.Debit,
-                    start_date: budget.date_start,
-                    end_date: budget.date_end,
-                    price: null
-                });
-
-                let budget_display: BudgetWithTagDisplay = {
-                    id: budget.id,
-                    title: budget.title,
-                    current: Math.abs(balance),
-                    date_start: budget.date_start,
-                    date_end: budget.date_end,
-                    target: budget.target,
-                    tags: budget.tags
-                };
-                
-                budgets_display.push(budget_display);
-            }
-
-            this.presenter.success(budgets_display);
         } catch(err) {
             this.presenter.fail(err as Error);
         }
