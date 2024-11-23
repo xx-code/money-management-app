@@ -1,4 +1,4 @@
-import { BudgetDisplay, Period, determined_start_end_date_budget } from "../../entities/budget";
+import { Period, determined_start_end_date_budget } from "../../entities/budget";
 import { NotFoundError } from "../../errors/notFoundError";
 import { ValidationError } from "../../errors/validationError";
 import { BudgetRepository } from "../repositories/budgetRepository";
@@ -17,10 +17,30 @@ export type RequestUpdateBudget = {
     is_archived: boolean|null;
     date_start: string|null;
     date_end: string|null;
-    period: Period|null;
+    period: string|null;
     period_time: number|null;
     tags: Array<string>|null;
     categories: Array<string>|null;
+}
+
+export type BudgetCategoryOutput = {
+    id: string
+    title: string
+    icon: string
+}
+
+export type BudgetOutput = {
+    id: string,
+    title: string,
+    target: number,
+    categories: BudgetCategoryOutput[],
+    tags: string[]
+    period: string|null
+    period_time: number
+    currentBalance: number
+    start_date: string
+    update_date: string
+    end_date: string|null
 }
 
 
@@ -29,11 +49,11 @@ export interface IUpdateBudgetUseCase {
 }
 
 export interface IUpdateBudgetUseCaseResponse {
-    success(budget: BudgetDisplay): void;
+    success(budget: BudgetOutput): void;
     fail(err: Error): void;
 }
 
-export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
+export class UpdateBudgetUseCase implements IUpdateBudgetUseCase {
     private budget_repository: BudgetRepository;
     private category_repository: CategoryRepository;
     private transaction_repository: TransactionRepository;
@@ -71,7 +91,7 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
             }
 
             if (request.period_time != null) {
-                if (request.period_time <= 0) {
+                if (request.period_time < 0) {
                     throw new ValidationError('Period time must be greather than 0');
                 }
                 budget.period_time = request.period_time;
@@ -82,7 +102,7 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 if (!period_list.includes(request.period)) {
                     throw new ValidationError('Period must be Week, Month or year');
                 }
-                budget.period = request.period;
+                budget.period = <Period>request.period;
             }
 
             if (request.is_archived !== null) {
@@ -101,10 +121,10 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                         throw new ValidationError('This category not exist');
                     }
 
-                    if (!budget.categories.map(cat => cat.id).includes(category.id!)) {
-                        budget.categories.push(category!);
+                    if (!budget.categories.includes(category.id!)) {
+                        budget.categories.push(category.id!);
                     } else {
-                        let index_to_delete = budget.categories.map(cat => cat.id).indexOf(category.id);
+                        let index_to_delete = budget.categories.indexOf(category.id);
                         budget.categories.splice(index_to_delete, 1);
                     }
                 }
@@ -123,38 +143,48 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 }
             }
 
-            let date_start: DateParser = budget.date_start
-            console.log(request.date_start)
-            if (request.date_start !== null && request.date_start !== undefined) {
-                
-                date_start = DateParser.from_string(request.date_start)
-                budget.date_to_update = determined_end_date_with(date_start.toDate(), budget.period!, budget.period_time!);
+           
+            if (request.date_end !== null && request.date_end !== undefined) {
+                let date_end = DateParser.from_string(request.date_end)
+                budget.date_end = date_end
             }
 
-            let categories_ref = budget.categories.map(cat => cat.id);
+            if (request.date_start !== null && request.date_start !== undefined) {
+                let date_start = DateParser.from_string(request.date_start)
+                budget.date_start = date_start
+                if (budget.period !== null && budget.period_time > 0) {
+                    budget.date_update = determined_end_date_with(date_start.toDate(), budget.period!, budget.period_time!);
+                } else {
+                    if (!budget.date_end) {
+                        throw new ValidationError('this format of budget is impossible set at less a date end')
+                    }
+                    budget.date_update = budget.date_end
+                }
+            }
+
             
-            let budget_updated = await this.budget_repository.update({
-                id: budget.id,
-                title: budget.title,
-                target: budget.target,
-                period: budget.period,
-                is_archived: budget.is_archived,
-                period_time: budget.period_time,
-                date_to_update: budget.date_to_update,
-                date_start: date_start,
-                categories: categories_ref,
-                is_periodic: false,
-                date_end: null,
-                tags: budget.tags.map(tag => formatted(tag))
-            });
+            let budget_updated = await this.budget_repository.update(budget);
 
-            let current_date_budget = determined_start_end_date_budget(budget.period!, budget.period_time!)
+            let start_date = budget_updated.date_start;
+            let end_date = budget_updated.date_update;
 
-            let start_date = current_date_budget.start_date;
-            let end_date = current_date_budget.end_date;
+            if (budget.period)  {
+                let current_date_budget = determined_start_end_date_budget(budget.period!, budget.period_time!)
+                start_date = current_date_budget.start_date
+                end_date = current_date_budget.end_date
+                if (budget.date_end && end_date.compare(budget.date_end) < 0)
+                    end_date = budget.date_end
+            }
+
+            let categories: BudgetCategoryOutput[] =  [] 
+            for(let category_id of budget.categories) {
+                let category = await this.category_repository.get(category_id)
+                if (category !== null)
+                    categories.push({id: category.id, title: category.title, icon: category.icon})
+            }
 
             let balance = await this.transaction_repository.get_balance({
-                categories: budget.categories.map(cat => cat.id),
+                categories: budget.categories,
                 accounts: [],
                 tags: [],
                 type: null,
@@ -163,19 +193,18 @@ export class UpdateBudgetCategoryUseCase implements IUpdateBudgetUseCase {
                 price: null
             });
 
-            let budget_display: BudgetDisplay = {
-                id: budget_updated.id,
-                title: budget_updated.title,
-                categories: budget_updated.categories,
-                current: balance,
-                date_start: budget.date_start,
-                date_to_update: budget.date_to_update,
-                period: budget_updated.period,
-                period_time: budget_updated.period_time,
-                target: budget_updated.target,
-                is_periodic: false,
-                date_end: null,
-                tags: budget_updated.tags.map(tag => reverseFormatted(tag))
+            let budget_display: BudgetOutput = {
+                id: budget.id,
+                title: budget.title,
+                categories: categories,
+                currentBalance: Math.abs(balance),
+                period: budget.period,
+                period_time: budget.period_time,
+                target: budget.target,
+                start_date: budget.date_start.toString(),
+                update_date: budget.date_update.toString(),
+                end_date: budget.date_end ? budget.date_end.toString() : null,
+                tags: budget.tags.map((tag => reverseFormatted(tag)))
             };
 
             this.presenter.success(budget_display);

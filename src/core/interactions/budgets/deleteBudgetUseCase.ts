@@ -10,7 +10,7 @@ export interface IDeleteBudgetUseCaseResponse {
     fail(err: Error): void;
 }
 
-export class DeleteBudgetCategoryUseCase implements IDeleteBudgetUseCase {
+export class DeleteBudgetUseCase implements IDeleteBudgetUseCase {
     private repository: BudgetRepository;
     private presenter: IDeleteBudgetUseCaseResponse;
 

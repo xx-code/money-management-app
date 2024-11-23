@@ -1,7 +1,7 @@
 import CardBudget from "@/app/components/cardWithProgressBar";
-import { BudgetWithCategoryDisplay, BudgetWithTagDisplay } from "@/core/entities/budget";
+import { BudgetOutput } from "@/core/interactions/budgets/getAllBudgetUseCase";
 
-export default function ListBudget({budgets, onUpdate, onDelete}: {budgets: Array<BudgetWithCategoryDisplay|BudgetWithTagDisplay>, onUpdate: any, onDelete: any}) {
+export default function ListBudget({budgets, onUpdate, onDelete}: {budgets: Array<BudgetOutput>, onUpdate: any, onDelete: any}) {
     return (
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
             {
@@ -12,7 +12,7 @@ export default function ListBudget({budgets, onUpdate, onDelete}: {budgets: Arra
                             title={budget.title}
                             description=""
                             targetPrice={budget.target} 
-                            currentPrice={budget.current} 
+                            currentPrice={budget.currentBalance} 
                             onUpdate={() => onUpdate(budget.id)} 
                             onDelete={() => onDelete(budget.id)}
                         />

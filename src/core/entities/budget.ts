@@ -4,7 +4,7 @@ import DateParser from "./date_parser";
 import { Tag } from "./tag";
 import { Transaction } from "./transaction";
 
-export type Period =  'Day' | 'Week' | 'Month' | 'Year' ;
+export type Period =  'Day' | 'Week' | 'Month' | 'Year';
 
 export type TypePeriod = {
     value: string,
@@ -29,96 +29,101 @@ export const typePeriods: TypePeriod[] = [
     }
 ]
 
+export enum BudgetType {
+    STANDARD_BUDGET,
+    BUDGET_WITH_TIME,
+    STANDARD_BUDGET_WITH_TIME
+}
+
 export class Budget {
     id: string = '';
     is_archived: boolean = false 
     title: string = ''
     target: number = 0
-    current: number = 0
     date_start: DateParser = DateParser.now()
-    categories: Array<Category> = []
-    tags: Array<Tag> = []
+    categories: Array<string> = []
+    tags: Array<string> = []
     date_update: DateParser = DateParser.now()
-    period: Period = "Day"
-    period_time: number = 0
-    date_end: DateParser = DateParser.now()
-
+    period: Period | null = null
+    period_time: number = 0 
+    date_end: DateParser|null = null
 }
 
-interface IBudgetBuilder {
+export interface IBudgetBuilder {
     reset(): void
-    setId(id: string): void 
-    setIsArchived(archived: boolean): void
+    setId(id: string): void
     setTitle(title: string): void
-    setStartDate(start_date: DateParser): void
-    setUpdateDate(update_date: DateParser): void
-    setEndDate(end_date: DateParser): void
+    setTarget(target: number): void
+    setIsArchived(is_archived: boolean): void
+    setDateStart(date_start: DateParser): void
+    setDateUpdate(date_update: DateParser): void
+    setDateEnd(date_end: DateParser): void
     setPeriod(period: Period): void
     setPeriodTime(period_time: number): void
-    setCategories(categories: Array<Category>): void
+    setCategories(category: Array<string>): void
     setTags(tags: Array<Tag>): void
-    setTarget(price: number): void 
 }
 
-class BudgetBuilder implements IBudgetBuilder {
-    private budget: Budget | null = null
+export class BudgetBuilder implements IBudgetBuilder {
+    budget: Budget | null = null
 
     constructor() {
-        this.reset()
+        this.budget = new Budget()
     }
 
     reset(): void {
-        this.budget = new Budget()
+        this.budget = null
     }
     setId(id: string): void {
-        this.budget!.id = id
+        if (this.budget)
+            this.budget.id = id 
     }
-    setIsArchived(archived: boolean): void {
-        this.budget!.is_archived = archived
+    setIsArchived(is_archived: boolean): void {
+        if (this.budget)
+            this.budget.is_archived = is_archived
     }
     setTitle(title: string): void {
-        this.budget!.title = title
+        if (this.budget)
+            this.budget.title = title
     }
-    setStartDate(start_date: DateParser): void {
-        this.budget!.date_start = start_date
+    setTarget(target: number): void {
+        if (this.budget)
+            this.budget.target = target
     }
-    setUpdateDate(update_date: DateParser): void {
-        this.budget!.date_end = update_date
+    setDateStart(date_start: DateParser): void {
+        if (this.budget)
+            this.budget.date_start = date_start
     }
-    setEndDate(end_date: DateParser): void {
-        this.budget!.date_end = end_date
+    setDateUpdate(date_update: DateParser): void {
+        if (this.budget)
+            this.budget.date_update = date_update
+    }
+    setDateEnd(date_end: DateParser): void {
+        if (this.budget)
+            this.budget.date_end = date_end
     }
     setPeriod(period: Period): void {
-        this.budget!.period = period
+        if (this.budget)
+            this.budget.period = period
     }
     setPeriodTime(period_time: number): void {
-        this.budget!.period_time = period_time
+        if (this.budget)
+            this.budget.period_time = period_time
     }
-    setCategories(categories: Array<Category>): void {
-        this.budget!.categories = categories
+    setCategories(categories: Array<string>): void {
+        if (this.budget)
+            this.budget.categories = categories
     }
     setTags(tags: Array<Tag>): void {
-        this.budget!.tags = tags
+        if (this.budget)
+            this.budget.tags = tags
     }
-    setTarget(price: number): void {
-        this.budget!.target = price
-    } 
-}
-
-
-export type BudgetDisplay = {
-    id: string;
-    is_periodic: boolean
-    title: string;
-    target: number;
-    date_start: DateParser;
-    date_to_update: DateParser|null
-    date_end: DateParser | null;
-    period: Period | null
-    period_time: number | null
-    categories: Array<Category>
-    tags: Array<Tag>
-    current: number;
+    
+    getBudget(): Budget | null {
+        let budget = this.budget
+        this.reset()
+        return budget
+    }
 }
 
 export type CurrentDateBudget = {

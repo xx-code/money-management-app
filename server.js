@@ -17,7 +17,7 @@ app.prepare().then(async () => {
     const server = express();
     const httpServer = http.createServer(server);
 
-    const PORT = 3000;
+    const PORT = 5000;
 
     // Scheduler
     const runScheduler = async () => {
@@ -29,7 +29,7 @@ app.prepare().then(async () => {
                     }
                 }
             )
-            _ = await axios.post(`http://localhost:${PORT}/api/budget_with_category/update`,
+            _ = await axios.post(`http://localhost:${PORT}/api/budget/update`,
                 {
                     headers: {
                         "Content-Type": "application/json"

@@ -3,7 +3,7 @@ import { SqlAccountRepository } from "../../infrastructure/sql/sqlAccountReposit
 import { SqlTagRepository } from "@/infrastructure/sql/sqlTagRepository";
 import { SqlRecordRepository } from "@/infrastructure/sql/sqlRecordRepository";
 import { SqlTransactionRepository } from "@/infrastructure/sql/sqlTransactionRepository";
-import { SqlBudgetCategoryRepository, SqlBudgetTagRepository } from "@/infrastructure/sql/sqlBudgetRepository";
+import { SqlBudgetRepository } from "@/infrastructure/sql/sqlBudgetRepository";
 import { SqlFutureTransactionRepository } from "@/infrastructure/sql/sqlFutureTransactionRepository";
 import { SqlSavingRepository } from "@/infrastructure/sql/sqlSavingRepository";
 
@@ -13,8 +13,9 @@ const category_repo = new SqlCategoryRepository('categories');
 const tag_repo = new SqlTagRepository('tags');
 const record_repo = new SqlRecordRepository('records');
 const transaction_repo = new SqlTransactionRepository('transactions');
-const budget_categories_repo = new SqlBudgetCategoryRepository('budget_categories');
-const budget_tag_repo = new SqlBudgetTagRepository('budget_tags');
+// const budget_categories_repo = new SqlBudgetCategoryRepository('budget_categories');
+// const budget_tag_repo = new SqlBudgetTagRepository('budget_tags');
+const budget_repo = new SqlBudgetRepository('budget')
 const future_transaction_repo = new SqlFutureTransactionRepository('future_transactions')
 const saving_repo = new SqlSavingRepository('savings')
 
@@ -25,8 +26,7 @@ export {
     tag_repo,
     record_repo,
     transaction_repo,
-    budget_categories_repo,
-    budget_tag_repo,
+    budget_repo,
     future_transaction_repo,
     saving_repo
 }

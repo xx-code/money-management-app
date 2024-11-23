@@ -1,26 +1,50 @@
-import { BudgetDisplay } from "../../entities/budget";
 import { BudgetRepository } from "../repositories/budgetRepository";
 import { TransactionRepository } from "../repositories/transactionRepository";
 import { TransactionType } from "../../../core/entities/transaction";
-import { reverseFormatted } from "@/core/entities/formatted";
+import { formatted, reverseFormatted } from "@/core/entities/formatted";
+import { determined_start_end_date_budget } from "@/core/entities/budget";
+import { CategoryRepository } from "../repositories/categoryRepository";
+import { Category } from "@/core/entities/category";
+
+export type BudgetCategoryOutput = {
+    id: string
+    title: string
+    icon: string
+}
+
+export type BudgetOutput = {
+    id: string,
+    title: string,
+    target: number,
+    categories: BudgetCategoryOutput[],
+    tags: string[]
+    period: string|null
+    period_time: number
+    currentBalance: number
+    start_date: string
+    update_date: string
+    end_date: string|null
+}
 
 export interface IGetAllBudgetUseCase {
     execute(): void;
 }
 
 export interface IGetAllBudgetUseCaseResponse { 
-    success(budgets: Array<BudgetDisplay>): void;
+    success(budgets: Array<BudgetOutput>): void;
     fail(err: Error): void;
 }
 
-export class GetAllBudgetCategoryUseCase implements IGetAllBudgetUseCase {
+export class GetAllBudgetUseCase implements IGetAllBudgetUseCase {
     private budget_repository: BudgetRepository;
     private transaction_repository: TransactionRepository;
+    private category_repository: CategoryRepository
     private presenter: IGetAllBudgetUseCaseResponse;
     
-    constructor(budget_repository: BudgetRepository, transaction_repository: TransactionRepository, presenter: IGetAllBudgetUseCaseResponse) {
+    constructor(budget_repository: BudgetRepository, category_repository: CategoryRepository, transaction_repository: TransactionRepository, presenter: IGetAllBudgetUseCaseResponse) {
         this.budget_repository = budget_repository;
         this.transaction_repository = transaction_repository;
+        this.category_repository = category_repository
         this.presenter = presenter;
     }
 
@@ -33,30 +57,44 @@ export class GetAllBudgetCategoryUseCase implements IGetAllBudgetUseCase {
                 let budget = budgets[i];
                 
                 let start_date = budget.date_start
-                let update_date = budget.date_to_update
+                let end_date = budget.date_update
 
+                if (budget.period)  {
+                    let current_date_budget = determined_start_end_date_budget(budget.period!, budget.period_time!)
+                    start_date = current_date_budget.start_date
+                    end_date = current_date_budget.end_date
+                    if (budget.date_end && end_date.compare(budget.date_end) < 0)
+                        end_date = budget.date_end
+                }
+
+                let categories: BudgetCategoryOutput[] =  [] 
+                for(let category_id of budget.categories) {
+                    let category = await this.category_repository.get(category_id)
+                    if (category !== null)
+                        categories.push({id: category.id, title: category.title, icon: category.icon})
+                }
+            
                 let balance = await this.transaction_repository.get_balance({
-                    categories: budget.categories.map(cat => cat.id),
+                    categories: budget.categories,
                     accounts: [],
-                    tags: [],
+                    tags: budget.tags.map(tag => formatted(tag)),
                     type: TransactionType.Debit,
                     start_date: start_date,
-                    end_date: update_date,
+                    end_date: end_date,
                     price: null
                 });
                 
-                let budget_display: BudgetDisplay = {
+                let budget_display: BudgetOutput = {
                     id: budget.id,
                     title: budget.title,
-                    categories: budget.categories.map(cat => ({id: cat.id, title: reverseFormatted(cat.title), icon: cat.icon })),
-                    current: Math.abs(balance),
+                    categories: categories,
+                    currentBalance: Math.abs(balance),
                     period: budget.period,
                     period_time: budget.period_time,
                     target: budget.target,
-                    date_start: budget.date_start,
-                    date_to_update: budget.date_to_update,
-                    is_periodic: budget.is_periodic,
-                    date_end: budget.date_end,
+                    start_date: budget.date_start.toString(),
+                    update_date: budget.date_update.toString(),
+                    end_date: budget.date_end ? budget.date_end.toString() : null,
                     tags: budget.tags.map((tag => reverseFormatted(tag)))
                 };
                 budgets_display.push(budget_display);
