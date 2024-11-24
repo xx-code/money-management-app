@@ -1,7 +1,7 @@
 import DateParser from "@/core/entities/date_parser";
 import { determined_end_date_with } from "@/core/entities/future_transaction";
-import { BudgetRepository } from "../repositories/budgetRepository";
-import { TransactionRepository } from "../repositories/transactionRepository";
+import { BudgetRepository } from "../../repositories/budgetRepository";
+import { TransactionRepository } from "../../repositories/transactionRepository";
 import { TransactionType } from "@/core/entities/transaction";
 import { Budget } from "@/core/entities/budget";
 

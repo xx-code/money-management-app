@@ -1,6 +1,6 @@
 import { Account, AccountDisplay } from "../../entities/account";
-import { AccountRepository } from "../repositories/accountRepository";
-import { TransactionRepository } from "../repositories/transactionRepository";
+import { AccountRepository } from "../../repositories/accountRepository";
+import { TransactionRepository } from "../../repositories/transactionRepository";
 
 interface IGetAllAccountUseCase {
     execute(is_saving:boolean): void

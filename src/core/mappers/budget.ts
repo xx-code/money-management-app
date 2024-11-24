@@ -1,5 +1,7 @@
-import { Budget, BudgetBuilder, Period } from "@/core/entities/budget";
-import DateParser from "@/core/entities/date_parser";
+import { Period } from "../domains/constants";
+import { Budget, BudgetBuilder } from "../domains/entities/budget";
+import { DateParser, Money } from "../domains/helpers";
+import Mapper from "./init";
 
 export type BudgetDto = {
     id: string;
@@ -22,15 +24,15 @@ export class MapperBudger {
         budget_builder.setId(budget_dto.id)
         budget_builder.setIsArchived(budget_dto.is_archived)
         budget_builder.setTitle(budget_dto.title)
-        budget_builder.setTarget(budget_dto.target)
-        budget_builder.setDateStart(DateParser.from_string(budget_dto.date_start))
-        budget_builder.setDateUpdate(DateParser.from_string(budget_dto.date_update))
+        budget_builder.setTarget(new Money(budget_dto.target))
+        budget_builder.setDateStart(DateParser.fromString(budget_dto.date_start))
+        budget_builder.setDateUpdate(DateParser.fromString(budget_dto.date_update))
         budget_builder.setTags(budget_dto.tags)
         budget_builder.setCategories(budget_dto.categories)
         budget_builder.setPeriodTime(budget_dto.period_time)
 
         if (budget_dto.date_end !== null)
-            budget_builder.setDateEnd(DateParser.from_string(budget_dto.date_end))
+            budget_builder.setDateEnd(DateParser.fromString(budget_dto.date_end))
 
         if (budget_dto.period !== null)
             budget_builder.setPeriod(<Period>budget_dto.period)
@@ -50,7 +52,7 @@ export class MapperBudger {
             date_end: budget.date_end ? budget.date_end.toString() : '',
             date_update: budget.date_update.toString(),
             tags: budget.tags,
-            target: budget.target
+            target: budget.target.getAmount()
         }
     }
 }

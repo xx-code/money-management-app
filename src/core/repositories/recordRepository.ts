@@ -1,4 +1,4 @@
-import { Record } from '../../entities/transaction';
+import { Record } from '../domains/entities/transaction';
 
 export interface RecordRepository {
     save(request: Record): Promise<boolean>;

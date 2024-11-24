@@ -1,9 +1,9 @@
-import { BudgetRepository } from "../repositories/budgetRepository";
-import { TransactionRepository } from "../repositories/transactionRepository";
+import { BudgetRepository } from "../../repositories/budgetRepository";
+import { TransactionRepository } from "../../repositories/transactionRepository";
 import { TransactionType } from "../../../core/entities/transaction";
 import { formatted, reverseFormatted } from "@/core/entities/formatted";
 import { determined_start_end_date_budget } from "@/core/entities/budget";
-import { CategoryRepository } from "../repositories/categoryRepository";
+import { CategoryRepository } from "../../repositories/categoryRepository";
 import { Category } from "@/core/entities/category";
 
 export type BudgetCategoryOutput = {

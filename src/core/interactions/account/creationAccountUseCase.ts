@@ -1,6 +1,6 @@
 import { ValidationError } from '../../errors/validationError';
-import { AccountRepository } from '../repositories/accountRepository';
-import { CryptoService } from '../../adapter/libs';
+import { AccountRepository } from '../../repositories/accountRepository';
+import { CryptoService } from '../../adapters/libs';
 import { is_empty } from '../../entities/verify_empty_value';
 
 export type CreationAccountUseCaseRequest = {

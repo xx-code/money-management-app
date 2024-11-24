@@ -1,6 +1,6 @@
 import { ValidationError } from "@/core/errors/validationError"
-import { FutureTransactionRepository } from "../repositories/futureTransactionRepository"
-import { RecordRepository } from "../repositories/recordRepository"
+import { FutureTransactionRepository } from "../../repositories/futureTransactionRepository"
+import { RecordRepository } from "../../repositories/recordRepository"
 import { NotFoundError } from "@/core/errors/notFoundError"
 
 export interface IDeleteFutureTransactionUseCase {

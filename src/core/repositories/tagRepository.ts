@@ -1,11 +1,7 @@
-import { Tag } from "@/core/entities/tag";
-
-export type dbTag = {
-    title: string
-} 
+import { Tag } from "../domains/entities/tag";
 
 export interface TagRepository {
-    save(tag: dbTag): Promise<boolean>;
+    save(tag: Tag): Promise<boolean>;
     delete(title: string): Promise<boolean>;
     get(title: string): Promise<Tag|null>;
     get_all(): Promise<Tag[]>;

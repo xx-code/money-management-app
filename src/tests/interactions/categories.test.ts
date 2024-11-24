@@ -4,8 +4,8 @@ import { GetAllCategoryUseCase, IGetAllCategoryUseCaseResponse } from "../../cor
 import { GetCategoryUseCase, IGetCategoryUseCaseResponse } from "../../core/interactions/category/getCategoryUseCase";
 import { NotFoundError } from "../../core/errors/notFoundError";
 import { ValidationError } from "../../core/errors/validationError";
-import { CategoryRepository, dbCategory } from "../../core/interactions/repositories/categoryRepository";
-import { CryptoService } from "@/core/adapter/libs";
+import { CategoryRepository, dbCategory } from "../../core/repositories/categoryRepository";
+import { CryptoService } from "@/core/adapters/libs";
 
 class MockCrypto implements CryptoService {
     generate_uuid_to_string(): string {

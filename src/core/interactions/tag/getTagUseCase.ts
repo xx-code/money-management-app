@@ -1,6 +1,6 @@
 import { Tag } from "../../entities/tag";
 import { NotFoundError } from "../../errors/notFoundError";
-import { TagRepository } from "../repositories/tagRepository";
+import { TagRepository } from "../../repositories/tagRepository";
 import { formatted, reverseFormatted } from "../../entities/formatted";
 
 export interface IGetTagUseCase {

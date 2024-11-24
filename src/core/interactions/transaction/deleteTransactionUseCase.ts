@@ -1,6 +1,6 @@
 import { NotFoundError } from "../../errors/notFoundError";
-import { RecordRepository } from "../repositories/recordRepository";
-import { TransactionRepository } from "../repositories/transactionRepository";
+import { RecordRepository } from "../../repositories/recordRepository";
+import { TransactionRepository } from "../../repositories/transactionRepository";
 
 interface IDeleteTransactionUseCase {
     execute(id: string): void;

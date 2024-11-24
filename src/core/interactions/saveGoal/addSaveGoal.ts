@@ -1,7 +1,7 @@
 import { ValidationError } from "@/core/errors/validationError";
-import { AccountRepository } from "../repositories/accountRepository";
-import { SavingRepository } from "../repositories/savingRepository";
-import { CryptoService } from "@/core/adapter/libs";
+import { AccountRepository } from "../../repositories/accountRepository";
+import { SavingRepository } from "../../repositories/savingRepository";
+import { CryptoService } from "@/core/adapters/libs";
 import { is_empty } from "@/core/entities/verify_empty_value";
 
 export type RequestNewSaveGoal = {

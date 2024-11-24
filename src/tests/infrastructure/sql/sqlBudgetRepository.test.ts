@@ -7,7 +7,7 @@ import { Tag } from '@/core/entities/tag';
 import DateParser from '../../../core/entities/date_parser';
 import { SqlBudgetCategoryRepository, SqlBudgetTagRepository } from '../../../infrastructure/sql/sqlBudgetRepository';
 import { BudgetWithCategory } from '../../../core/entities/budget';
-import { dbBudgetCategory, dbBudgetTag } from '../../../core/interactions/repositories/budgetRepository';
+import { dbBudgetCategory, dbBudgetTag } from '../../../core/repositories/budgetRepository';
 
 describe('Budget sql repository', () => {
     sqlite3.verbose();

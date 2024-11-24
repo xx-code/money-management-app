@@ -1,6 +1,6 @@
 import { NotFoundError } from "../../core/errors/notFoundError";
 import { ValidationError } from "../../core/errors/validationError";
-import { TagRepository, dbTag } from "../../core/interactions/repositories/tagRepository";
+import { TagRepository, dbTag } from "../../core/repositories/tagRepository";
 import { CreationTagUseCase, ICreationTagUseCaseResponse } from "../../core/interactions/tag/creationTagUseCase";
 import { DeleteTagUseCase, IDeleteTagUseCaseResponse } from "../../core/interactions/tag/deleteTagUseCase";
 import { GetAllTagUseCase, IGetAllTagUseCaseResponse } from "../../core/interactions/tag/getAllTagsUseCase";

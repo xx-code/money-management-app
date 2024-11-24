@@ -9,9 +9,9 @@ import { Tag } from '../../../core/entities/tag';
 import { Account } from '../../../core/entities/account';
 import { Category } from '../../../core/entities/category';
 import { Transaction, Record, TransactionType } from '../../../core/entities/transaction';
-import { dbTransaction } from '../../../core/interactions/repositories/transactionRepository';
+import { dbTransaction } from '../../../core/repositories/transactionRepository';
 import DateParser from '../../../core/entities/date_parser';
-import { dbFutureTransaction } from '@/core/interactions/repositories/futureTransactionRepository';
+import { dbFutureTransaction } from '@/core/repositories/futureTransactionRepository';
 
 describe('Test Future transaction sql repository', () => {
     sqlite3.verbose();

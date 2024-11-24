@@ -1,8 +1,8 @@
 import { ValidationError } from "../../errors/validationError";
-import { CategoryRepository } from "../repositories/categoryRepository";
+import { CategoryRepository } from "../../repositories/categoryRepository";
 import { formatted } from "../../entities/formatted";
 import { is_empty } from "../../entities/verify_empty_value";
-import { CryptoService } from "@/core/adapter/libs";
+import { CryptoService } from "@/core/adapters/libs";
 
 export type RequestCreationCategoryUseCase = {
     title: string,

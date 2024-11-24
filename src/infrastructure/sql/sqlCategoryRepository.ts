@@ -1,5 +1,5 @@
 import { Category } from "@/core/entities/category";
-import { CategoryRepository, dbCategory } from "../../core/interactions/repositories/categoryRepository";
+import { CategoryRepository, dbCategory } from "../../core/repositories/categoryRepository";
 import { open_database } from "../../config/sqlLiteConnection";
 
 

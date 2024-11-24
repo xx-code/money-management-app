@@ -11,7 +11,7 @@ import ModalIncreaseSavingGoal from "@/app/components/modalIncreaseSaveGoal";
 import { Account } from "@/core/entities/account";
 import { RequestDeleteSaveGoal } from "@/core/interactions/saveGoal/deleteSaveGoal";
 import ModalDeleteSavingGoal from "@/app/components/modalDeleteSaveGoal";
-import { SavingRepository } from "@/core/interactions/repositories/savingRepository";
+import { SavingRepository } from "@/core/repositories/savingRepository";
 
 export default function Saving() {
     const [openSavingGoal, setOpenSavingGoal] = useState(false)

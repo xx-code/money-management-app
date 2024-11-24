@@ -1,10 +1,10 @@
 import { ValidationError } from "@/core/errors/validationError";
-import { AccountRepository } from "../repositories/accountRepository";
-import { SavingRepository } from "../repositories/savingRepository";
-import { TransactionRepository } from "../repositories/transactionRepository";
-import { RecordRepository } from "../repositories/recordRepository";
+import { AccountRepository } from "../../repositories/accountRepository";
+import { SavingRepository } from "../../repositories/savingRepository";
+import { TransactionRepository } from "../../repositories/transactionRepository";
+import { RecordRepository } from "../../repositories/recordRepository";
 import { TransactionType } from "@/core/entities/transaction";
-import { CryptoService } from "@/core/adapter/libs";
+import { CryptoService } from "@/core/adapters/libs";
 import { SAVING_CATEGORY_ID } from "./increaseSaveGoal";
 
 export type RequestDeleteSaveGoal = {

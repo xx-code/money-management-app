@@ -1,5 +1,5 @@
 import { NotFoundError } from "../../errors/notFoundError";
-import { BudgetRepository } from "../repositories/budgetRepository";
+import { BudgetRepository } from "../../repositories/budgetRepository";
 
 export interface IDeleteBudgetUseCase {
     execute(id: string): void;

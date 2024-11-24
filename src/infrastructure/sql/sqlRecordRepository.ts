@@ -1,5 +1,5 @@
 import { Tag } from "@/core/entities/tag";
-import { RecordRepository } from "../../core/interactions/repositories/recordRepository";
+import { RecordRepository } from "../../core/repositories/recordRepository";
 import { Record } from "@/core/entities/transaction";
 import DateParser from "../../core/entities/date_parser";
 import { open_database } from "../../config/sqlLiteConnection";

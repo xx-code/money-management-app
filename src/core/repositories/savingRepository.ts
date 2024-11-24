@@ -1,12 +1,4 @@
-import { SaveGoal } from "@/core/entities/save_goal"
-
-export type dbSaveGoal = {
-    id: string,
-    title: string,
-    description: string
-    account_ref: string
-    target: number
-}
+import { SaveGoal } from "../domains/entities/saveGoal"
 
 export type dbUpdateSaveGoal = {
     id: string,
@@ -16,7 +8,7 @@ export type dbUpdateSaveGoal = {
 }
 
 export interface SavingRepository {
-    create(save_goal: dbSaveGoal): Promise<boolean>
+    create(save_goal: SaveGoal): Promise<boolean>
     get(save_goal_id: string): Promise<SaveGoal|null>
     getAll(): Promise<SaveGoal[]>
     update(save_goal: dbUpdateSaveGoal): Promise<boolean>

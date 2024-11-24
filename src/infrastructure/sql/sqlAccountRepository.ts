@@ -1,5 +1,5 @@
 import { Account } from "@/core/entities/account";
-import { AccountRepository, dbAccount } from "../../core/interactions/repositories/accountRepository";
+import { AccountRepository, dbAccount } from "../../core/repositories/accountRepository";
 import { open_database } from "../../config/sqlLiteConnection";
 
 export class SqlAccountRepository implements AccountRepository {

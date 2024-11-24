@@ -1,4 +1,4 @@
-import { CryptoService } from '../core/adapter/libs';
+import { CryptoService } from '../core/adapters/libs';
 import { v4 as uuidv4 } from 'uuid';
 
 export default class UUIDMaker implements CryptoService {

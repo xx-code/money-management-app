@@ -1,11 +1,11 @@
-import { BudgetRepository } from '../../core/interactions/repositories/budgetRepository';
+import { BudgetRepository } from '../../core/repositories/budgetRepository';
 import { Category } from '@/core/entities/category';
 import { Tag } from '@/core/entities/tag';
 import DateParser from '../../core/entities/date_parser';
 import { open_database } from "../../config/sqlLiteConnection";
 import { determined_end_date_with } from '@/core/entities/future_transaction';
 import { Budget } from '@/core/entities/budget';
-import { MapperBudger } from '@/core/interactions/mappers/budget';
+import { MapperBudger } from '@/core/mappers/budget';
 
 
 export class SqlBudgetRepository implements BudgetRepository {

@@ -1,8 +1,8 @@
 import DateParser from "@/core/entities/date_parser";
 import { Period } from '../../entities/budget';
-import { FutureTransactionRepository, dbFutureTransaction } from "../repositories/futureTransactionRepository";
+import { FutureTransactionRepository, dbFutureTransaction } from "../../repositories/futureTransactionRepository";
 import { determined_end_date_with } from "@/core/entities/future_transaction";
-import { TransactionRepository } from "../repositories/transactionRepository";
+import { TransactionRepository } from "../../repositories/transactionRepository";
 
 export interface IAutoUpdateFutureTransactionUseCase {
     execute(): void

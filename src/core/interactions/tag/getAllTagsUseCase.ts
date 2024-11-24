@@ -1,5 +1,5 @@
 import { Tag } from "../../entities/tag";
-import { TagRepository } from "../repositories/tagRepository";
+import { TagRepository } from "../../repositories/tagRepository";
 import { reverseFormatted } from "../../entities/formatted";
 
 export interface IGetAllTagUseCase {

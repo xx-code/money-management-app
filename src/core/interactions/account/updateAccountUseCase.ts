@@ -1,4 +1,4 @@
-import { AccountRepository } from "../repositories/accountRepository";
+import { AccountRepository } from "../../repositories/accountRepository";
 import { Account } from "../../entities/account";
 import { NotFoundError } from "../../errors/notFoundError";
 import { ValidationError } from "../../errors/validationError";

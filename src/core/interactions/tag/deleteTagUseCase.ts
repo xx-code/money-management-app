@@ -1,5 +1,5 @@
 import { NotFoundError } from "../../errors/notFoundError";
-import { TagRepository } from "../repositories/tagRepository";
+import { TagRepository } from "../../repositories/tagRepository";
 import { formatted } from "../../entities/formatted";
 
 export interface IDeleteTagUseCase {

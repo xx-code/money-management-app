@@ -1,13 +1,13 @@
 import { CreationAccountUseCase, ICreationAccountUseCaseResponse } from '../../core/interactions/account/creationAccountUseCase';
-import { CryptoService } from '../../core/adapter/libs';
-import { AccountRepository } from '../../core/interactions/repositories/accountRepository';
+import { CryptoService } from '../../core/adapters/libs';
+import { AccountRepository } from '../../core/repositories/accountRepository';
 import { ValidationError } from '../../core/errors/validationError';
 import { GetAccountUseCase, IGetAccountUseCaseResponse } from '../../core/interactions/account/getAccountUseCase';
 import { NotFoundError } from '../../core/errors/notFoundError';
 import { GetAllAccountUseCase, IGetAllAccountUseCaseResponse } from '../../core/interactions/account/getAllAccountUseCase';
 import { DeleteAccountUseCase, IDeleteAccountUseCaseResponse } from '../../core/interactions/account/deleteAccountUseCase';
 import { Account } from '@/core/entities/account';
-import { TransactionRepository, dbFilter } from '@/core/interactions/repositories/transactionRepository';
+import { TransactionRepository, dbFilter } from '@/core/repositories/transactionRepository';
 
 const replyRepositoryMock: AccountRepository = {
     save: jest.fn().mockReturnValue('new id'),

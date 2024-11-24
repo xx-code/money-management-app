@@ -1,9 +1,9 @@
 import { AddTransactionUseCase, IAddTransactionUseCaseResponse } from '../../core/interactions/transaction/addTransactionUseCase';
-import { CryptoService } from '../../core/adapter/libs';
-import { TransactionRepository } from '../../core/interactions/repositories/transactionRepository';
-import { RecordRepository } from '../../core/interactions/repositories/recordRepository';
-import { CategoryRepository } from '../../core/interactions/repositories/categoryRepository';
-import { TagRepository } from '../../core/interactions/repositories/tagRepository';
+import { CryptoService } from '../../core/adapters/libs';
+import { TransactionRepository } from '../../core/repositories/transactionRepository';
+import { RecordRepository } from '../../core/repositories/recordRepository';
+import { CategoryRepository } from '../../core/repositories/categoryRepository';
+import { TagRepository } from '../../core/repositories/tagRepository';
 import { ValidationError } from '../../core/errors/validationError';
 import { NotFoundError } from '../../core/errors/notFoundError';
 import { Transaction, TransactionType } from '../../core/entities/transaction';
@@ -11,7 +11,7 @@ import { GetTransactionUseCase, IGetTransactionUseCase, IGetTransactionUseCaseRe
 import { GetPaginationTransaction, IGetPaginationTransactionResponse } from '../../core/interactions/transaction/getPaginationTransactionUseCase';
 import { DeleteTransactionUseCase, IDeleteTransactoinUseCaseResponse } from '../../core/interactions/transaction/deleteTransactionUseCase';
 import { UpdateTransactionUseCase, IUpdateTransactionUseCaseResponse } from '../../core/interactions/transaction/updateTransactionUseCase';
-import { AccountRepository } from '../../core/interactions/repositories/accountRepository';
+import { AccountRepository } from '../../core/repositories/accountRepository';
 import { IDeleteAccountUseCaseResponse } from '../../core/interactions/account/deleteAccountUseCase';
 import DateParser from '../../core/entities/date_parser';
 

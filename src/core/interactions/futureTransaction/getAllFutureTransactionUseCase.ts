@@ -1,5 +1,5 @@
 import { FutureTransaction } from "@/core/entities/future_transaction";
-import { FutureTransactionRepository } from "../repositories/futureTransactionRepository";
+import { FutureTransactionRepository } from "../../repositories/futureTransactionRepository";
 import { reverseFormatted } from "@/core/entities/formatted";
 
 export interface IGetAllFutureTransactionUseCase {

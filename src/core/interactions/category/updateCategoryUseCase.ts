@@ -1,6 +1,6 @@
 import { formatted, reverseFormatted } from "@/core/entities/formatted";
 import { NotFoundError } from "@/core/errors/notFoundError";
-import { CategoryRepository, dbCategory } from "../repositories/categoryRepository";
+import { CategoryRepository, dbCategory } from "../../repositories/categoryRepository";
 import { Category } from "@/core/entities/category";
 
 export interface IUpdateCategoryUseCase {

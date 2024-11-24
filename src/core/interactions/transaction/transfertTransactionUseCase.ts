@@ -1,13 +1,13 @@
 import { Record, TransactionType } from "../../entities/transaction";
 import { ValidationError } from "../../errors/validationError";
-import { RecordRepository } from "../repositories/recordRepository";
-import { AccountRepository } from "../repositories/accountRepository";
-import { TagRepository } from "../repositories/tagRepository";
-import { CategoryRepository } from "../repositories/categoryRepository";
+import { RecordRepository } from "../../repositories/recordRepository";
+import { AccountRepository } from "../../repositories/accountRepository";
+import { TagRepository } from "../../repositories/tagRepository";
+import { CategoryRepository } from "../../repositories/categoryRepository";
 import { formatted } from "../../entities/formatted";
-import { TransactionRepository } from "../repositories/transactionRepository";
+import { TransactionRepository } from "../../repositories/transactionRepository";
 import DateParser from "@/core/entities/date_parser";
-import { CryptoService } from "@/core/adapter/libs";
+import { CryptoService } from "@/core/adapters/libs";
 
 export const TRANSFERT_CATEGORY_ID = 'category-transfert'
 

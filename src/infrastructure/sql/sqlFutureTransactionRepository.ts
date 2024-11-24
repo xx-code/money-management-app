@@ -1,4 +1,4 @@
-import { FutureTransactionRepository, dbFutureTransaction } from "@/core/interactions/repositories/futureTransactionRepository";
+import { FutureTransactionRepository, dbFutureTransaction } from "@/core/repositories/futureTransactionRepository";
 import { open_database } from "../../config/sqlLiteConnection";
 import { FutureTransaction } from "../../core/entities/future_transaction";
 import { Tag } from "../../core/entities/tag";

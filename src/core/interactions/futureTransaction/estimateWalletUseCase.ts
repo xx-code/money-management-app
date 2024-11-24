@@ -1,8 +1,8 @@
 import DateParser from "@/core/entities/date_parser";
 import { TransactionType } from "@/core/entities/transaction";
-import { FutureTransactionRepository } from "../repositories/futureTransactionRepository";
+import { FutureTransactionRepository } from "../../repositories/futureTransactionRepository";
 import { diff_between_date_by } from "@/core/entities/libs";
-import { TransactionRepository, dbFilter } from "../repositories/transactionRepository";
+import { TransactionRepository, dbFilter } from "../../repositories/transactionRepository";
 
 export type RecordForEstimation = {
     price: number,

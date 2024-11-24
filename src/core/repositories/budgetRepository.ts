@@ -1,4 +1,4 @@
-import {Budget} from "../../entities/budget";
+import { Budget } from "../domains/entities/budget";
 
 
 export interface BudgetRepository {

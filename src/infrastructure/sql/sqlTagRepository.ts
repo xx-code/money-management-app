@@ -1,5 +1,5 @@
 import { Tag } from "@/core/entities/tag";
-import { TagRepository, dbTag } from "../../core/interactions/repositories/tagRepository";
+import { TagRepository, dbTag } from "../../core/repositories/tagRepository";
 import { open_database } from "../../config/sqlLiteConnection";
 
 

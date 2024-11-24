@@ -1,5 +1,5 @@
 import { ValidationError } from "../../errors/validationError";
-import { TagRepository } from "../repositories/tagRepository";
+import { TagRepository } from "../../repositories/tagRepository";
 import { formatted } from "../../entities/formatted";
 import { is_empty } from "../../entities/verify_empty_value";
 

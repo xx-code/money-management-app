@@ -1,5 +1,5 @@
 import { Category } from "../../entities/category";
-import { CategoryRepository } from "../repositories/categoryRepository";
+import { CategoryRepository } from "../../repositories/categoryRepository";
 import { reverseFormatted } from "../../entities/formatted";
 
 export type Request = {

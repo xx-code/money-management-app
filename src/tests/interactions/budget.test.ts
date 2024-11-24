@@ -6,11 +6,11 @@ import { GetBudgetTagUseCase, GetBudgetCategoryUseCase, IGetBudgetUseCaseRespons
 import { IUpdateBudgetUseCaseResponse, UpdateBudgetCategoryUseCase, UpdateBudgetTagUseCase } from "../../core/interactions/budgets/updateBudgetUseCase";
 import { NotFoundError } from "../../core/errors/notFoundError";
 import { ValidationError } from "../../core/errors/validationError";
-import { BudgetCategoryRepository, BudgetTagRepository} from "../../core/interactions/repositories/budgetRepository";
-import { CryptoService } from "../../core/adapter/libs";
-import { TagRepository } from "../../core/interactions/repositories/tagRepository";
-import { TransactionRepository } from "../../core/interactions/repositories/transactionRepository";
-import { CategoryRepository } from "../../core/interactions/repositories/categoryRepository";
+import { BudgetCategoryRepository, BudgetTagRepository} from "../../core/repositories/budgetRepository";
+import { CryptoService } from "../../core/adapters/libs";
+import { TagRepository } from "../../core/repositories/tagRepository";
+import { TransactionRepository } from "../../core/repositories/transactionRepository";
+import { CategoryRepository } from "../../core/repositories/categoryRepository";
 import DateParser from "../../core/entities/date_parser";
 
 class MockCrypto implements CryptoService {

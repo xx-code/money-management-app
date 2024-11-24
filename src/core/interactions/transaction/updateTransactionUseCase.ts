@@ -1,13 +1,13 @@
 import { Transaction, TransactionType } from "../../entities/transaction";
 import { NotFoundError } from "../../errors/notFoundError";
 import { ValidationError } from "../../errors/validationError";
-import { RecordRepository } from "../repositories/recordRepository";
-import { AccountRepository } from "../repositories/accountRepository";
-import { TagRepository } from "../repositories/tagRepository";
-import { CategoryRepository } from "../repositories/categoryRepository";
+import { RecordRepository } from "../../repositories/recordRepository";
+import { AccountRepository } from "../../repositories/accountRepository";
+import { TagRepository } from "../../repositories/tagRepository";
+import { CategoryRepository } from "../../repositories/categoryRepository";
 import { formatted, reverseFormatted } from "../../entities/formatted";
 import { is_empty } from "../../entities/verify_empty_value";
-import { TransactionRepository } from "../repositories/transactionRepository";
+import { TransactionRepository } from "../../repositories/transactionRepository";
 import DateParser from "@/core/entities/date_parser";
 
 export type RequestUpdateTransactionUseCase = {

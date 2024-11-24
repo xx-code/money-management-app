@@ -1,6 +1,6 @@
 import { SaveGoal } from "@/core/entities/save_goal";
 import { open_database } from "../../config/sqlLiteConnection";
-import { dbSaveGoal, dbUpdateSaveGoal, SavingRepository } from "@/core/interactions/repositories/savingRepository";
+import { dbSaveGoal, dbUpdateSaveGoal, SavingRepository } from "@/core/repositories/savingRepository";
 
 export class SqlSavingRepository implements SavingRepository {
     

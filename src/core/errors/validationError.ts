@@ -1,4 +1,4 @@
-export class ValidationError extends Error {
+export default class ValidationError extends Error {
     public code: number|undefined;
     
     constructor(message: string, code:number|undefined = undefined) {

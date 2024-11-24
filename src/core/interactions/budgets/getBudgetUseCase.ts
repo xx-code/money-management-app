@@ -1,9 +1,9 @@
 import { formatted, reverseFormatted } from "@/core/entities/formatted";
 import { determined_start_end_date_budget } from "../../entities/budget";
 import { NotFoundError } from "../../errors/notFoundError";
-import { BudgetRepository } from "../repositories/budgetRepository";
-import { TransactionRepository } from "../repositories/transactionRepository";
-import { CategoryRepository } from "../repositories/categoryRepository";
+import { BudgetRepository } from "../../repositories/budgetRepository";
+import { TransactionRepository } from "../../repositories/transactionRepository";
+import { CategoryRepository } from "../../repositories/categoryRepository";
 
 export type BudgetCategoryOutput = {
     id: string

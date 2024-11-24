@@ -1,7 +1,7 @@
 import { Account, AccountDisplay } from "../../entities/account";
 import { NotFoundError } from "../../errors/notFoundError";
-import { AccountRepository } from "../repositories/accountRepository";
-import { TransactionRepository } from "../repositories/transactionRepository";
+import { AccountRepository } from "../../repositories/accountRepository";
+import { TransactionRepository } from "../../repositories/transactionRepository";
 
 interface IGetAccountUseCase {    
     execute(id: string): void;

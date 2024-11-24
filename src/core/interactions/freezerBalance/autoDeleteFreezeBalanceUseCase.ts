@@ -1,4 +1,4 @@
-import { dbFilter, dbSortBy, TransactionRepository } from "../repositories/transactionRepository";
+import { dbFilter, dbSortBy, TransactionRepository } from "../../repositories/transactionRepository";
 import { FREEZE_CATEGORY_ID } from "./addFreezeBalanceUseCase";
 import DateParser from "@/core/entities/date_parser";
 

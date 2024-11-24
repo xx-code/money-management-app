@@ -1,6 +1,6 @@
 import { Category } from "../../entities/category";
 import { NotFoundError } from "../../errors/notFoundError";
-import { CategoryRepository } from "../repositories/categoryRepository";
+import { CategoryRepository } from "../../repositories/categoryRepository";
 import { formatted, reverseFormatted } from "../../entities/formatted";
 
 export interface IGetCategoryUseCase {

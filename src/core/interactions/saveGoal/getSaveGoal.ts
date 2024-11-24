@@ -1,6 +1,6 @@
 import { ValidationError } from "@/core/errors/validationError"
-import { SavingRepository } from "../repositories/savingRepository"
-import { TransactionRepository } from "../repositories/transactionRepository"
+import { SavingRepository } from "../../repositories/savingRepository"
+import { TransactionRepository } from "../../repositories/transactionRepository"
 import { SaveGoalDisplay } from "@/core/entities/save_goal";
 
 export interface IGetSaveGoalUseCase {

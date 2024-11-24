@@ -1,6 +1,6 @@
 import DateParser from "@/core/entities/date_parser";
 import { ValidationError } from "@/core/errors/validationError";
-import { TransactionRepository, dbFilter } from "../repositories/transactionRepository";
+import { TransactionRepository, dbFilter } from "../../repositories/transactionRepository";
 import { TransactionType, is_Transaction_type } from "@/core/entities/transaction";
 import { is_empty } from "@/core/entities/verify_empty_value";
 import { formatted } from "@/core/entities/formatted";

@@ -1,6 +1,6 @@
 import { SaveGoalDisplay } from "@/core/entities/save_goal";
-import { SavingRepository } from "../repositories/savingRepository"
-import { TransactionRepository } from "../repositories/transactionRepository"
+import { SavingRepository } from "../../repositories/savingRepository"
+import { TransactionRepository } from "../../repositories/transactionRepository"
 
 export interface IGetAllSaveGoal {
     execute(): void

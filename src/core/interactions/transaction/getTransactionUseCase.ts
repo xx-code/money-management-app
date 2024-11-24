@@ -1,6 +1,6 @@
 import { Transaction } from "../../entities/transaction";
 import { NotFoundError } from "../../errors/notFoundError";
-import { TransactionRepository, dbFilter, dbSortBy } from "../repositories/transactionRepository";
+import { TransactionRepository, dbFilter, dbSortBy } from "../../repositories/transactionRepository";
 
 export interface IGetTransactionUseCase {
     execute(id: string): void;   

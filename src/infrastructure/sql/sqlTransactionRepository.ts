@@ -1,5 +1,5 @@
 import { Account } from "../../core/entities/account";
-import { TransactionRepository, dbTransaction, dbTransactionPaginationResponse, dbFilter, dbSortBy } from "../../core/interactions/repositories/transactionRepository";
+import { TransactionRepository, dbTransaction, dbTransactionPaginationResponse, dbFilter, dbSortBy } from "../../core/repositories/transactionRepository";
 import { Transaction, Record, TransactionType } from "../../core/entities/transaction";
 import { Category } from "../../core/entities/category";
 import { Tag } from "../../core/entities/tag";

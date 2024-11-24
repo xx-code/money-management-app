@@ -1,5 +1,5 @@
 import { ValidationError } from "@/core/errors/validationError";
-import { SavingRepository } from "../repositories/savingRepository";
+import { SavingRepository } from "../../repositories/savingRepository";
 import { is_empty } from "@/core/entities/verify_empty_value";
 
 export type RequestUpdateSaveGoal = {

@@ -1,5 +1,5 @@
 import { NotFoundError } from "../../errors/notFoundError";
-import { AccountRepository } from "../repositories/accountRepository";
+import { AccountRepository } from "../../repositories/accountRepository";
 
 interface IDeleteAccountUseCase {
     execute(id: string): void;
