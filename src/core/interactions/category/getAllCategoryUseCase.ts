@@ -1,18 +1,18 @@
-import { Category } from "../../entities/category";
 import { CategoryRepository } from "../../repositories/categoryRepository";
-import { reverseFormatted } from "../../entities/formatted";
 
-export type Request = {
-    title: string,
+export type CategoryResponse = {
+    category_id: string
+    title: string
     icon: string
-} 
+    color: string|null 
+}
 
 export interface IGetAllCategoryUseCase {
-    execute(): void;
+    execute(): void
 }
 
 export interface IGetAllCategoryUseCaseResponse {
-    success(categories: Category[]): void;
+    success(categories: CategoryResponse[]): void;
     fail(err: Error): void;
 }
 
@@ -27,13 +27,16 @@ export class GetAllCategoryUseCase implements IGetAllCategoryUseCase {
 
     async execute(): Promise<void> {
         try {
-            let results = await this.repository.get_all();
+            let results = await this.repository.getAll();
 
-            // TODO: Data transfert a implement
-            let categories: Category[] = [];
+            let categories: CategoryResponse[] = [];
             for (let result of results) {
-                result.title = reverseFormatted(result.title);
-                categories.push(result);
+                categories.push({
+                    category_id: result.id,
+                    title: result.getTitle(),
+                    color: result.color,
+                    icon: result.icon
+                });
             }
             this.presenter.success(categories);
         } catch(err) {

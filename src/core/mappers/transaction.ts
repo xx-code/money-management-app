@@ -52,7 +52,7 @@ export class RecordMapper {
             id: entity.id,
             date: entity.date.toString(),
             description: entity.description,
-            price: entity.price.getAmount(),
+            price: entity.amount.getAmount(),
             type: entity.type
         }
     }

@@ -1,14 +1,16 @@
 import { AccountRepository } from "../../repositories/accountRepository";
-import { Account } from "../../entities/account";
 import { NotFoundError } from "../../errors/notFoundError";
-import { ValidationError } from "../../errors/validationError";
-import { is_empty } from '../../entities/verify_empty_value';
+import { isEmpty } from "@/core/domains/helpers";
+import ValidationError from "@/core/errors/validationError";
 
 export type RequestUpdateAccountUseCase = {
     id: string;
     title: string|null;
-    credit_value: number|null;
-    credit_limit: number|null;
+}
+
+export type AccountResponse = {
+    account_id: string
+    title: string
 }
 
 interface IUpdateAccountUseCase {
@@ -16,7 +18,7 @@ interface IUpdateAccountUseCase {
 }
 
 export interface IUpdateAccountUseCaseResponse {
-    success(account_updated: Account): void
+    success(account_updated: AccountResponse): void
     fail(err: Error): void
 }
 
@@ -38,7 +40,7 @@ export class UpdateAccountUseCase implements IUpdateAccountUseCase {
             }
 
             if (request.title != null) {
-                if (is_empty(request.title)) {
+                if (isEmpty(request.title)) {
                     throw new ValidationError('Title of account is empty');
                 }
                 account.title = request.title;
@@ -47,7 +49,7 @@ export class UpdateAccountUseCase implements IUpdateAccountUseCase {
 
             let account_updated = await this.repository.update(account);
 
-            this.presenter.success(account_updated);
+            this.presenter.success({account_id: account_updated.id, title: account_updated.title});
         } catch(err) {
             this.presenter.fail(err as Error);
         }

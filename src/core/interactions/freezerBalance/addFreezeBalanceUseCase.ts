@@ -4,19 +4,16 @@ import { CategoryRepository } from "../../repositories/categoryRepository";
 import { RecordRepository } from "../../repositories/recordRepository";
 import { TagRepository } from "../../repositories/tagRepository";
 import { TransactionRepository } from "../../repositories/transactionRepository";
-import { ValidationError } from "@/core/errors/validationError";
-import { TransactionType } from "@/core/entities/transaction";
-import { formatted } from "@/core/entities/formatted";
-import { Record } from '../../entities/transaction'
-import { is_empty } from "@/core/entities/verify_empty_value";
-import DateParser from "@/core/entities/date_parser";
-
-export const FREEZE_CATEGORY_ID = 'category-freeze'
+import ValidationError from "@/core/errors/validationError";
+import { DateParser, isEmpty, Money } from "@/core/domains/helpers";
+import { Record, Transaction, TransactionType } from "@/core/domains/entities/transaction";
+import { FREEZE_CATEGORY_ID } from "@/core/domains/constants";
+import { Category } from "@/core/domains/entities/category";
 
 export type RequestNewFreezeBalance = {
     account_ref: string;
     end_date: string;
-    price: number;
+    amount: number;
 }
 
 export interface IAddFreezeBalanceUseCase {
@@ -24,7 +21,7 @@ export interface IAddFreezeBalanceUseCase {
 }
 
 export interface IAddFreezeBalancePresenter {
-    success(isSave: boolean): void;
+    success(is_save: boolean): void;
     fail(err: Error): void;
 }
 
@@ -56,32 +53,23 @@ export class AddFreezeBalanceUseCase implements IAddFreezeBalanceUseCase {
                 throw new ValidationError('Account don\'t existe');
             }
 
-            if (request.price <= 0) {
-                throw new ValidationError('Price must be greather to 0');
-            }
-
-            if (is_empty(request.end_date)) {
+            if (isEmpty(request.end_date)) {
                 throw new ValidationError('Date start is empty')
             }
 
-            let date: DateParser = DateParser.from_string(request.end_date)
+            let amount = new Money(request.amount)
 
-            let new_record: Record = {
-                id: this.crypto.generate_uuid_to_string(),
-                date: date,
-                description: `freeze`,
-                type: TransactionType.Debit,
-                price: request.price
-            }
+            let date: DateParser = DateParser.fromString(request.end_date)
 
-            let category = await this.category_repository.get_by_title(formatted('freeze'));
+            let record_id = this.crypto.generate_uuid_to_string()
+            let new_record = new Record(record_id, amount, date, TransactionType.DEBIT)
+            new_record.description = 'Freeze'
+          
+            let category = await this.category_repository.get(FREEZE_CATEGORY_ID);
 
             if (category === null) {
-                let is_category_saved = await this.category_repository.save({
-                    id: FREEZE_CATEGORY_ID,
-                    title: formatted('freeze'),
-                    icon: 'freeze'
-                });
+                let new_category = new Category(FREEZE_CATEGORY_ID, 'Freeze', 'freeze')
+                let is_category_saved = await this.category_repository.save(new_category);
 
                 if (!is_category_saved) {
                     throw new ValidationError('Error while creating category transfert');
@@ -93,14 +81,10 @@ export class AddFreezeBalanceUseCase implements IAddFreezeBalanceUseCase {
                 throw new ValidationError('Error while saving record Sender');
             }
 
+            let id_trans = this.crypto.generate_uuid_to_string()
+            let new_transaction = new Transaction(id_trans, account.id, new_record.id, FREEZE_CATEGORY_ID)
 
-            let is_saved = await this.transaction_repository.save({
-                id: this.crypto.generate_uuid_to_string(),
-                account_ref: account.id,
-                category_ref: FREEZE_CATEGORY_ID,
-                record_ref: new_record.id,
-                tag_ref: []
-            })
+            let is_saved = await this.transaction_repository.save(new_transaction)
 
             this.presenter.success(is_saved);
         } catch (err) {

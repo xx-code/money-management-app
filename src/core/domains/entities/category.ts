@@ -6,10 +6,10 @@ export class Category {
     icon: string = ''
     color: string|null = null 
 
-    constructor(id: string, title: string, color: string|null) {
+    constructor(id: string, title: string, icon: string) {
         this.id = id
         this.setTitle(title)
-        this.color = color
+        this.icon = icon
     }
 
     setTitle(title: string) {

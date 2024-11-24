@@ -1,6 +1,5 @@
 import { NotFoundError } from "../../errors/notFoundError";
 import { CategoryRepository } from "../../repositories/categoryRepository";
-import { formatted } from "../../entities/formatted";
 
 export interface IDeleteCategoryUseCase {
     execute(id: string): void;

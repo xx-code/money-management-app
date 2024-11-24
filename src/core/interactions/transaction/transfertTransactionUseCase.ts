@@ -1,21 +1,20 @@
-import { Record, TransactionType } from "../../entities/transaction";
-import { ValidationError } from "../../errors/validationError";
 import { RecordRepository } from "../../repositories/recordRepository";
 import { AccountRepository } from "../../repositories/accountRepository";
 import { TagRepository } from "../../repositories/tagRepository";
 import { CategoryRepository } from "../../repositories/categoryRepository";
-import { formatted } from "../../entities/formatted";
 import { TransactionRepository } from "../../repositories/transactionRepository";
-import DateParser from "@/core/entities/date_parser";
 import { CryptoService } from "@/core/adapters/libs";
-
-export const TRANSFERT_CATEGORY_ID = 'category-transfert'
+import ValidationError from "@/core/errors/validationError";
+import { Record, Transaction, TransactionType } from "@/core/domains/entities/transaction";
+import { DateParser, isEmpty, Money } from "@/core/domains/helpers";
+import { TRANSFERT_CATEGORY_ID } from "@/core/domains/constants";
+import { Category } from "@/core/domains/entities/category";
 
 export type RequestTransfertTransactionUseCase = {
     account_id_from: string;
     account_id_to: string;
-    date: DateParser;
-    price: number;
+    date: string;
+    amount: number;
 }
 
 interface IUpdateTransactionUseCase {
@@ -60,7 +59,13 @@ export class TransfertTransactionUseCase implements IUpdateTransactionUseCase {
                 throw new ValidationError('Received account don\'t existe');
             }
 
-            let balance = await this.transaction_repository.get_balance({
+            
+            if (!isEmpty(request.date))
+                throw new ValidationError('date must not be empty')
+
+            let date = DateParser.fromString(request.date)
+
+            let balance = await this.transaction_repository.getBalance({
                 accounts: [account_from.id],
                 categories: [],
                 end_date: null,
@@ -70,38 +75,27 @@ export class TransfertTransactionUseCase implements IUpdateTransactionUseCase {
                 type: null
             })
 
-            if (balance < request.price) {
+            let amount = new Money(request.amount)
+
+            if (balance < amount.getAmount()) {
                 throw new ValidationError('Price must be less than balance from 0');
             }
     
-            if (request.price <= 0) {
-                throw new ValidationError('Price must be greather to 0');
-            }
 
-            let from_record: Record = {
-                id: this.crypto.generate_uuid_to_string(),
-                date: request.date,
-                description: `Transfert du compte ${account_from.title}`,
-                type: TransactionType.Debit,
-                price: request.price
-            }
+            
+            let id_from_record = this.crypto.generate_uuid_to_string() 
+            let from_record: Record = new Record(id_from_record, amount, date, TransactionType.DEBIT)
+            from_record.description = `Transfert du compte ${account_from.title}`
 
-            let to_record: Record = {
-                id: this.crypto.generate_uuid_to_string(),
-                date: request.date,
-                description: `Transfert au compte ${account_to.title}`,
-                type: TransactionType.Credit,
-                price: request.price
-            }
+            let id_to_record = this.crypto.generate_uuid_to_string()
+            let to_record: Record = new Record(id_to_record, amount, date, TransactionType.CREDIT)
+            to_record.description = `Transfert au compte ${account_to.title}`
 
-            let category = await this.category_repository.get_by_title(formatted('Transfert'));
+            let category = await this.category_repository.get(TRANSFERT_CATEGORY_ID);
 
             if (category === null) {
-                let is_category_saved = await this.category_repository.save({
-                    id: TRANSFERT_CATEGORY_ID,
-                    title: formatted('Transfert'),
-                    icon: 'transfert'
-                });
+                let new_category = new Category(TRANSFERT_CATEGORY_ID, 'Transfert', 'transfert')
+                let is_category_saved = await this.category_repository.save(new_category);
 
                 if (!is_category_saved) {
                     throw new ValidationError('Error while creating category transfert');
@@ -118,21 +112,19 @@ export class TransfertTransactionUseCase implements IUpdateTransactionUseCase {
                 throw new ValidationError('Error while saving record Received');
             }
 
-            let is_saved_from = await this.transaction_repository.save({
-                id: this.crypto.generate_uuid_to_string(),
-                account_ref: account_from.id,
-                category_ref: TRANSFERT_CATEGORY_ID,
-                record_ref: from_record.id,
-                tag_ref: []
-            });
+            let id_trans_from = this.crypto.generate_uuid_to_string()
+            let trans_from = new Transaction(id_trans_from, account_from.id, from_record.id, TRANSFERT_CATEGORY_ID)
+            let is_saved_from = await this.transaction_repository.save(trans_from);
 
-            let is_saved_to = await this.transaction_repository.save({
-                id: this.crypto.generate_uuid_to_string(),
-                account_ref: account_to.id,
-                category_ref: TRANSFERT_CATEGORY_ID,
-                record_ref: to_record.id,
-                tag_ref: []
-            });
+            if (!is_saved_from)
+                throw new ValidationError('Transaction from not save')
+
+            let id_trans_to = this.crypto.generate_uuid_to_string()
+            let trans_to = new Transaction(id_trans_to, account_from.id, from_record.id, TRANSFERT_CATEGORY_ID)
+            let is_saved_to = await this.transaction_repository.save(trans_to);
+
+            if (!is_saved_to)
+                throw new ValidationError('Transaction to not save')
 
             this.presenter.success(is_saved_from && is_saved_to);
         } catch (err) {

@@ -9,7 +9,7 @@ export type CategoryDto = {
 
 export class CategoryMapper {
     static to_domain(category_dto: CategoryDto): Category {
-        let category = new Category(category_dto.id, category_dto.title, category_dto.color)
+        let category = new Category(category_dto.id, category_dto.title, category_dto.icon)
         category.color = category_dto.color
         
         return category

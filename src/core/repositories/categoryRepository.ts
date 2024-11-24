@@ -6,6 +6,6 @@ export interface CategoryRepository {
     delete(id: string): Promise<boolean>;
     update(category: Category): Promise<boolean>;
     get(id: string): Promise<Category|null>;
-    get_by_title(title: string): Promise<Category|null>;
-    get_all(): Promise<Category[]>;
+    getByTitle(title: string): Promise<Category|null>;
+    getAll(): Promise<Category[]>;
 }

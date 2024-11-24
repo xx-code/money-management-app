@@ -1,6 +1,8 @@
-import { dbFilter, dbSortBy, TransactionRepository } from "../../repositories/transactionRepository";
-import { FREEZE_CATEGORY_ID } from "./addFreezeBalanceUseCase";
-import DateParser from "@/core/entities/date_parser";
+import { RecordRepository } from "@/core/repositories/recordRepository";
+import { TransactionFilter, SortBy, TransactionRepository } from "../../repositories/transactionRepository";
+import ValidationError from "@/core/errors/validationError";
+import { FREEZE_CATEGORY_ID } from "@/core/domains/constants";
+import { DateParser } from "@/core/domains/helpers";
 
 export interface IAutoDeleteFreezeBalanceUseCase {
     execute(): void
@@ -13,10 +15,12 @@ export interface IAutoDeleteFreezeBalancePresenter {
 
 export class AutoDeleteFreezeBalanceUseCase  implements IAutoDeleteFreezeBalanceUseCase {
     private transaction_repository: TransactionRepository;
+    private record_repository: RecordRepository
     private presenter: IAutoDeleteFreezeBalancePresenter;
 
-    constructor(transaction_repo: TransactionRepository, presenter: IAutoDeleteFreezeBalancePresenter) {
+    constructor(transaction_repo: TransactionRepository, record_repository: RecordRepository, presenter: IAutoDeleteFreezeBalancePresenter) {
         this.transaction_repository = transaction_repo;
+        this.record_repository = record_repository;
         this.presenter = presenter;
     }
 
@@ -26,7 +30,7 @@ export class AutoDeleteFreezeBalanceUseCase  implements IAutoDeleteFreezeBalance
             let categories_to_filter = [FREEZE_CATEGORY_ID]
 
         
-            let filters: dbFilter = {
+            let filters: TransactionFilter = {
                 accounts: [], 
                 tags: [],
                 categories: categories_to_filter,
@@ -36,13 +40,19 @@ export class AutoDeleteFreezeBalanceUseCase  implements IAutoDeleteFreezeBalance
                 price: null
             };
 
-            let sort_by: dbSortBy|null = null;
+            let sort_by: SortBy|null = null;
       
-            let response = await this.transaction_repository.get_paginations(-1, 1, sort_by, filters);
+            let response = await this.transaction_repository.getPaginations(-1, 1, sort_by, filters);
 
             for (let i = 0; i < response.transactions.length ; i++) {
-                if (DateParser.now().compare(response.transactions[i].record.date) >= 0) {
-                    this.transaction_repository.delete(response.transactions[i].id)
+                let record = await this.record_repository.get(response.transactions[i].record_ref)
+
+                if (record === null)
+                    throw new ValidationError('Auto delete freeze error in reading record')
+
+                if (DateParser.now().compare(record.date) >= 0) {
+                    await this.record_repository.delete(record.id)
+                    await this.transaction_repository.delete(response.transactions[i].id)
                 }
             }
 

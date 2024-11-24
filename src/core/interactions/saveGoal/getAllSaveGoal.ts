@@ -1,4 +1,3 @@
-import { SaveGoalDisplay } from "@/core/entities/save_goal";
 import { SavingRepository } from "../../repositories/savingRepository"
 import { TransactionRepository } from "../../repositories/transactionRepository"
 
@@ -6,8 +5,16 @@ export interface IGetAllSaveGoal {
     execute(): void
 }
 
+export type SaveGoalResponse = {
+    id: string,
+    title: string,
+    description: string,
+    target: number,
+    balance: number
+}
+
 export interface IGetAllSaveGoalPresenter {
-    success(response: SaveGoalDisplay[]): void;
+    success(response: SaveGoalResponse[]): void;
     fail(err: Error): void;
 }
 
@@ -26,10 +33,10 @@ export class GetAllSaveGoal implements IGetAllSaveGoal {
         try {
             let save_goals = await this.saving_repository.getAll()
 
-            let responses: SaveGoalDisplay[] = [] 
+            let responses: SaveGoalResponse[] = [] 
 
             for(let save_goal of save_goals) {
-                let balance = await this.transaction_repository.get_account_balance(save_goal.account_ref)
+                let balance = await this.transaction_repository.getAccountBalance(save_goal.account_ref)
 
                 responses.push(
                     {
@@ -37,7 +44,7 @@ export class GetAllSaveGoal implements IGetAllSaveGoal {
                         title: save_goal.title,
                         description: save_goal.description,
                         balance: balance,
-                        target: save_goal.target
+                        target: save_goal.target.getAmount()
                     }
                 ) 
             }

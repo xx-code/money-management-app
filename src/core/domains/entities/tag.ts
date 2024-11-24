@@ -1,4 +1,4 @@
-import { formatted } from "../helpers"
+import { formatted, reverseFormatted } from "../helpers"
 
 export class Tag {
     id: string = ''
@@ -16,6 +16,6 @@ export class Tag {
     }
 
     getValue(): string {
-        return formatted(this.value)
+        return reverseFormatted(this.value)
     }
 }

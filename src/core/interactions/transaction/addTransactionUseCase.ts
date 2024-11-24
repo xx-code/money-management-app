@@ -1,23 +1,24 @@
-import { TransactionType, is_Transaction_type } from "../../entities/transaction";
-import { ValidationError } from "../../errors/validationError";
 import { TransactionRepository } from "../../repositories/transactionRepository";
 import { AccountRepository } from "../../repositories/accountRepository";
 import { CategoryRepository } from "../../repositories/categoryRepository";
 import { TagRepository } from "../../repositories/tagRepository";
 import { RecordRepository } from "../../repositories/recordRepository";
 import { CryptoService } from '../../adapters/libs';
-import { formatted } from "../../entities/formatted";
-import { is_empty } from "../../entities/verify_empty_value";
-import DateParser from "@/core/entities/date_parser";
+import { DateParser, isEmpty, Money } from "@/core/domains/helpers";
+import ValidationError from "@/core/errors/validationError";
+import { Tag } from "@/core/domains/entities/tag";
+import { Record, Transaction } from "@/core/domains/entities/transaction";
+import { mapperTransactionType } from "@/core/mappers/transaction";
 
 export type RequestAddTransactionUseCase = {
     account_ref: string;
-    price: number;
+    amount: number;
     category_ref: string;
     description: string;
-    date: DateParser;
+    date: string;
     tag_ref: string[];
-    type: TransactionType;
+    new_tags: string[]
+    type: string;
 }
 
 export interface IAddTransactionUseCase {
@@ -25,7 +26,7 @@ export interface IAddTransactionUseCase {
 }
 
 export interface IAddTransactionUseCaseResponse {
-    success(id_transaction: string): void;
+    success(success: boolean): void;
     fail(err: Error): void
 }
 
@@ -52,7 +53,7 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
         try {
             let new_id = this.crypto.generate_uuid_to_string();
 
-            if (is_empty(request.account_ref)) {
+            if (isEmpty(request.account_ref)) {
                 throw new ValidationError('Account ref field is empty');
             }
 
@@ -62,8 +63,12 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
                 throw new ValidationError('Account not exist');
             } 
 
-            if (is_empty(request.category_ref)) {
+            if (isEmpty(request.category_ref)) {
                 throw new ValidationError('Category ref field is empty');
+            }
+
+            if (isEmpty(request.description)) {
+                throw new ValidationError('Description ref field is emtpy');
             }
 
             let category = await this.category_repository.get(request.category_ref);
@@ -75,53 +80,48 @@ export class AddTransactionUseCase implements IAddTransactionUseCase {
             let tags = [];
             if (request.tag_ref.length > 0) {
                 for(let i = 0; i < request.tag_ref.length; i++) {
-                    if (is_empty(request.tag_ref[i])) {
-                        throw new ValidationError('Tag ' + request.tag_ref[i] + 'ref field is empty');
-                    }
-                    tags.push(formatted(request.tag_ref[i]));
+                    let tag = await this.tag_repository.get(request.tag_ref[i])
+                    if (isEmpty(tag)) 
+                        throw new ValidationError('tag ref ' + request.tag_ref[i] + ' not exist')
+                    
+                    tags.push(request.tag_ref[i])
                 } 
             }
 
-            for (let i = 0; i < tags.length; i++) {
-                if (await this.tag_repository.get(tags[i]) == null) {
-                    let is_saved = await this.tag_repository.save({title: tags[i]});
+            if (request.new_tags.length > 0) {
+                for(let i = 0; i < request.new_tags.length; i++) {
+                    if (isEmpty(request.new_tags[i]))
+                        throw new ValidationError('A tag have not value')
 
-                    if (!is_saved) {
+                    let new_id_tag = this.crypto.generate_uuid_to_string()
+                    let is_save = await this.tag_repository.save(new Tag(new_id_tag, request.new_tags[i], null))
+
+                    if (is_save)
                         throw new Error(`Tag ${tags[i]}not saved`)
-                    }
+
+                    tags.push(new_id_tag)
                 }
             }
 
-            if (is_empty(request.description)) {
-                throw new ValidationError('Description ref field is emtpy');
-            }
+            let amount = new Money(request.amount)
 
-            if (request.price < 0) {
-                throw new ValidationError('Price must be greather to 0');
-            }
 
             let record_id = this.crypto.generate_uuid_to_string();
-            let is_record_saved = await this.record_repository.save({
-                id: record_id,
-                price: request.price,
-                date: request.date,
-                description: request.description,
-                type: request.type
-            });
+            let new_record = new Record(record_id, amount, DateParser.fromString(request.date), mapperTransactionType(request.type))
+            new_record.description = request.description
+            let is_record_saved = await this.record_repository.save(new_record);
 
             if (!is_record_saved) {
                 throw new Error('New record not created');
             }
             
-            await this.transaction_repository.save({
-                id: new_id,
-                account_ref: request.account_ref,
-                category_ref: request.category_ref,
-                tag_ref: tags,
-                record_ref: record_id
-            });
+            let new_transaction = new Transaction(new_id, request.account_ref, new_record.id, request.category_ref)
+            new_transaction.setTags(tags)
+    
 
-           this.presenter.success(new_id);
+            let is_save = await this.transaction_repository.save(new_transaction);
+
+            this.presenter.success(is_save);
         } catch (err) {
             this.presenter.fail(err as Error);
         }

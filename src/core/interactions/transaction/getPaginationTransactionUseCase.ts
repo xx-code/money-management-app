@@ -1,13 +1,12 @@
-import { Transaction, TransactionType, is_Transaction_type } from "../../entities/transaction";
-import { TransactionRepository, dbFilter, dbSortBy } from "../../repositories/transactionRepository";
+import { TransactionRepository, TransactionFilter, SortBy } from "../../repositories/transactionRepository";
 import { RecordRepository } from "../../repositories/recordRepository";
 import { AccountRepository } from "../../repositories/accountRepository";
 import { TagRepository } from "../../repositories/tagRepository";
 import { CategoryRepository } from "../../repositories/categoryRepository";
-import { ValidationError } from "../../errors/validationError";
-import { formatted, reverseFormatted } from "../../entities/formatted";
-import { is_empty } from "../../entities/verify_empty_value";
-import DateParser from "@/core/entities/date_parser";
+import { Transaction } from "@/core/domains/entities/transaction";
+import ValidationError from "@/core/errors/validationError";
+import { DateParser, formatted, isEmpty } from "@/core/domains/helpers";
+import { mapperTransactionType } from "@/core/mappers/transaction";
 
 export type RequestGetPagination = {
     page: number;
@@ -17,15 +16,37 @@ export type RequestGetPagination = {
     account_filter: Array<string>;
     category_filter: Array<string>;
     tag_filter: Array<string>;
-    date_start: DateParser|null;
-    date_end: DateParser|null;
+    date_start: string|null;
+    date_end: string|null;
     type: string | null | undefined;
     price: number | undefined;
 }
 
+export type TransactionCategoryResponse = {
+    id: string
+    title: string,
+    icon: string,
+    color: string|null
+}
+
+export type TransactionTagResponse = {
+    id: string
+    value: string
+    color: string|null
+}
+
 export type TransactionResponse = {
-    transactions: Transaction[];
-    current_page: number;
+    transaction_id: string
+    amount: number
+    date: string
+    description: string
+    type: string
+    category: TransactionCategoryResponse
+    tags: TransactionTagResponse[]
+}
+
+export type TransactionPaginationResponse = {
+    transactions: TransactionResponse[];
     max_pages: number;
 }
 
@@ -34,7 +55,7 @@ export interface IGetPaginationTransaction {
 }
 
 export interface IGetPaginationTransactionResponse {
-    success(response: TransactionResponse): void;
+    success(response: TransactionPaginationResponse): void;
     fail(err: Error): void;
 }
 
@@ -86,32 +107,36 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
                     throw new ValidationError('Category ' + request.category_filter[i] + ' in filter not exist');
                 }
 
-                categories_to_filter.push(category!.id)
+                categories_to_filter.push(category.id)
             }
 
             for (let i = 0; i < request.tag_filter.length; i++) {
-                let tag = await this.tag_repository.get(formatted(request.tag_filter[i]));
+                let tag = await this.tag_repository.get(request.tag_filter[i]);
 
                 if (tag === null) {
                     throw new ValidationError('Tag ' + request.tag_filter[i] + ' in filter not exist');
                 }
 
-                tags_to_filter.push(formatted(tag)!)
+                tags_to_filter.push(tag.id)
             }
 
-            if ((request.date_start !== null && request.date_start !== undefined) && ((request.date_end !== null && request.date_end !== undefined))) {
-                if (request.date_end < request.date_start) {
+            if (!isEmpty(request.date_start) && !isEmpty(request.date_end)) {
+                if (DateParser.fromString(request.date_end!).compare(DateParser.fromString(request.date_start!)) < 0) {
                     throw new ValidationError('Date start must be less than date end');
                 }
             }
 
+            let date_start = null
+            if (!isEmpty(request.date_end))
+                date_start = DateParser.fromString(request.date_start!)
+            
+            let date_end = null
+            if (!isEmpty(request.date_end))
+                date_end = DateParser.fromString(request.date_end!) 
+
             let type = null;
-            if (request.type !== null && request.type !== undefined) {
-                if (!is_Transaction_type(request.type)) {
-                    throw new ValidationError('Type must be Debit or Credit')
-                }
-                type = TransactionType[request.type];
-            }
+            if (!isEmpty(request.type))
+                type = mapperTransactionType(request.type!)
 
             let price = null;
             if (request.price !== null && request.price !== undefined) {
@@ -121,23 +146,23 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
                 price = request.price;
             }
  
-            let filters: dbFilter = {
+            let filters: TransactionFilter = {
                 accounts: accounts_to_filter, 
                 tags: tags_to_filter,
                 categories: categories_to_filter,
-                start_date: request.date_start,
-                end_date: request.date_end,
+                start_date: date_start?.toString(),
+                end_date: date_end?.toString(),
                 type: type,
                 price: price
             };
 
-            let sort_by: dbSortBy|null = null;
+            let sort_by: SortBy|null = null;
 
             request.sort_by = 'date';
             request.sort_sense = 'desc'
 
             if (request.sort_by !== null) {
-                if (is_empty(request.sort_by)) {
+                if (isEmpty(request.sort_by)) {
                    throw new ValidationError('Sort by is empty field');
                 }
 
@@ -159,14 +184,51 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
                 }
             }
       
-            let response = await this.transaction_repository.get_paginations(request.page, request.size, sort_by, filters);
+            let response = await this.transaction_repository.getPaginations(request.page, request.size, sort_by, filters);
 
+            let transactions: TransactionResponse[] = []
             for (let i = 0; i < response.transactions.length ; i++) {
-                response.transactions[i].category.title = reverseFormatted(response.transactions[i].category.title);
-                response.transactions[i].tags = response.transactions[i].tags.map(tag => reverseFormatted(tag));
+                let transaction = response.transactions[i]
+                let category = await this.category_repository.get(transaction.category_ref)
+                let record = await this.record_repository.get(transaction.record_ref)
+
+                if (category === null || record === null ) {
+                    throw new ValidationError('Error while get transaction in category or record retreived')
+                }
+
+                let category_res: TransactionCategoryResponse = {
+                    id: category.id,
+                    title: category.getTitle(),
+                    color: category.color,
+                    icon: category.icon
+                }
+
+                let tags_res: TransactionTagResponse[] = []
+                for(let tag_ref of transaction.getTags()) {
+                    let tag = await this.tag_repository.get(tag_ref)
+                    if (!tag) {
+                        throw new ValidationError('Error while get transaction in tag retreived')
+                    }
+
+                    tags_res.push({
+                        id: tag.id,
+                        value: tag.getValue(),
+                        color: tag.color
+                    })
+                }
+
+                transactions.push({
+                    transaction_id: transaction.id,
+                    amount: record.amount.getAmount(),
+                    category: category_res,
+                    date: record.date.toString(),
+                    tags: tags_res,
+                    description: record.description,
+                    type: record.type,
+                })
             }
 
-            this.presenter.success({ transactions: response.transactions, current_page: response.current_page, max_pages: response.max_page });
+            this.presenter.success({ transactions: transactions, max_pages: response.max_page });
         } catch (err) {
             this.presenter.fail(err as Error);
         }

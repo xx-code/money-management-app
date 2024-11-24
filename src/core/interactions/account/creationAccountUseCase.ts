@@ -1,14 +1,15 @@
-import { ValidationError } from '../../errors/validationError';
 import { AccountRepository } from '../../repositories/accountRepository';
 import { CryptoService } from '../../adapters/libs';
-import { is_empty } from '../../entities/verify_empty_value';
+import ValidationError from '@/core/errors/validationError';
+import { isEmpty } from '@/core/domains/helpers';
+import { Account } from '@/core/domains/entities/account';
 
-export type CreationAccountUseCaseRequest = {
+export type RequestCreationAccountUseCase = {
   title: string;
 }
 
 interface ICreationAccountUseCase {
-  execute(request: CreationAccountUseCaseRequest): void;
+  execute(request: RequestCreationAccountUseCase): void;
 }
 
 export interface ICreationAccountUseCaseResponse {
@@ -27,23 +28,21 @@ export class CreationAccountUseCase implements ICreationAccountUseCase {
     this.presenter = presenter;
   }
 
-  async execute(request: CreationAccountUseCaseRequest): Promise<void> {
+  async execute(request: RequestCreationAccountUseCase): Promise<void> {
     try {
       let id = this.crypto.generate_uuid_to_string();
 
-      if (is_empty(request.title)) {
+      if (isEmpty(request.title)) {
         throw new ValidationError('Title of account is empty');
       }
 
       if (await this.repository.exist(request.title)) {
-        throw new ValidationError('Account name already exist');
+        throw new ValidationError('Account name already exist')
       }
 
-      let is_saved = await this.repository.save({
-        id: id,
-        title: request.title,
-        is_saving: false
-      });
+      let new_account = new Account(id, request.title)
+
+      let is_saved = await this.repository.save(new_account)
 
       if (!is_saved) {
         throw new Error('Account not saved');

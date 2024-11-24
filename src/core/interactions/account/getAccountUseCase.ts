@@ -1,4 +1,3 @@
-import { Account, AccountDisplay } from "../../entities/account";
 import { NotFoundError } from "../../errors/notFoundError";
 import { AccountRepository } from "../../repositories/accountRepository";
 import { TransactionRepository } from "../../repositories/transactionRepository";
@@ -7,8 +6,14 @@ interface IGetAccountUseCase {
     execute(id: string): void;
 }
 
+export type AccountResponse = {
+    account_id: string
+    title: string
+    balance: number
+}
+
 export interface IGetAccountUseCaseResponse {
-    success(account: AccountDisplay): void
+    success(account: AccountResponse): void
     fail(error: Error): void
 }
 
@@ -31,7 +36,7 @@ export class GetAccountUseCase implements IGetAccountUseCase {
                 throw new NotFoundError('Account Not Found');
             }
 
-            let balance = await this.transaction_repository.get_balance({
+            let balance = await this.transaction_repository.getBalance({
                 accounts: [id],
                 tags: [],
                 categories: [],
@@ -41,7 +46,7 @@ export class GetAccountUseCase implements IGetAccountUseCase {
                 type: null,
             });
 
-            this.presenter.success({...account, balance: balance});
+            this.presenter.success({account_id: account.id, title: account.title, balance: balance});
         } catch(err) {
             this.presenter.fail(err as Error);
         }

@@ -1,10 +1,16 @@
-import { formatted, reverseFormatted } from "@/core/entities/formatted";
 import { NotFoundError } from "@/core/errors/notFoundError";
-import { CategoryRepository, dbCategory } from "../../repositories/categoryRepository";
-import { Category } from "@/core/entities/category";
+import { CategoryRepository } from "../../repositories/categoryRepository";
+import { isEmpty } from "@/core/domains/helpers";
+
+export type RequestUpdateCategoryUseCase = {
+    id: string
+    title: string | null
+    icon: string | null 
+    color: string | null
+}
 
 export interface IUpdateCategoryUseCase {
-    execute(category: Category): void;
+    execute(request: RequestUpdateCategoryUseCase): void;
 }
 
 export interface IUpdateCategoryUseCaseResponse {
@@ -21,18 +27,24 @@ export class UpdateCategoryUseCase implements IUpdateCategoryUseCase {
         this.presenter = presenter;
     }
 
-    async execute(request_category: Category): Promise<void> {
+    async execute(request: RequestUpdateCategoryUseCase): Promise<void> {
         try {
-            let category = await this.repository.get(request_category.id);
+            let category = await this.repository.get(request.id);
             if (category == null) {
                 throw new NotFoundError('Category no found');
             }
-            request_category.title = formatted(request_category.title);
+           
+            if (!isEmpty(request.title))
+                category.setTitle(request.title!)
 
-            category.title = request_category.title;
-            category.icon = request_category.icon;
+            if (!(isEmpty(request.icon)))
+                category.icon = request.icon!
 
-            let is_updated = await this.repository.update(<dbCategory>category);
+            if (!(isEmpty(request.color)))
+                category.color = request.color
+
+            let is_updated = await this.repository.update(category);
+
             this.presenter.success(is_updated);
         } catch(err) {
             this.presenter.fail(err as Error);

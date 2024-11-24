@@ -1,21 +1,23 @@
-import { ValidationError } from "@/core/errors/validationError";
+import { isEmpty, Money } from "@/core/domains/helpers";
 import { AccountRepository } from "../../repositories/accountRepository";
 import { SavingRepository } from "../../repositories/savingRepository";
 import { CryptoService } from "@/core/adapters/libs";
-import { is_empty } from "@/core/entities/verify_empty_value";
+import ValidationError from "@/core/errors/validationError";
+import { Account } from "@/core/domains/entities/account";
+import { SaveGoal } from "@/core/domains/entities/saveGoal";
 
-export type RequestNewSaveGoal = {
+export type RequestAddSaveGoalUseCase = {
     target: number;
     title: string;
     description: string
 }
 
 export interface IAddSaveGoalUseCase {
-    execute(request: RequestNewSaveGoal): void
+    execute(request: RequestAddSaveGoalUseCase): void
 }
 
 export interface IAddSaveGoalPresenter {
-    success(isSave: boolean): void;
+    success(is_save: boolean): void;
     fail(err: Error): void;
 }
 
@@ -32,36 +34,28 @@ export class AddSaveGoalUseCase implements IAddSaveGoalUseCase {
         this.presenter = presenter
     }
 
-    async execute(request: RequestNewSaveGoal): Promise<void> {
+    async execute(request: RequestAddSaveGoalUseCase): Promise<void> {
         try {
             let id = this.crypt.generate_uuid_to_string();
             
-            if (is_empty(request.title)) {
+            if (isEmpty(request.title)) {
                 throw new ValidationError('Title of saving is empty');
             }
 
             let account_id = this.crypt.generate_uuid_to_string()
-            let is_save_account = await this.account_repository.save({
-                id: account_id,
-                title: request.title,
-                is_saving: true
-            })
+            let new_account = new Account(account_id, request.title)
+            new_account.is_saving = true
+            let is_save_account = await this.account_repository.save(new_account)
 
             if (!is_save_account) {
                 throw new ValidationError('Can\'t create an account')
             }
 
-            if (request.target <= 0) {
-                throw new ValidationError('Target value must be greater than 0')
-            }
+            let money = new Money(request.target)
 
-            let is_saved = await this.saving_repository.create({
-                id: id,
-                account_ref: account_id,
-                title: request.title,
-                description: request.description,
-                target: request.target
-            })
+            let new_save_goal = new SaveGoal(id, request.title, account_id, money)
+            
+            let is_saved = await this.saving_repository.create(new_save_goal)
             
             this.presenter.success(is_saved)
         } catch (err: any) {

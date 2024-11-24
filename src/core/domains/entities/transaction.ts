@@ -11,14 +11,14 @@ export type typeTransactionType = keyof typeof TransactionType
 
 export class Record {
     id: string = ''
-    price: Money 
+    amount: Money 
     date: DateParser
     description: string = ''
     type: TransactionType 
 
-    constructor(id: string, price: Money, date: DateParser, type: TransactionType) {
+    constructor(id: string, amount: Money, date: DateParser, type: TransactionType) {
         this.id = id
-        this.price = price
+        this.amount = amount
         this.date = date
         this.type = type
 
@@ -28,7 +28,7 @@ export class Record {
 export class Transaction {
     id: string;
     account_ref: string;
-    private tags: string[];
+    private tags_ref: string[];
     category_ref: string;
     record_ref: string
     __add_event_tag: string[] = []
@@ -38,27 +38,27 @@ export class Transaction {
         this.id = id 
         this.account_ref = account_ref
         this.record_ref = record_ref
-        this.tags = []
+        this.tags_ref = []
         this.category_ref = category_ref
     }
 
-    setTags(tags: string[]) {
-        this.tags = tags
+    setTags(tags_ref: string[]) {
+        this.tags_ref = tags_ref
     }
     
     addTag(tag: string) {
-        if (this.tags.includes(tag))
+        if (this.tags_ref.includes(tag))
             throw new EntityError('Tag already exist, in transaction. Not duplicate allow.')
         this.__add_event_tag.push(tag)
         if (this.__delete_event_tag.includes(tag)) {
             let index_add_tag = this.__add_event_tag.indexOf(tag)
             this.__add_event_tag.splice(index_add_tag, 1)
         }
-        this.tags.push(tag)
+        this.tags_ref.push(tag)
     }
 
     deleteTag(tag: string) {
-        let index_tag = this.tags.indexOf(tag)
+        let index_tag = this.tags_ref.indexOf(tag)
         if (index_tag < 0)
             throw new EntityError('Tag do not exist, in Transaction.')
 
@@ -67,10 +67,10 @@ export class Transaction {
             let index_del_tag = this.__delete_event_tag.indexOf(tag)
             this.__delete_event_tag.splice(index_del_tag, 1)
         }
-        this.tags.splice(index_tag, 1)
+        this.tags_ref.splice(index_tag, 1)
     }
 
     getTags(): string[] {
-        return this.tags
+        return this.tags_ref
     }
 }

@@ -1,12 +1,13 @@
-import { ValidationError } from "../../errors/validationError";
+import { formatted, isEmpty } from "@/core/domains/helpers";
 import { CategoryRepository } from "../../repositories/categoryRepository";
-import { formatted } from "../../entities/formatted";
-import { is_empty } from "../../entities/verify_empty_value";
 import { CryptoService } from "@/core/adapters/libs";
+import ValidationError from "@/core/errors/validationError";
+import { Category } from "@/core/domains/entities/category";
 
 export type RequestCreationCategoryUseCase = {
     title: string,
-    icon: string
+    icon: string,
+    color: string|null
 } 
 
 export interface ICreationCategoryUseCase {
@@ -33,25 +34,24 @@ export class CreationCategoryUseCase implements ICreationCategoryUseCase {
         try {
             let id = this.crypto.generate_uuid_to_string();
 
-            if (is_empty(request.title)) {
+            if (isEmpty(request.title)) {
                 throw new ValidationError('Title field empty');
             }
 
-            if (is_empty(request.icon)) {
+            if (isEmpty(request.icon)) {
                 throw new ValidationError('Icon field empty');
             }
 
-            let category = await this.repository.get_by_title(formatted(request.title));
+            let category = await this.repository.getByTitle(formatted(request.title));
 
             if (category != null) {
                 throw new ValidationError('This category is already use');
             }
 
-            let is_saved = await this.repository.save({
-                id: id,
-                title: formatted(request.title),
-                icon: request.icon
-            });
+            let new_category = new Category(id, request.title, request.icon)
+            new_category.color = request.color
+
+            let is_saved = await this.repository.save(new_category);
 
             if (!is_saved) {
                 throw new Error('Category not save');

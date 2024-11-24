@@ -1,14 +1,19 @@
-import { Category } from "../../entities/category";
 import { NotFoundError } from "../../errors/notFoundError";
 import { CategoryRepository } from "../../repositories/categoryRepository";
-import { formatted, reverseFormatted } from "../../entities/formatted";
 
 export interface IGetCategoryUseCase {
-    execute(title: string): void;
+    execute(id: string): void;
+}
+
+export type CategoryResponse = {
+    category_id: string
+    title: string
+    icon: string
+    color: string|null 
 }
 
 export interface IGetCategoryUseCaseResponse {
-    success(category: Category): void;
+    success(category: CategoryResponse): void;
     fail(err: Error): void;
 }
 
@@ -21,16 +26,19 @@ export class GetCategoryUseCase implements IGetCategoryUseCase {
         this.presenter = presenter;
     }
 
-    async execute(title: string): Promise<void> {
+    async execute(id: string): Promise<void> {
         try {
-            title = formatted(title);
-            let category = await this.repository.get(title);
+            let category = await this.repository.get(id);
             if (category == null) {
                 throw new NotFoundError('Category no found');
             }
-            category.title = reverseFormatted(category.title);
             
-            this.presenter.success(category);
+            this.presenter.success({
+                category_id: category.id,
+                icon: category.icon,
+                title: category.getTitle(),
+                color: category.color
+            });
         } catch(err) {
             this.presenter.fail(err as Error);
         }

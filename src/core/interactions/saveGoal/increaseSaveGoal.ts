@@ -4,18 +4,17 @@ import { CategoryRepository } from "../../repositories/categoryRepository";
 import { RecordRepository } from "../../repositories/recordRepository";
 import { SavingRepository } from "../../repositories/savingRepository";
 import { TransactionRepository } from "../../repositories/transactionRepository";
-import { is_empty } from "@/core/entities/verify_empty_value";
-import { ValidationError } from "@/core/errors/validationError";
-import { formatted } from "@/core/entities/formatted";
-import DateParser from "@/core/entities/date_parser";
-import { TransactionType } from "@/core/entities/transaction";
+import { DateParser, isEmpty, Money } from "@/core/domains/helpers";
+import ValidationError from "@/core/errors/validationError";
+import { SAVING_CATEGORY_ID } from "@/core/domains/constants";
+import { Category } from "@/core/domains/entities/category";
+import { Record, Transaction, TransactionType } from "@/core/domains/entities/transaction";
 
-export const SAVING_CATEGORY_ID = 'category-saving'
 
 export type RequestIncreaseSaveGoal = {
     saving_goal_ref: string;
     account_ref: string;
-    price: number;
+    increase_amount: number;
 }
 
 export interface IIncreaseSaveGoalUseCase {
@@ -23,7 +22,7 @@ export interface IIncreaseSaveGoalUseCase {
 }
 
 export interface IIncreaseSaveGoalPresenter {
-    success(isSave: boolean): void;
+    success(is_save: boolean): void;
     fail(err: Error): void;
 }
 
@@ -50,20 +49,14 @@ export class IncreaseSaveGoalUseCase implements IIncreaseSaveGoalUseCase {
     async execute(request: RequestIncreaseSaveGoal): Promise<void> {
         try {
 
-            if (is_empty(request.saving_goal_ref)) {
+            if (isEmpty(request.saving_goal_ref)) {
                 throw new ValidationError('Saving must not be empty')
             }
 
             let saving_goal = await this.saving_repository.get(request.saving_goal_ref)
 
-            console.log(saving_goal)
-
             if (saving_goal === null) {
                 throw new ValidationError('Saving goal dont exist')
-            }
-
-            if (request.price <= 0) {
-                throw new ValidationError('Price must be greater than 0')
             }
 
             let account = await this.account_repository.get(request.account_ref)
@@ -71,7 +64,9 @@ export class IncreaseSaveGoalUseCase implements IIncreaseSaveGoalUseCase {
                 throw new ValidationError('Account do not exist')
             }
 
-            let account_balance = await this.transaction_repository.get_balance({
+            let increase_amount = new Money(request.increase_amount)
+
+            let account_balance = await this.transaction_repository.getBalance({
                 accounts: [account.id],
                 categories: [],
                 tags: [],
@@ -81,18 +76,19 @@ export class IncreaseSaveGoalUseCase implements IIncreaseSaveGoalUseCase {
                 type: undefined
             })
 
-            if (account_balance < request.price) {
+            if (account_balance < increase_amount.getAmount()) {
                 throw new ValidationError('Price must be smaller than account')
             }
 
-            let category = await this.category_repository.get_by_title(formatted('Saving'));
+            let category = await this.category_repository.get(SAVING_CATEGORY_ID);
 
             if (category === null) {
-                let is_category_saved = await this.category_repository.save({
-                    id: SAVING_CATEGORY_ID,
-                    title: formatted('Saving'),
-                    icon: 'Saving'
-                });
+                let new_category = new Category(
+                    SAVING_CATEGORY_ID,
+                    'Saving',
+                    '#2ecc71'
+                )
+                let is_category_saved = await this.category_repository.save(new_category);
 
                 if (!is_category_saved) {
                     throw new ValidationError('Error while creating category saving');
@@ -100,51 +96,31 @@ export class IncreaseSaveGoalUseCase implements IIncreaseSaveGoalUseCase {
             }
 
             let id_record_from = this.crypto.generate_uuid_to_string()
-            let is_record_from_saved = await this.record_repository.save({
-                id: id_record_from,
-                date: DateParser.now(),
-                description: 'Saving ' + saving_goal.title,
-                price: request.price,
-                type: TransactionType.Debit
-            })
-
-            let id_record_saving = this.crypto.generate_uuid_to_string() 
-            let is_record_saving_saved = await this.record_repository.save({
-                id: id_record_saving,
-                date: DateParser.now(),
-                description: 'Saving ' + saving_goal.title,
-                price: request.price,
-                type: TransactionType.Credit
-            })
-
-            if (!is_record_from_saved) {
+            let new_record_from = new Record(id_record_from, increase_amount, DateParser.now(), TransactionType.DEBIT)
+            new_record_from.description = 'Saving ' + saving_goal.title
+            if (!await this.record_repository.save(new_record_from)) {
                 throw new ValidationError('Error while saving record Sender');
             }
 
-            if (!is_record_saving_saved) {
+            let id_record_saving = this.crypto.generate_uuid_to_string() 
+            let new_record_saving = new Record(id_record_saving, increase_amount, DateParser.now(), TransactionType.CREDIT)
+            new_record_saving.description = 'Saving ' + saving_goal.title
+            if (!await this.record_repository.save(new_record_saving)) {
                 throw new ValidationError('Error while saving record saving');
             }
 
-            let is_saved_from = await this.transaction_repository.save({
-                id: this.crypto.generate_uuid_to_string(),
-                account_ref: request.account_ref,
-                category_ref: SAVING_CATEGORY_ID,
-                record_ref: id_record_from,
-                tag_ref: []
-            });
+            let id_trans_from = this.crypto.generate_uuid_to_string()
+            let new_transaction_from = new Transaction(id_trans_from, request.account_ref, id_record_from, SAVING_CATEGORY_ID)
+            let is_saved_from = await this.transaction_repository.save(new_transaction_from);
 
+            let is_save = false
             if (is_saved_from) {
-                let is_saved_to = await this.transaction_repository.save({
-                    id: this.crypto.generate_uuid_to_string(),
-                    account_ref: saving_goal.account_ref,
-                    category_ref: SAVING_CATEGORY_ID,
-                    record_ref: id_record_saving,
-                    tag_ref: []
-                });
+                let id_trans_to = this.crypto.generate_uuid_to_string()
+                let new_transaction_to = new Transaction(id_trans_to, saving_goal.account_ref, id_record_saving, SAVING_CATEGORY_ID)
+                is_save = await this.transaction_repository.save(new_transaction_to);
             }
             
-
-            this.presenter.success(is_saved_from);
+            this.presenter.success(is_save);
         } catch (err: any) {
             this.presenter.fail(err)
         }

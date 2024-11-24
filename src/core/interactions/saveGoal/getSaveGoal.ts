@@ -1,14 +1,22 @@
-import { ValidationError } from "@/core/errors/validationError"
+import ValidationError from "@/core/errors/validationError"
 import { SavingRepository } from "../../repositories/savingRepository"
 import { TransactionRepository } from "../../repositories/transactionRepository"
-import { SaveGoalDisplay } from "@/core/entities/save_goal";
+
+export type SaveGoalResponse = {
+    id: string,
+    title: string,
+    description: string,
+    target: number,
+    balance: number
+}
+
 
 export interface IGetSaveGoalUseCase {
     execute(id: string): void
 }
 
 export interface IGetSaveGoalPresenter {
-    success(response: SaveGoalDisplay): void;
+    success(response: SaveGoalResponse): void;
     fail(err: Error): void;
 }
 
@@ -31,14 +39,14 @@ export class GetSaveGoalUseCase implements IGetSaveGoalUseCase {
                 throw new ValidationError('save goal not exist')
             }
 
-            let balance = await this.transaction_repository.get_account_balance(save_goal.account_ref)
+            let balance = await this.transaction_repository.getAccountBalance(save_goal.account_ref)
 
-            let response: SaveGoalDisplay = {
+            let response: SaveGoalResponse = {
                 id: save_goal.id,
                 title: save_goal.title,
                 description: save_goal.description,
                 balance: balance,
-                target: save_goal.target
+                target: save_goal.target.getAmount()
             }
 
             this.presenter.success(response)

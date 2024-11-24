@@ -4,5 +4,5 @@ export interface TagRepository {
     save(tag: Tag): Promise<boolean>;
     delete(title: string): Promise<boolean>;
     get(title: string): Promise<Tag|null>;
-    get_all(): Promise<Tag[]>;
+    getAll(): Promise<Tag[]>;
 }

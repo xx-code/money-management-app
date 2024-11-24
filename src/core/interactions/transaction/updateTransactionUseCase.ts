@@ -1,24 +1,25 @@
-import { Transaction, TransactionType } from "../../entities/transaction";
 import { NotFoundError } from "../../errors/notFoundError";
-import { ValidationError } from "../../errors/validationError";
 import { RecordRepository } from "../../repositories/recordRepository";
 import { AccountRepository } from "../../repositories/accountRepository";
 import { TagRepository } from "../../repositories/tagRepository";
 import { CategoryRepository } from "../../repositories/categoryRepository";
-import { formatted, reverseFormatted } from "../../entities/formatted";
-import { is_empty } from "../../entities/verify_empty_value";
 import { TransactionRepository } from "../../repositories/transactionRepository";
-import DateParser from "@/core/entities/date_parser";
+import { DateParser, isEmpty, Money } from "@/core/domains/helpers";
+import ValidationError from "@/core/errors/validationError";
+import { mapperTransactionType } from "@/core/mappers/transaction";
+import { CryptoService } from "@/core/adapters/libs";
+import { Tag } from "@/core/domains/entities/tag";
 
 export type RequestUpdateTransactionUseCase = {
     id: string;
     account_ref: string|null;
-    tag_ref: string|null;
+    tags_ref: string[]|null;
+    new_tags_ref: string[]
     category_ref: string|null;
-    type: TransactionType|null;
+    type: string|null;
     description: string|null;
     date: string|null;
-    price: number|null;
+    amount: number|null;
 }
 
 interface IUpdateTransactionUseCase {
@@ -26,7 +27,7 @@ interface IUpdateTransactionUseCase {
 }
 
 export interface IUpdateTransactionUseCaseResponse {
-    success(transaction: Transaction): void
+    success(success: boolean): void
     fail(err: Error): void
 }
 
@@ -36,114 +37,99 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
     private category_repository: CategoryRepository;
     private tag_repository: TagRepository;
     private account_repository: AccountRepository;
+    private crypto: CryptoService;
 
     private presenter: IUpdateTransactionUseCaseResponse;
 
-    constructor(transaction_repo: TransactionRepository, presenter: IUpdateTransactionUseCaseResponse, account_repo: AccountRepository, category_repo: CategoryRepository, tag_repo: TagRepository, record_repo: RecordRepository) {
+    constructor(transaction_repo: TransactionRepository, crypo: CryptoService, account_repo: AccountRepository, category_repo: CategoryRepository, tag_repo: TagRepository, record_repo: RecordRepository, presenter: IUpdateTransactionUseCaseResponse,) {
         this.transaction_repository = transaction_repo;
         this.record_repository = record_repo;
         this.category_repository = category_repo;
         this.tag_repository = tag_repo;
         this.account_repository = account_repo;
         this.presenter = presenter;
+        this.crypto = crypo
     }
+    
 
     async execute(request: RequestUpdateTransactionUseCase): Promise<void> {
         try {
             let transaction = await this.transaction_repository.get(request.id);
             
             if (transaction == null) {
-                throw new NotFoundError('Transaction not found');
+                throw new NotFoundError('Transaction not found')
             }
 
-            let record = transaction.record;
-            let category_ref = transaction.category.id;
-            let tags: string[] = [];
+            let record = await this.record_repository.get(transaction.record_ref)
 
-            let account_ref = transaction.account.id
-            if (request.account_ref !== null) {
-                let account = await this.account_repository.get(request.account_ref)
+            if (record === null)
+                throw new NotFoundError('Can\'t found record')
+
+            
+            if (!isEmpty(request.account_ref)) {
+                let account = await this.account_repository.get(request.account_ref!)
 
                 if (account === null) {
                     throw new ValidationError('The account do not exist')
                 }
-                account_ref = request.account_ref                
+                transaction.account_ref = request.account_ref!                
             }
             
-            if (request.description != null) {
-                if (is_empty(request.description)) {
-                    throw new ValidationError('Description ref field is emtpy');
-                }
-                record.description = request.description;
+            if (!isEmpty(request.description != null)) {
+                record.description = request.description!
             }
 
-            if (request.price != null) {
-                if (request.price < 0) {
-                    throw new ValidationError('Price must be greather to 0');
-                }
-                record.price = request.price;
+            if (!isEmpty(request.amount)) {
+                record.amount = new Money(request.amount!)
             }
 
             // TODO: Clean transaction type
-            if (request.type != null) {
-                if (formatted(request.type) != 'CREDIT' && formatted(request.type) != 'DEBIT') {
-                    throw new ValidationError('Type must be Debit or Credit');
-                }
-                record.type = request.type;
+            if (!isEmpty(request.type)) {
+                record.type = mapperTransactionType(request.type!)
             }
 
-            let date: DateParser = transaction.record.date
-            if (request.date !== null && request.date !== undefined && !is_empty(request.date)) {
-                date = DateParser.from_string(request.date);
+            if (!isEmpty(request.date)) {
+                record.date = DateParser.fromString(request.date!);
             }
 
-            if (request.category_ref != null) {
-                // category = formatted(request.category_ref);
-                if (is_empty(request.category_ref)) {
-                    throw new ValidationError('Category ref field is empty');
-                }
-
-                let new_category = await this.category_repository.get(request.category_ref);
+            if (!isEmpty(request.category_ref)) {
+                let new_category = await this.category_repository.get(request.category_ref!);
                 if (new_category == null) {
                     throw new ValidationError('Category not exist');
                 }
-                category_ref = new_category.id;
+                transaction.category_ref = new_category.id;
             }
 
-            if (request.tag_ref != null) {
-                for (let i = 0; i < request.tag_ref.length; i++) {
-                    if (is_empty(request.tag_ref[i])) {
-                        throw new ValidationError('Tag a position ' + i + ' ref field is empty');
-                    } 
-                    let req_tag = formatted(request.tag_ref[i]);
-                    let tag = await this.tag_repository.get(req_tag);
-                    if (tag == null) {
-                        await this.tag_repository.save({ title: req_tag });
-                        tags.push(req_tag);
-                    } else {
-                        tags.push(req_tag);
-                    }
-
+            if (!isEmpty(request.tags_ref)) {
+                for (let tag_ref of transaction.getTags()) {
+                    if (request.tags_ref!.includes(tag_ref))
+                        transaction.deleteTag(tag_ref) 
                 }
             }
 
-            let record_updated = await this.record_repository.update({
-                id: record.id,
-                price: record.price,
-                description: record.description,
-                date: date,
-                type: record.type
-            });
+            if (isEmpty(request.new_tags_ref)) {
+                for(let i = 0; i < request.new_tags_ref.length; i++) {
+                    if (isEmpty(request.new_tags_ref[i]))
+                        throw new ValidationError('A tag have not value')
 
-            let response = await this.transaction_repository.update({
-                id: transaction.id,
-                account_ref: account_ref,
-                category_ref: category_ref,
-                tag_ref: tags,
-                record_ref: record_updated.id
-            });
+                    let new_id_tag = this.crypto.generate_uuid_to_string()
+                    let is_save = await this.tag_repository.save(new Tag(new_id_tag, request.new_tags_ref[i], null))
 
-            this.presenter.success(response);
+                    if (is_save)
+                        throw new Error(`Tag ${request.new_tags_ref[i]}not saved`)
+
+                    transaction.addTag(new_id_tag)
+                }
+            }
+
+            let is_record_update = await this.record_repository.update(record);
+
+            if (!is_record_update)
+                throw new Error('We cannot update record') 
+            
+            let is_transaction_update = await this.transaction_repository.update(transaction);
+
+            this.presenter.success(is_transaction_update);
         } catch (err) {
             this.presenter.fail(err as Error);
         }
