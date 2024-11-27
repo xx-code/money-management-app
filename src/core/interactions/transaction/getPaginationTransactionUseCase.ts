@@ -59,6 +59,14 @@ export interface IGetPaginationTransactionResponse {
     fail(err: Error): void;
 }
 
+export interface IGetPaginationTransactionAdapter {
+    transaction_repository: TransactionRepository
+    account_repository: AccountRepository
+    category_repository: CategoryRepository
+    tag_repository: TagRepository
+    record_repository: RecordRepository
+}
+
 export class GetPaginationTransaction implements IGetPaginationTransaction {
     private transaction_repository: TransactionRepository;
     private account_repository: AccountRepository;
@@ -67,12 +75,12 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
     private record_repository: RecordRepository;
     private presenter: IGetPaginationTransactionResponse;
 
-    constructor(transaction_repo: TransactionRepository, account_repo: AccountRepository, category_repo: CategoryRepository, tag_repo: TagRepository, record_repo: RecordRepository, presenter: IGetPaginationTransactionResponse) {
-        this.transaction_repository = transaction_repo;
-        this.account_repository = account_repo;
-        this.category_repository = category_repo;
-        this.tag_repository = tag_repo;
-        this.record_repository = record_repo;
+    constructor(adapter: IGetPaginationTransactionAdapter, presenter: IGetPaginationTransactionResponse) {
+        this.transaction_repository = adapter.transaction_repository;
+        this.account_repository = adapter.account_repository;
+        this.category_repository = adapter.category_repository;
+        this.tag_repository = adapter.tag_repository;
+        this.record_repository = adapter.record_repository;
         this.presenter = presenter;
     }
 

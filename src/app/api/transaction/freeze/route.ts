@@ -3,8 +3,12 @@ import { NextResponse } from "next/server";
 import { initRepository } from "../../libs/init_repo";
 import UUIDMaker from "@/services/crypto";
 
+export type ApiFreezeBalanceResponse = {
+    is_freezed: boolean
+}
+
 type ModelView = {
-    response: boolean | null,
+    response: ApiFreezeBalanceResponse | null,
     error: Error | null
 }
 
@@ -12,7 +16,7 @@ class AddFreezeBalancePresenter implements IAddFreezeBalancePresenter {
     model_view: ModelView = {response: null, error: null};
 
     success(is_save: boolean): void {
-        this.model_view.response = is_save;
+        this.model_view.response = {is_freezed: is_save};
         this.model_view.error = null;
     }
     fail(err: Error): void {

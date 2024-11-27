@@ -1,14 +1,213 @@
 import { BudgetRepository } from '../../core/repositories/budgetRepository';
-import { Category } from '@/core/entities/category';
-import { Tag } from '@/core/entities/tag';
-import DateParser from '../../core/entities/date_parser';
 import { open_database } from "../../config/sqlLiteConnection";
-import { determined_end_date_with } from '@/core/entities/future_transaction';
-import { Budget } from '@/core/entities/budget';
 import { MapperBudger } from '@/core/mappers/budget';
+import { SqlLiteRepository } from './sql_lite_connector';
+import { Budget } from '@/core/domains/entities/budget';
 
+export class SqlLiteBudget extends SqlLiteRepository implements BudgetRepository {
 
-export class SqlBudgetRepository implements BudgetRepository {
+    private async getAllCategories(id_budget: string): Promise<string[]> {
+        return new Promise(async (resolve, reject) => {
+            let result_category = await this.db.all(`
+                SELECT * 
+                FROM 
+                    budget_categories
+                WHERE budget_categories.id_budget = ?
+                `,
+                id_budget
+            );
+
+            let categories: string[] = []
+            for (let result of result_category) {
+                categories.push(result['id']);
+            }
+
+            resolve(categories);
+        });
+    }
+
+    private async getAllTags(id_budget: string): Promise<string[]> {
+        return new Promise(async (resolve, reject) => {
+            let result_tag = await this.db.all(`
+                SELECT * 
+                FROM 
+                    budget_tags
+                WHERE budget_tags.id_budget = ?
+                `,
+                id_budget
+            );
+
+            let tags: string[] = []
+            for (let result of result_tag) {
+                tags.push(result['id']);
+            }
+
+            resolve(tags);
+        });
+    }
+
+    save(request: Budget): Promise<boolean> {
+        return new Promise(async (resolve, reject) => {
+            const dto = MapperBudger.to_persistence(request)
+
+            let result = await this.db.run(`
+                INSERT INTO budgets (id, title, target, period, period_time, date_start, date_update, is_archived, date_end) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                dto.id, dto.title, dto.target, dto.period, dto.period_time, dto.date_start, dto.date_update, 0, dto.date_end
+            );
+
+            let saved_category = true;
+            if (request.categories.length > 0) {
+                for (let category of request.categories) {
+                    let result = await this.db.run(`
+                        INSERT INTO budget_categories (id_budget, id_category) VALUES (?, ?)`,
+                        request.id, category
+                    );
+                    saved_category = result != undefined;
+                }
+            }
+
+            let saved_tag = true;
+            if (request.tags.length > 0) {
+                for (let tag of request.tags) {
+                    let result = await this.db.run(`
+                        INSERT INTO budget_tags (id_budget, id_tag) VALUES (?, ?)`,
+                        request.id, tag
+                    );
+                    saved_tag = result != undefined;
+                }
+            }
+
+            if (result['changes'] == 0 && saved_category && saved_tag) {
+                resolve(false);
+            } else {
+                resolve(true);
+            }
+        })
+    }
+    
+    get(id: string): Promise<Budget | null> {
+        return new Promise(async (resolve, reject) => {
+            let result = await this.db.get(`SELECT id, title, target, period, period_time, date_start, date_update, date_end FROM budgets WHERE id = ? and is_archived = 0`, id);
+            
+            if (result != undefined) {
+                
+                let categories = await this.getAllCategories(id);
+                let tags = await this.getAllTags(id)
+
+                let budget = MapperBudger.to_domain({
+                    id: result['id'],
+                    title: result['title'],
+                    target: result['target'],
+                    is_archived: result['is_archived'],
+                    period: result['period'],
+                    period_time: result['period_time'],
+                    date_start: result['date_start'],
+                    date_update: result['date_update'],
+                    date_end: result['date_end'],
+                    tags: tags,
+                    categories: categories
+                })
+
+                resolve(budget);
+            } else {
+                resolve(null);
+            }
+        })
+    }
+    getAll(): Promise<Budget[]> {
+        return new Promise(async (resolve, reject) => {
+            let results = await this.db.all(`SELECT id, title, target, period, period_time, date_start, date_update, date_end FROM budgets Where is_archived = 0`);
+
+            let budgets: Budget[] = [];
+
+            for (let result of results) {
+                let categories = await this.getAllCategories(result['id']);
+                let tags = await this.getAllTags(result['id'])
+
+                let budget = MapperBudger.to_domain({
+                    id: result['id'],
+                    title: result['title'],
+                    target: result['target'],
+                    is_archived: result['is_archived'],
+                    period: result['period'],
+                    period_time: result['period_time'],
+                    date_start: result['date_start'],
+                    date_update: result['date_update'],
+                    date_end: result['date_end'],
+                    tags: tags,
+                    categories: categories
+                })
+
+                budgets.push(budget);
+            }
+            resolve(budgets);
+        })
+    }
+    delete(id: string): Promise<boolean> {
+        return new Promise(async (resolve, reject) => {
+            // Todo: Transaction 
+            let result = await this.db.run(`DELETE FROM budgets WHERE id = ?`, id);
+            let result2 = await this.db.run(`DELETE FROM budget_tags WHERE id_budget = ?`, id);
+            let result3 = await this.db.run(`DELETE FROM budget_categories WHERE id_budget = ?`, id);
+
+            if (result['changes'] == 0) {
+                resolve(false);
+            } else {
+                resolve(true)
+            } 
+        })
+    }
+    archived(id: string, balance: number): Promise<boolean> {
+        return new Promise(async (resolve, reject) => {
+            let result = await this.db.run(`UPDATE budgets SET balance = ?, is_archived = ? WHERE id = ? `, balance, 1, id);
+
+            if (result['changes'] == 0) {
+                resolve(false);
+            } else {
+                resolve(true)
+            } 
+        })
+    }
+    update(request: Budget): Promise<boolean> {
+        return new Promise(async (resolve, reject) => {
+            const dto = MapperBudger.to_persistence(request)
+            
+            await this.db.run(`UPDATE budgets SET title = ?, target = ?, period = ?, period_time = ?, date_start = ?, date_update = ?, date_end = ? WHERE id = ? `, 
+                dto.title, dto.target, dto.period, dto.period_time, dto.date_start, dto.date_update, dto.date_end, dto.id);
+
+            if (request.__delete_event_category.length > 0) {
+                await this.db.run(`DELETE FROM budget_categories WHERE id_category in (?)`, request.__delete_event_category.toString());
+            }
+
+            if (request.__add_event_category.length > 0) {
+                for (let category of request.__add_event_category) {
+                    await this.db.run(`
+                        INSERT INTO budget_categories (id_budget, id_category) VALUES (?, ?)`,
+                        request.id, category
+                    );
+                }
+            }
+
+            if (request.__delete_event_tag.length > 0) {
+                await this.db.run(`DELETE FROM budget_tags WHERE id_category in (?)`, request.__delete_event_tag.toString());
+            } 
+
+            if (request.__add_event_tag.length > 0) {
+                for (let category of request.__add_event_tag) {
+                    await this.db.run(`
+                        INSERT INTO budgets_tags (id_budget, id_tag) VALUES (?, ?)`,
+                        request.id, category
+                    );
+                }
+            }
+
+            resolve(true);
+        })
+    }
+    
+}
+
+/*export class SqlBudgetRepository implements BudgetRepository {
     private db: any;
     private table_name: string;
     private create_table_query: string = ''
@@ -286,4 +485,4 @@ export class SqlBudgetRepository implements BudgetRepository {
         })
     }
 
-}
+}*/

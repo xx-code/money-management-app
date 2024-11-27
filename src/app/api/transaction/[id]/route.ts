@@ -1,31 +1,41 @@
-import { DB_FILENAME, account_repo, category_repo, record_repo, tag_repo, transaction_repo } from "@/app/configs/repository";
-import DateParser from "@/core/entities/date_parser";
-import { Transaction } from "@/core/entities/transaction"
 import { DeleteTransactionUseCase, IDeleteTransactoinUseCaseResponse } from "@/core/interactions/transaction/deleteTransactionUseCase";
-import { GetTransactionUseCase, IGetTransactionUseCaseResponse } from "@/core/interactions/transaction/getTransactionUseCase"
-import { IUpdateTransactionUseCaseResponse, RequestUpdateTransactionUseCase, UpdateTransactionUseCase } from "@/core/interactions/transaction/updateTransactionUseCase";
+import { GetTransactionUseCase, IGetTransactionAdapter, IGetTransactionUseCaseResponse, TransactionResponse } from "@/core/interactions/transaction/getTransactionUseCase"
+import { IUpdateTransactionAdapter, IUpdateTransactionUseCaseResponse, RequestUpdateTransactionUseCase, UpdateTransactionUseCase } from "@/core/interactions/transaction/updateTransactionUseCase";
 import { NextResponse } from "next/server";
+import { initRepository } from "../../libs/init_repo";
+import UUIDMaker from "@/services/crypto";
+
+export type ApiGetTransactionResponse = {
+    account_id: string, 
+    category_title: string, 
+    category_icon: string,
+    category_color: string|null,
+    date: string,
+    tags: {tag_id: string, tag_value: string, tag_color: string|null}[], 
+    type: string, 
+    amount: number, 
+    description: string
+}
 
 type GetTransaction = {
-    response : {
-        account_id: string, category_title: string, category_icon: string, date: string,
-        tags: string[], type: string, price: number, description: string} | null,
+    response : ApiGetTransactionResponse | null,
     error: Error | null
 }
 
 class GetTransactionPresenter implements IGetTransactionUseCaseResponse {
     model_view: GetTransaction = {response: null, error: null};
 
-    success(transaction: Transaction): void {
+    success(transaction: TransactionResponse): void {
         this.model_view.response = {
-            account_id: transaction.account.id, 
+            account_id: transaction.account_id,
             category_title: transaction.category.title,
             category_icon: transaction.category.icon,
-            tags: transaction.tags,
-            description: transaction.record.description,
-            date: transaction.record.date.toString(),
-            price: transaction.record.price,
-            type: transaction.record.type
+            category_color: transaction.category.color,
+            tags: transaction.tags.map(tag => ({tag_id: tag.id, tag_value: tag.value, tag_color: tag.color})),
+            description: transaction.description,
+            date: transaction.date,
+            amount: transaction.amount,
+            type: transaction.type
         }
         this.model_view.error = null;
     }
@@ -44,13 +54,16 @@ export async function GET(
 
     let presenter = new GetTransactionPresenter();
 
-    await account_repo.init(DB_FILENAME);
-    await category_repo.init(DB_FILENAME);
-    await tag_repo.init(DB_FILENAME);
-    await record_repo.init(DB_FILENAME);
-    await transaction_repo.init(DB_FILENAME, account_repo.table_account_name, category_repo.table_category_name, tag_repo.table_tag_name, record_repo.table_record_name);
+    let repo = await initRepository()
 
-    let use_case = new GetTransactionUseCase(transaction_repo, presenter);
+    let adapters: IGetTransactionAdapter = {
+        category_repository: repo.categoryRepo,
+        record_repository: repo.recordRepo,
+        tag_repository: repo.tagRepo,
+        transaction_repository: repo.transactionRepo
+    }
+
+    let use_case = new GetTransactionUseCase(adapters, presenter);
     await use_case.execute(id);
 
     if (presenter.model_view.error !== null) {
@@ -63,20 +76,20 @@ export async function GET(
     return NextResponse.json(presenter.model_view.response, {status: 200});
 }
 
-class UpdateTransactionPresenter implements IUpdateTransactionUseCaseResponse {
-    model_view: GetTransaction = {response: null, error: null};
+export type ApiUpdateTransactionResponse = {
+    is_updated: boolean
+}
 
-    success(transaction: Transaction): void {
-        this.model_view.response = {
-            account_id: transaction.account.id, 
-            category_title: transaction.category.title,
-            category_icon: transaction.category.icon,
-            tags: transaction.tags,
-            description: transaction.record.description,
-            date: transaction.record.date.toString(),
-            price: transaction.record.price,
-            type: transaction.record.type
-        }
+type UpdateTransactionModelView = {
+    response: ApiUpdateTransactionResponse | null
+    error: Error | null
+}
+
+class UpdateTransactionPresenter implements IUpdateTransactionUseCaseResponse {
+    model_view: UpdateTransactionModelView = {response: null, error: null};
+
+    success(is_updated: boolean): void {
+        this.model_view.response = { is_updated: is_updated }
         this.model_view.error = null;
     }
 
@@ -99,14 +112,18 @@ export async function PUT(
     let request_transaction: RequestUpdateTransactionUseCase = transaction;
     request_transaction.id = id;
     
+    let repo = await initRepository()
 
-    await account_repo.init(DB_FILENAME);
-    await category_repo.init(DB_FILENAME);
-    await tag_repo.init(DB_FILENAME);
-    await record_repo.init(DB_FILENAME);
-    await transaction_repo.init(DB_FILENAME, account_repo.table_account_name, category_repo.table_category_name, tag_repo.table_tag_name, record_repo.table_record_name);
+    let adapter: IUpdateTransactionAdapter = {
+        transaction_repository: repo.transactionRepo,
+        account_repository: repo.accountRepo,
+        category_repository: repo.categoryRepo,
+        tag_repository: repo.tagRepo,
+        record_repository: repo.recordRepo,
+        crypto: new UUIDMaker()
+    }
 
-    let use_case = new UpdateTransactionUseCase(transaction_repo, presenter, account_repo, category_repo, tag_repo, record_repo);
+    let use_case = new UpdateTransactionUseCase(adapter, presenter);
     await use_case.execute(request_transaction);
 
     if (presenter.model_view.error !== null) {
@@ -119,8 +136,12 @@ export async function PUT(
     return NextResponse.json(presenter.model_view.response, {status: 200});
 }
 
+export type IDeleteTransactionResponse = {
+    is_deleted: boolean
+}
+
 type DeleteTransaction = {
-    response: {is_deleted: boolean} | null,
+    response: IDeleteTransactionResponse | null,
     error: Error | null
 }
 
@@ -145,14 +166,9 @@ export async function DELETE(
 
     let presenter = new DeleteTransactionPresenter();
 
-    await account_repo.init(DB_FILENAME);
-    await category_repo.init(DB_FILENAME);
-    await tag_repo.init(DB_FILENAME);
-    await record_repo.init(DB_FILENAME);
-    await record_repo.init(DB_FILENAME);
-    await transaction_repo.init(DB_FILENAME, account_repo.table_account_name, category_repo.table_category_name, tag_repo.table_tag_name, record_repo.table_record_name);
+    let repo = await initRepository()
 
-    let use_case = new DeleteTransactionUseCase(transaction_repo, record_repo, presenter);
+    let use_case = new DeleteTransactionUseCase(repo.transactionRepo, repo.recordRepo, presenter);
     use_case.execute(id);
 
     if (presenter.model_view.error !== null) {

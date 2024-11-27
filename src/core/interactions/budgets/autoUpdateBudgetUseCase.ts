@@ -1,9 +1,8 @@
-import DateParser from "@/core/entities/date_parser";
-import { determined_end_date_with } from "@/core/entities/future_transaction";
+import { Budget } from "@/core/domains/entities/budget";
 import { BudgetRepository } from "../../repositories/budgetRepository";
 import { TransactionRepository } from "../../repositories/transactionRepository";
-import { TransactionType } from "@/core/entities/transaction";
-import { Budget } from "@/core/entities/budget";
+import { DateParser, determinedEndDateWith } from "@/core/domains/helpers";
+import { TransactionType } from "@/core/domains/entities/transaction";
 
 export interface IAutoUpdateBudgetUseCase {
     execute(): void
@@ -27,7 +26,7 @@ export class AutoUpdateBudgetUseCase implements IAutoUpdateBudgetUseCase {
 
     async execute(): Promise<void> {
         try {
-            let budgets = await this.budget_repo.get_all()
+            let budgets = await this.budget_repo.getAll()
 
             budgets.forEach(async budget => {
                 this.updateBudget(budget)
@@ -48,38 +47,29 @@ export class AutoUpdateBudgetUseCase implements IAutoUpdateBudgetUseCase {
                     await this.budget_repo.update(budget)
                 } else {
                     if (budget.date_update.compare(DateParser.now()) <= 0) {
-                        let balance = await this.transaction_repo.get_balance({
+                        let balance = await this.transaction_repo.getBalance({
                             categories: budget.categories,
                             accounts: [],
                             tags: [],
-                            type: TransactionType.Debit,
-                            start_date: budget.date_start,
-                            end_date: budget.date_update,
+                            type: TransactionType.DEBIT,
+                            start_date: budget.date_start.toString(),
+                            end_date: budget.date_update.toString(),
                             price: null
                         });
                     
                         let new_date_to_start: DateParser = budget.date_update
-                        let new_date_to_update: DateParser = determined_end_date_with(budget.date_update!.toDate(), budget.period!, budget.period_time!)
+                        let new_date_to_update: DateParser = determinedEndDateWith(budget.date_update!.toDate(), budget.period!, budget.period_time!)
                         
                         // update data corretly
                         while (new_date_to_update.compare(DateParser.now()) < 0) {
                             new_date_to_start = new_date_to_update
-                            new_date_to_update = determined_end_date_with(new_date_to_update.toDate(), budget.period!, budget.period_time!)
+                            new_date_to_update = determinedEndDateWith(new_date_to_update.toDate(), budget.period!, budget.period_time!)
                         }
+
+                        budget.date_start = new_date_to_start
+                        budget.date_update = new_date_to_update
     
-                        await this.budget_repo.update({
-                            id: budget.id,
-                            title: budget.title,
-                            target: budget.target + (budget.target - Math.abs(balance)),
-                            period: budget.period,
-                            is_archived: false,
-                            date_start: new_date_to_start,
-                            date_update: new_date_to_update,
-                            categories: budget.categories,
-                            period_time: budget.period_time,
-                            date_end: budget.date_end,
-                            tags: budget.tags
-                        })
+                        await this.budget_repo.update(budget)
                     }
                 }
                 

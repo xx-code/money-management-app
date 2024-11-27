@@ -22,9 +22,7 @@ class AutoUpdateBudgetPresenter implements IAutoUpdateBudgetPresenter {
     }
 }
 
-async function executeAutoUpdate() {
-    let uuid = new UUIDMaker();
-            
+async function executeAutoUpdate() {            
     let presenter: AutoUpdateBudgetPresenter = new AutoUpdateBudgetPresenter()
     const repositories = await initRepository() 
     let auto_update_budget_usecase = new AutoUpdateBudgetUseCase(presenter, repositories.budgetRepo, repositories.transactionRepo)

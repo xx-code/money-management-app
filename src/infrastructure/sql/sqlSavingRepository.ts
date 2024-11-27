@@ -1,8 +1,101 @@
-import { SaveGoal } from "@/core/entities/save_goal";
-import { open_database } from "../../config/sqlLiteConnection";
-import { dbSaveGoal, dbUpdateSaveGoal, SavingRepository } from "@/core/repositories/savingRepository";
+import { SavingRepository } from "@/core/repositories/savingRepository";
+import { SqlLiteRepository } from "./sql_lite_connector";
+import { SaveGoal } from "@/core/domains/entities/saveGoal";
+import { SaveGoalDto, SaveGoalMapper } from "@/core/mappers/saveGoal";
 
-export class SqlSavingRepository implements SavingRepository {
+export class SqlLiteSaving extends SqlLiteRepository implements SavingRepository {
+    create(save_goal: SaveGoal): Promise<boolean> {
+        return new Promise(async (resolve, reject) => {
+            let dto = SaveGoalMapper.to_persistence(save_goal)
+            let result = await this.db.run(
+                `INSERT INTO savings (id, id_account, title, description, target) VALUES (?, ?, ?, ?, ?)`,
+                dto.id, dto.account_ref, dto.title, dto.description, dto.target
+            )
+
+            if (result != undefined) {
+                resolve(true);
+            } else {
+                resolve(false);
+            } 
+        })
+    }
+    get(save_goal_id: string): Promise<SaveGoal | null> {
+        return new Promise(async (resolve, reject) => {
+            let result = await this.db.get(
+                `Select id, id_account, title, description, target From savings Where id = ?`,
+                save_goal_id
+            )
+
+            if(result != undefined) {
+                let save_goal: SaveGoalDto = {
+                    id: result['id'],
+                    account_ref: result['id_account'],
+                    description: result['description'],
+                    target: result['target'],
+                    title: result['title']
+                }
+
+                resolve(SaveGoalMapper.to_domain(save_goal));
+            } else {
+                resolve(null);
+            }
+        })
+    }
+    getAll(): Promise<SaveGoal[]> {
+        return new Promise(async (resolve, reject) => {
+            let results = await this.db.all(
+                `Select id, id_account, title, description, target From savings`
+            )
+
+            let save_goals = [];
+
+            for (let result of results) {
+                let save_goal: SaveGoalDto = {
+                    id: result['id'],
+                    account_ref: result['id_account'],
+                    description: result['description'],
+                    target: result['target'],
+                    title: result['title']
+                }
+
+                save_goals.push(SaveGoalMapper.to_domain(save_goal));
+            }
+
+            resolve(save_goals)
+        })
+    }
+    update(save_goal: SaveGoal): Promise<boolean> {
+        return new Promise(async (resolve, reject) => {
+            let result = await this.db.run(
+                `Update savings Set title = ?, description = ?, target = ? Where id = ?`,
+                save_goal.title,
+                save_goal.description,
+                save_goal.target,
+                save_goal.id
+            )
+
+            if (result['changes'] == 0) {
+                resolve(false);
+            } else {
+                resolve(true)
+            }
+        })
+    }
+    delete(save_goal_id: string): Promise<boolean> {
+        return new Promise(async (resolve, reject) => {
+            let result = await this.db.run(`DELETE FROM savings WHERE id = ?`, save_goal_id);
+
+            if (result['changes'] == 0) {
+                resolve(false);
+            } else {
+                resolve(true)
+            }
+        })
+    }
+
+}
+
+/*export class SqlSavingRepository implements SavingRepository {
     
     private db: any;
     public table_saving_name: string;
@@ -118,4 +211,4 @@ export class SqlSavingRepository implements SavingRepository {
             }
         })
     }
-}
+}*/

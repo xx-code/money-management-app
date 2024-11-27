@@ -50,7 +50,7 @@ export class RecordMapper {
     static to_persistence(entity: Record): RecordDto {
         return {
             id: entity.id,
-            date: entity.date.toString(),
+            date: entity.date.toString('datetime'),
             description: entity.description,
             price: entity.amount.getAmount(),
             type: entity.type

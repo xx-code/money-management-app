@@ -1,20 +1,26 @@
-import { DB_FILENAME, category_repo } from "@/app/configs/repository";
-import { Category } from "@/core/entities/category"
 import { DeleteCategoryUseCase, IDeleteCategoryUseCaseResponse } from "@/core/interactions/category/deleteCategoryUseCase";
-import { GetCategoryUseCase, IGetCategoryUseCaseResponse } from "@/core/interactions/category/getCategoryUseCase"
-import { UpdateCategoryUseCase } from "@/core/interactions/category/updateCategoryUseCase";
+import { CategoryResponse, GetCategoryUseCase, IGetCategoryUseCaseResponse } from "@/core/interactions/category/getCategoryUseCase"
+import { RequestUpdateCategoryUseCase, UpdateCategoryUseCase } from "@/core/interactions/category/updateCategoryUseCase";
 import { NextResponse } from "next/server";
+import { initRepository } from "../../libs/init_repo";
+
+export type ApiCategoryResponse = {
+    category_id: string,
+    title: string,
+    icon: string,
+    color: string|null
+}
 
 type GetCategoryModelView = {
-    response: { title: string, icon: string } | null,
+    response: ApiCategoryResponse | null,
     error: Error | null
 }
 
 class GetCategoryPresenter implements IGetCategoryUseCaseResponse {
     model_view: GetCategoryModelView = {response: null, error: null};
 
-    success(category: Category): void {
-        this.model_view.response = { title: category.title, icon: category.icon };
+    success(category: CategoryResponse): void {
+        this.model_view.response = { category_id: category.category_id, title: category.title, icon: category.icon, color: category.color };
         this.model_view.error = null;
     }
     fail(err: Error): void {
@@ -31,9 +37,9 @@ export async function GET(
 
     let presenter = new GetCategoryPresenter();
 
-    await category_repo.init(DB_FILENAME);
+    let repos = await initRepository()
 
-    let use_case = new GetCategoryUseCase(category_repo, presenter);
+    let use_case = new GetCategoryUseCase(repos.categoryRepo, presenter);
     await use_case.execute(id);
 
     if (presenter.model_view.error !== null) {
@@ -45,8 +51,12 @@ export async function GET(
     return NextResponse.json(presenter.model_view.response, { status: 200});
 }
 
+export type ApiDeleteCategoryResponse = {
+    is_deleted: boolean
+}
+
 type DeleteCategory = {
-    response: {is_deleted: boolean} | null,
+    response: ApiDeleteCategoryResponse | null,
     error: Error | null
 }
 
@@ -72,9 +82,9 @@ export async function DELETE(
 
     let presenter = new DeleteCategoryPresenter();
 
-    await category_repo.init(DB_FILENAME);
+    let repos = await initRepository()
 
-    let use_case = new DeleteCategoryUseCase(category_repo, presenter);
+    let use_case = new DeleteCategoryUseCase(repos.categoryRepo, presenter);
     await use_case.execute(id);
 
     if (presenter.model_view.error !== null) {
@@ -86,13 +96,17 @@ export async function DELETE(
     return NextResponse.json(presenter.model_view.response, {status: 200});
 }
 
-type UpdateCategory = {
-    response: {is_updated: boolean} | null,
+export type ApiUpdateCategory = {
+    is_updated: boolean
+}
+
+type UpdateCategoryModelView = {
+    response: ApiUpdateCategory | null,
     error: Error | null
 }
 
 class UpdateCategoryPresenter implements IDeleteCategoryUseCaseResponse {
-    model_view: UpdateCategory = {response: null, error: null};
+    model_view: UpdateCategoryModelView = {response: null, error: null};
 
     success(is_updated: boolean): void {
         this.model_view.response = { is_updated: is_updated };
@@ -112,14 +126,14 @@ export async function PUT(
     const id = params.id;
 
     let category = await request.json();
-    let request_category: Category = category;
+    let request_category: RequestUpdateCategoryUseCase = category;
     request_category.id = id;
 
     let presenter = new UpdateCategoryPresenter();
 
-    await category_repo.init(DB_FILENAME);
+    let repo = await initRepository()
 
-    let use_case = new UpdateCategoryUseCase(category_repo, presenter);
+    let use_case = new UpdateCategoryUseCase(repo.categoryRepo, presenter);
     use_case.execute(request_category);
 
     if (presenter.model_view.error !== null) {

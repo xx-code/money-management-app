@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server';
-import { CreationAccountUseCase, ICreationAccountUseCaseResponse, CreationAccountUseCaseRequest } from '../../../core/interactions/account/creationAccountUseCase';
+import { CreationAccountUseCase, ICreationAccountUseCaseResponse, RequestCreationAccountUseCase } from '../../../core/interactions/account/creationAccountUseCase';
 import { GetAllAccountUseCase, IGetAllAccountUseCaseResponse } from '../../../core/interactions/account/getAllAccountUseCase';
 import UUIDMaker from '../../../services/crypto';
 import { DB_FILENAME, account_repo, category_repo, record_repo, tag_repo, transaction_repo } from '../../configs/repository';
-import { Account } from '@/core/entities/account';
+import { AccountResponse } from '@/core/interactions/account/getAccountUseCase';
+import { initRepository } from '../libs/init_repo';
+
+export type ApiCreateAccountResponse = {
+  is_created: boolean
+}
 
 type CreationAccountModelView = {
-  response: boolean | null,
+  response: ApiCreateAccountResponse | null,
   error: Error | null
 }
 
@@ -14,7 +19,7 @@ class CreationAccountApiResponse implements ICreationAccountUseCaseResponse {
   public model_view: CreationAccountModelView = { response: null, error: null };
 
   success(is_saved: boolean): void {
-    this.model_view.response = is_saved;
+    this.model_view.response = {is_created: is_saved}
     this.model_view.error = null;
   }
 
@@ -26,13 +31,14 @@ class CreationAccountApiResponse implements ICreationAccountUseCaseResponse {
 
 export async function POST(request: Request) {
   let uuid = new UUIDMaker();
-  await account_repo.init(DB_FILENAME);
+  
+  let repo = await initRepository()
 
-  let new_account: CreationAccountUseCaseRequest = await request.json();
+  let new_account: RequestCreationAccountUseCase = await request.json();
 
   let presenter = new CreationAccountApiResponse();
 
-  let account = new CreationAccountUseCase(account_repo, uuid, presenter);
+  let account = new CreationAccountUseCase(repo.accountRepo, uuid, presenter);
 
   await account.execute(new_account);
 
@@ -47,17 +53,32 @@ export async function POST(request: Request) {
   });
 }
 
+export type ApiGetAllResponse = {
+  account_id: string
+  title: string
+  balance: number
+}
+
 type ModelViewAllAccount = {
   error: Error | null
-  response: Account[]
+  response: ApiGetAllResponse[]
 }
 
 class GetAllAccountApiResponse implements IGetAllAccountUseCaseResponse {
   public model_view: ModelViewAllAccount = { error: null, response: [] };
 
-  success(all_accounts: Account[]): void {
-    this.model_view.response = all_accounts;
-    this.model_view.error = null;
+  success(all_accounts: AccountResponse[]): void {
+    let accounts: ApiGetAllResponse[] = []
+    for (let account of all_accounts) {
+      accounts.push({
+        account_id: account.account_id, 
+        title: account.title,
+        balance: account.balance
+      })
+    }
+
+    this.model_view.response = accounts
+    this.model_view.error = null
   }
 
   fail(err: Error): void {
@@ -67,16 +88,11 @@ class GetAllAccountApiResponse implements IGetAllAccountUseCaseResponse {
 }
 
 export async function GET() {
-  await account_repo.init(DB_FILENAME);
-
   let presenter = new GetAllAccountApiResponse();
 
-  await account_repo.init(DB_FILENAME);
-  await category_repo.init(DB_FILENAME);
-  await tag_repo.init(DB_FILENAME);
-  await record_repo.init(DB_FILENAME);
-  await transaction_repo.init(DB_FILENAME, account_repo.table_account_name, category_repo.table_category_name, tag_repo.table_tag_name, record_repo.table_record_name);
-  let account = new GetAllAccountUseCase(account_repo, transaction_repo, presenter);
+  let repo = await initRepository()
+  
+  let account = new GetAllAccountUseCase(repo.accountRepo, repo.transactionRepo, presenter);
 
   await account.execute();
 

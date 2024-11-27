@@ -1,9 +1,103 @@
-import { Tag } from "@/core/entities/tag";
 import { RecordRepository } from "../../core/repositories/recordRepository";
-import { Record } from "@/core/entities/transaction";
-import DateParser from "../../core/entities/date_parser";
-import { open_database } from "../../config/sqlLiteConnection";
+import { SqlLiteRepository } from "./sql_lite_connector";
+import { Record } from "@/core/domains/entities/transaction";
+import { RecordDto, RecordMapper } from "@/core/mappers/transaction";
 
+export class SqlLiteRecord extends SqlLiteRepository implements RecordRepository {
+    save(request: Record): Promise<boolean> {
+        return new Promise(async (resolve, reject) => {
+            let record_dto = RecordMapper.to_persistence(request)
+
+            let result = await this.db.run(`
+                INSERT INTO records (id, amount, date, description, type) VALUES (?, ?, ?, ?, ?)`,
+                record_dto.id, record_dto.price, record_dto.date, record_dto.description, record_dto.type
+            );
+
+            if (result != undefined) {
+                resolve(true);
+            } else {
+                resolve(false);
+            }
+        })
+    }
+    get(id: string): Promise<Record | null> {
+        return new Promise(async (resolve, reject) => {
+            let result = await this.db.get(`SELECT id, amount, date, description, type FROM records WHERE id = ?`, id);
+            
+            if (result != undefined) {
+
+                let record_dto: RecordDto = {
+                    id: result['id'],
+                    price: result['amount'],
+                    date: result['date'],
+                    description: result['description'],
+                    type: result['type']
+                }
+
+                resolve(RecordMapper.to_domain(record_dto));
+            } else {
+                resolve(null);
+            }
+        })
+    }
+    getAll(): Promise<Record[]> {
+        return new Promise(async (resolve, reject) => {
+            let results = await this.db.all(`SELECT id, amount, date, description, type FROM records`);
+            
+            let records: Record[] = [];
+            for (let result of results) {
+                let record_dto: RecordDto = {
+                    id: result['id'],
+                    price: result['amount'],
+                    date: result['date'],
+                    description: result['description'],
+                    type: result['type']
+                }
+
+                records.push(RecordMapper.to_domain(record_dto));  
+            }
+
+            resolve(records);
+        })
+    }
+    getManyById(ids: string[]): Promise<Record[]> {
+        return new Promise(async (resolve, reject) => {
+            let records: Record[] = [];
+            for (let id of ids) {
+                let record = await this.get(id);
+                if (record != null) {
+                    records.push(record);
+                }
+            }
+
+            resolve(records);
+        })
+    }
+    delete(id: string): Promise<boolean> {
+        return new Promise(async (resolve, reject) => {
+            let result = await this.db.run(`DELETE FROM records WHERE id = ?`, id);
+
+            if (result['changes'] == 0) {
+                resolve(false);
+            } else {
+                resolve(true)
+            }
+        })
+    }
+    update(record: Record): Promise<boolean> {
+        return new Promise(async (resolve, reject) => {
+            let record_dto = RecordMapper.to_persistence(record)
+            await this.db.run(`
+                UPDATE records SET amount = ?, date = ?, description = ?, type = ? WHERE id = ? 
+            `, record_dto.price, record_dto.date, record_dto.description, record_dto.type, record_dto.id);
+
+            resolve(true);
+        })
+    }
+
+}
+
+/*
 export class SqlRecordRepository implements RecordRepository {
     private db: any;
     public table_record_name: string;
@@ -109,4 +203,4 @@ export class SqlRecordRepository implements RecordRepository {
         });
     }
     
-}
+}*/

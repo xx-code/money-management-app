@@ -1,21 +1,22 @@
-import { DB_FILENAME, account_repo, category_repo, record_repo, tag_repo, transaction_repo } from "@/app/configs/repository";
-import DateParser from "@/core/entities/date_parser";
-import { is_Transaction_type } from "@/core/entities/transaction";
-import { is_empty } from "@/core/entities/verify_empty_value";
-import { AddTransactionUseCase, IAddTransactionUseCaseResponse, RequestAddTransactionUseCase } from "@/core/interactions/transaction/addTransactionUseCase"
+import { AddTransactionUseCase, IAddTransactionAdapter, IAddTransactionUseCaseResponse, RequestAddTransactionUseCase } from "@/core/interactions/transaction/addTransactionUseCase"
 import UUIDMaker from "@/services/crypto";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import { initRepository } from "../libs/init_repo";
+
+export type ApiAddTransactionResponse = {
+    is_saved: boolean
+}
 
 type AddTransactionModelView = {
-    response: {id_transaction: string} | null,
+    response: ApiAddTransactionResponse | null,
     error: Error | null
 }
 
 class AddTransactionPresenter implements IAddTransactionUseCaseResponse {
     model_view: AddTransactionModelView = {response: null, error: null};
 
-    success(id_transaction: string): void {
-        this.model_view.response = {id_transaction: id_transaction};
+    success(is_saved: boolean): void {
+        this.model_view.response = {is_saved: is_saved};
         this.model_view.error = null;
     }
     fail(err: Error): void {
@@ -27,61 +28,22 @@ class AddTransactionPresenter implements IAddTransactionUseCaseResponse {
 export async function POST(
     request: Request
 ) {
-    let new_transaction = await request.json();
-
-    // TODO Make all transaction transation request transformation in date
-    if (is_empty(new_transaction.date)) {
-        return new Response(
-            'Date field is empty',
-            {status: 400}
-        );
-    }
-
-    if (is_empty(new_transaction.type)) {
-        return new Response(
-            'Type field is empty',
-            {status: 400}
-        )
-    }
-   
-    const type = new_transaction.type[0].toUpperCase() + new_transaction.type.slice(1)
-    if (!is_Transaction_type(type)) {
-        return new Response(
-            'You have to select Credit or Debit Transactions',
-            {status: 400}
-        );
-    }
-
-    if (is_empty(new_transaction.date)) {
-        return new Response(
-            'You have to set date transaction',
-            {status: 400}
-        );
-    }
-
-    console.log(new_transaction)
-
-    let request_new_transaction: RequestAddTransactionUseCase = {
-        account_ref: new_transaction.account_ref,
-        tag_ref: new_transaction.tag_ref,
-        category_ref: new_transaction.category_ref,
-        description: new_transaction.description,
-        price: new_transaction.price,
-        type: type,
-        date: DateParser.from_string(new_transaction.date)
-    }
-
-    let uuid = new UUIDMaker(); 
+    let request_new_transaction: RequestAddTransactionUseCase = await request.json();
 
     let presenter = new AddTransactionPresenter();
 
-    await account_repo.init(DB_FILENAME);
-    await category_repo.init(DB_FILENAME);
-    await tag_repo.init(DB_FILENAME);
-    await record_repo.init(DB_FILENAME);
-    await transaction_repo.init(DB_FILENAME, account_repo.table_account_name, category_repo.table_category_name, tag_repo.table_tag_name, record_repo.table_record_name);
+    let repo = await initRepository()
 
-    let use_case = new AddTransactionUseCase(transaction_repo, record_repo, category_repo, tag_repo, account_repo, uuid, presenter);
+    let adapters: IAddTransactionAdapter = {
+        transaction_repository: repo.transactionRepo,
+        record_repository: repo.recordRepo,
+        category_repository: repo.categoryRepo,
+        tag_repository: repo.tagRepo,
+        account_repository: repo.accountRepo,
+        crypto: new UUIDMaker()
+    }
+
+    let use_case = new AddTransactionUseCase(adapters, presenter);
     await use_case.execute(request_new_transaction);
 
     if (presenter.model_view.error != null) {

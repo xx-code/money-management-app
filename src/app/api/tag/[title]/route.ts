@@ -1,18 +1,25 @@
-import { DB_FILENAME, tag_repo } from "@/app/configs/repository"
 import { DeleteTagUseCase, IDeleteTagUseCaseResponse } from "@/core/interactions/tag/deleteTagUseCase"
+import { TagOutput } from "@/core/interactions/tag/getAllTagsUseCase"
 import { GetTagUseCase, IGetTagUseCaseResponse } from "@/core/interactions/tag/getTagUseCase"
 import { NextResponse } from "next/server"
+import { initRepository } from "../../libs/init_repo"
+
+export type ApiGetTagResponse = {
+    id: string,
+    title: string,
+    color: string|null
+}
 
 type GetTagModelView = {
-    response: {tag: string} | null,
+    response: ApiGetTagResponse | null,
     error: Error | null
 }
 
 class GetTagPresenter implements IGetTagUseCaseResponse {
     model_view: GetTagModelView = {response: null, error: null}
 
-    success(tag: string): void {
-        this.model_view.response = {tag: tag};
+    success(tag: TagOutput): void {
+        this.model_view.response = {id: tag.id, title: tag.value, color: tag.color}
         this.model_view.error = null;
     }
     fail(err: Error): void {
@@ -23,16 +30,16 @@ class GetTagPresenter implements IGetTagUseCaseResponse {
 
 export async function GET(
     request: Request,
-    { params }: {params: {title: string}}
+    { params }: {params: {id: string}}
 ) {
-    const title = params.title;
+    const id = params.id
 
     let presenter = new GetTagPresenter();    
 
-    await tag_repo.init(DB_FILENAME);
+    let repos = await initRepository()
 
-    let use_case = new GetTagUseCase(tag_repo, presenter);
-    await use_case.execute(title);
+    let use_case = new GetTagUseCase(repos.tagRepo, presenter);
+    await use_case.execute(id);
 
     if (presenter.model_view.error != null) {
         return new Response(presenter.model_view.error.message, {
@@ -43,8 +50,12 @@ export async function GET(
     return NextResponse.json(presenter.model_view.response, {status: 200});
 }
 
+export type ApiDeleteTagResponse = {
+    is_deleted: boolean
+}
+
 type DeleteTagModelView = {
-    response: {is_deleted: boolean} | null,
+    response: ApiDeleteTagResponse | null,
     error: Error | null
 }
 
@@ -63,15 +74,15 @@ class DeleteTagPresenter implements IDeleteTagUseCaseResponse {
 
 export async function DELETE(
     request: Request,
-    { params }: {params: {title: string}}
+    { params }: {params: {id: string}}
 ) {
-    const title = params.title;
+    const id = params.id;
     let presenter = new DeleteTagPresenter();
 
-    await tag_repo.init(DB_FILENAME);
+    let repo = await initRepository()
 
-    let use_case = new DeleteTagUseCase(tag_repo, presenter);
-    use_case.execute(title);
+    let use_case = new DeleteTagUseCase(repo.tagRepo, presenter);
+    use_case.execute(id);
 
     if (presenter.model_view.error != null) {
         return new Response(presenter.model_view.error.message, {

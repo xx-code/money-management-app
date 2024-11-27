@@ -1,20 +1,26 @@
 import { DB_FILENAME, account_repo, category_repo, record_repo, tag_repo, transaction_repo } from '@/app/configs/repository';
 import { GetAccountUseCase, IGetAccountUseCaseResponse } from '../../../../core/interactions/account/getAccountUseCase';
 import { NextResponse } from 'next/server';
-import { Account, AccountDisplay } from '@/core/entities/account';
 import { DeleteAccountUseCase, IDeleteAccountUseCaseResponse } from '@/core/interactions/account/deleteAccountUseCase';
 import { IUpdateAccountUseCaseResponse, RequestUpdateAccountUseCase, UpdateAccountUseCase } from '@/core/interactions/account/updateAccountUseCase';
+import { AccountResponse } from '@/core/interactions/account/getAllAccountUseCase';
+import { initRepository } from '../../libs/init_repo';
+
+export type ApiGetAccountResponse = {
+    title: string,
+    balance: number
+} 
 
 type CreationAccountModelView = {
-    response: {title: string, balance: number} | null,
+    response: ApiGetAccountResponse | null,
     error: Error | null
-    }
+}
    
 
 class GetAccountApiResponse implements IGetAccountUseCaseResponse {
     model_view: CreationAccountModelView = {response: null, error: null};
 
-    success(account: AccountDisplay): void {
+    success(account: AccountResponse): void {
         this.model_view.response = {title: account.title,  balance: 0};
         this.model_view.error = null;
     }
@@ -31,11 +37,8 @@ export async function GET(
 ) {
     const id = params.id;
 
-    await account_repo.init(DB_FILENAME);
-    await category_repo.init(DB_FILENAME);
-    await tag_repo.init(DB_FILENAME);
-    await record_repo.init(DB_FILENAME);
-    await transaction_repo.init(DB_FILENAME, account_repo.table_account_name, category_repo.table_category_name, tag_repo.table_tag_name, record_repo.table_record_name);
+    let repo = await initRepository()
+    await transaction_repo.init(DB_FILENAME, repo.accountRepo, repo.categoryRepo, repo.tagRepo, repo.recordRepo);
 
     let presenter = new GetAccountApiResponse();
 
@@ -51,8 +54,12 @@ export async function GET(
     return NextResponse.json(presenter.model_view.response, { status: 200 });
 }
 
+export type ApiDeleteAccountResponse = {
+    is_deleted: boolean 
+}
+
 type DeleteAccountModelView = {
-    response: {is_deleted: boolean} | null,
+    response: ApiDeleteAccountResponse | null,
     error: Error|null
 } 
 
@@ -75,11 +82,11 @@ export async function DELETE(
 ) {
     const id = params.id;
 
-    await account_repo.init(DB_FILENAME);
+    let repo = await initRepository()
 
     let presenter = new DeleteAccountPresenter();
 
-    let use_case = new DeleteAccountUseCase(account_repo, presenter);
+    let use_case = new DeleteAccountUseCase(repo.accountRepo, presenter);
     await use_case.execute(id);
 
     if (presenter.model_view.error != null) {
@@ -91,16 +98,20 @@ export async function DELETE(
     return NextResponse.json(presenter.model_view.response, { status: 200 });
 }
 
+export type ApiUpdateAccountResponse = {
+    is_updated: boolean 
+}
+
 type UpdateAccountModelView = {
-    response: {title: string, balance: number} | null,
+    response: ApiUpdateAccountResponse | null,
     error: Error | null
 }
 
 class UpdateAccountPresenter implements IUpdateAccountUseCaseResponse {
     model_view: UpdateAccountModelView = {response: null, error: null};
 
-    success(account_updated: Account): void {
-        this.model_view.response = { title: account_updated.title, balance: 0 };
+    success(is_updated: boolean): void {
+        this.model_view.response = {is_updated: is_updated}
         this.model_view.error = null;
     }
     fail(err: Error): void {
@@ -115,14 +126,14 @@ export async function PUT(
 ) {
     const id = params.id;
 
-    await account_repo.init(DB_FILENAME);
+    let repo = await initRepository()
 
     let presenter = new UpdateAccountPresenter();
 
     let request_update: RequestUpdateAccountUseCase = await request.json();
     request_update.id = id;
 
-    let use_case = new UpdateAccountUseCase(account_repo, presenter);
+    let use_case = new UpdateAccountUseCase(repo.accountRepo, presenter);
     await use_case.execute(request_update);
 
     if (presenter.model_view.error != null) {

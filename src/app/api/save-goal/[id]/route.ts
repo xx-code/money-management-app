@@ -1,20 +1,33 @@
-import { IGetSaveGoalPresenter, GetSaveGoalUseCase } from "@/core/interactions/saveGoal/getSaveGoal"
+import { IGetSaveGoalPresenter, GetSaveGoalUseCase, SaveGoalResponse } from "@/core/interactions/saveGoal/getSaveGoal"
 import { NextResponse } from "next/server"
 import { initRepository } from "../../libs/init_repo"
-import { DeleteSaveGoalUseCase, IDeleteSaveGoalPresenter, RequestDeleteSaveGoal } from "@/core/interactions/saveGoal/deleteSaveGoal"
-import { IUpdateSaveGoalPresenter, RequestUpdateSaveGoal, UpdateSaveGoalUseCase } from "@/core/interactions/saveGoal/updateSaveGoal"
-import { SaveGoalDisplay } from "@/core/entities/save_goal"
+import { IUpdateSaveGoalPresenter, RequestUpdateSaveGoalUseCase, UpdateSaveGoalUseCase } from "@/core/interactions/saveGoal/updateSaveGoal"
+
+export type ApiSaveGoalResponse = {
+    id: string,
+    title: string,
+    description: string,
+    target: number,
+    balance: number
+}
 
 type GetModelView = {
-    response: SaveGoalDisplay | null,
+    response: ApiSaveGoalResponse | null,
     error: Error | null
 }
 
 class GetGoalPresenter implements IGetSaveGoalPresenter {
     model_view: GetModelView = {response: null, error: null}
 
-    success(response: SaveGoalDisplay): void {
-        this.model_view.response = response 
+    success(response: SaveGoalResponse): void {
+        let save_goal: ApiSaveGoalResponse = {
+            id: response.id,
+            title: response.title,
+            description: response.description,
+            target: response.target,
+            balance: response.balance
+        }
+        this.model_view.response = save_goal 
         this.model_view.error = null
     }
     fail(err: Error): void {
@@ -45,16 +58,20 @@ export async function GET(
     return NextResponse.json(presenter.model_view.response, {status: 200});
 }
 
-type UpdateModelView = {
-    response: boolean | null,
+export type ApiUpdateSaveGoalResponse = {
+    is_updated: boolean
+}
+
+type UpdateSaveGoalModelView = {
+    response: ApiUpdateSaveGoalResponse | null,
     error: Error | null
 }
 
 class UpdateSaveGoalPresenter implements IUpdateSaveGoalPresenter {
-    model_view: UpdateModelView = {response: null, error: null}
+    model_view: UpdateSaveGoalModelView = {response: null, error: null}
 
     success(response: boolean): void {
-        this.model_view.response = response 
+        this.model_view.response = {is_updated: response} 
         this.model_view.error = null
     }
     fail(err: Error): void {
@@ -70,7 +87,7 @@ export async function PUT(
 
     let presenter = new UpdateSaveGoalPresenter()
 
-    let req: RequestUpdateSaveGoal = await request.json()
+    let req: RequestUpdateSaveGoalUseCase = await request.json()
 
     let repo = await initRepository()
 

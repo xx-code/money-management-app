@@ -1,6 +1,6 @@
 import { CategoryRepository } from "@/core/repositories/categoryRepository";
 import { NotFoundError } from "../../errors/notFoundError";
-import { TransactionRepository, TransactionFilter, SortBy } from "../../repositories/transactionRepository";
+import { TransactionRepository } from "../../repositories/transactionRepository";
 import { TagRepository } from "@/core/repositories/tagRepository";
 import { RecordRepository } from "@/core/repositories/recordRepository";
 
@@ -23,6 +23,7 @@ export type TransactionTagResponse = {
 
 export type TransactionResponse = {
     transaction_id: string
+    account_id: string
     amount: number
     date: string
     description: string
@@ -36,6 +37,13 @@ export interface IGetTransactionUseCaseResponse {
     fail(err: Error): void;
 }
 
+export interface IGetTransactionAdapter {
+    transaction_repository: TransactionRepository
+    category_repository: CategoryRepository
+    tag_repository: TagRepository
+    record_repository: RecordRepository
+}
+
 export class GetTransactionUseCase implements IGetTransactionUseCase {
     private transaction_repository: TransactionRepository;
     private category_repository: CategoryRepository;
@@ -43,11 +51,11 @@ export class GetTransactionUseCase implements IGetTransactionUseCase {
     private record_repository: RecordRepository; 
     private presenter: IGetTransactionUseCaseResponse;
 
-    constructor(trans_repo: TransactionRepository, category_repo: CategoryRepository, tag_repo: TagRepository, record_repo: RecordRepository, presenter: IGetTransactionUseCaseResponse) {
-        this.transaction_repository = trans_repo;
-        this.category_repository = category_repo
-        this.tag_repository = tag_repo
-        this.record_repository = record_repo
+    constructor(adapter: IGetTransactionAdapter, presenter: IGetTransactionUseCaseResponse) {
+        this.transaction_repository = adapter.transaction_repository
+        this.category_repository = adapter.category_repository
+        this.tag_repository = adapter.tag_repository
+        this.record_repository = adapter.record_repository
         this.presenter = presenter;
     }
 
@@ -83,6 +91,7 @@ export class GetTransactionUseCase implements IGetTransactionUseCase {
             }
 
             let response: TransactionResponse = {
+                account_id: transaction.account_ref,
                 transaction_id: transaction.id,
                 amount: record.amount.getAmount(),
                 date: record.date.toString(),

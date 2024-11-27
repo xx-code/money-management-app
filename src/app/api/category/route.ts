@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server';
 import { CreationCategoryUseCase, RequestCreationCategoryUseCase, ICreationCategoryUseCaseResponse } from '../../../core/interactions/category/creationCategoryUseCase';
 import { DB_FILENAME, category_repo } from '../../configs/repository';
-import { GetAllCategoryUseCase, IGetAllCategoryUseCaseResponse } from '@/core/interactions/category/getAllCategoryUseCase';
-import { Category } from '@/core/entities/category';
+import { CategoryResponse, GetAllCategoryUseCase, IGetAllCategoryUseCaseResponse } from '@/core/interactions/category/getAllCategoryUseCase';
 import UUIDMaker from '@/services/crypto';
+import { initRepository } from '../libs/init_repo';
+
+export type ApiCreationCategoryResponse = {
+    is_saved: boolean
+}
 
 type CreationCategoryModelView = {
-    response: {is_saved: boolean} | null,
+    response: ApiCreationCategoryResponse | null,
     error: Error | null
 }
 
@@ -32,9 +36,9 @@ export async function POST(
 
     let presenter = new CreationCategoryPresenter();
 
-    await category_repo.init(DB_FILENAME);
+    let repos = await initRepository()
 
-    let use_case = new CreationCategoryUseCase(category_repo, presenter, uuid);
+    let use_case = new CreationCategoryUseCase(repos.categoryRepo, presenter, uuid);
     await use_case.execute(request_category);
 
     if (presenter.model_view.error != null) {
@@ -46,30 +50,41 @@ export async function POST(
     return NextResponse.json(presenter.model_view.response, {status: 200});
 }
 
+export type ApiCategoryRespone = {
+    category_id: string
+    title: string
+    icon: string
+    color: string|null
+}
+
 type GetAllCategoryModelView = {
-    response : {categories: Category[]},
+    response : ApiCategoryRespone[],
     error: Error | null
 }
 
 class GetAllCategoryPresenter implements IGetAllCategoryUseCaseResponse {
-    model_view: GetAllCategoryModelView = {response: {categories: []}, error: null};
+    model_view: GetAllCategoryModelView = {response: [], error: null};
 
-    success(categories: Category[]): void {
-        this.model_view.response = { categories: categories };
-        this.model_view.error = null;
+    success(categories: CategoryResponse[]): void {
+        let res_categories: ApiCategoryRespone[] = []
+        for (let category of categories) {
+            res_categories.push({category_id: category.category_id, title: category.title, icon: category.icon, color: category.color})
+        }
+        this.model_view.response = categories
+        this.model_view.error = null
     }
     fail(err: Error): void {
-        this.model_view.error = err;
-        this.model_view.response = { categories: [] };
+        this.model_view.error = err
+        this.model_view.response = []
     }
 }
 
 export async function GET() {
     let presenter = new GetAllCategoryPresenter();
 
-    await category_repo.init(DB_FILENAME);
+    let repos = await initRepository()
 
-    let use_case = new GetAllCategoryUseCase(category_repo, presenter);
+    let use_case = new GetAllCategoryUseCase(repos.categoryRepo, presenter);
     await use_case.execute();
 
     if (presenter.model_view.error != null) {

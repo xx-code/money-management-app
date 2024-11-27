@@ -1,20 +1,38 @@
 import { NextResponse } from "next/server"
 import { initRepository } from "../libs/init_repo"
-import { GetAllSaveGoal, IGetAllSaveGoalPresenter } from "@/core/interactions/saveGoal/getAllSaveGoal"
-import { AddSaveGoalUseCase, IAddSaveGoalPresenter, RequestNewSaveGoal } from "@/core/interactions/saveGoal/addSaveGoal"
+import { GetAllSaveGoal, IGetAllSaveGoalPresenter, SaveGoalResponse } from "@/core/interactions/saveGoal/getAllSaveGoal"
+import { AddSaveGoalUseCase, IAddSaveGoalPresenter, RequestAddSaveGoalUseCase } from "@/core/interactions/saveGoal/addSaveGoal"
 import UUIDMaker from "@/services/crypto"
-import { SaveGoalDisplay } from "@/core/entities/save_goal"
+
+export type ApiSaveGoalResponse = {
+    id: string,
+    title: string,
+    description: string,
+    target: number,
+    balance: number
+}
+
 
 type ModelView = {
-    response: SaveGoalDisplay[] | null,
+    response: ApiSaveGoalResponse[] | null,
     error: Error | null
 }
 
 class GetAllGoalPresenter implements IGetAllSaveGoalPresenter {
     model_view: ModelView = {response: null, error: null}
 
-    success(response: SaveGoalDisplay[]): void {
-        this.model_view.response = response 
+    success(response: SaveGoalResponse[]): void {
+        let save_goals: ApiSaveGoalResponse[] = []
+        for (let save_goal of response) {
+            save_goals.push({
+                id: save_goal.id,
+                title: save_goal.title,
+                description: save_goal.description,
+                balance: save_goal.balance,
+                target: save_goal.target
+            })
+        }
+        this.model_view.response = save_goals 
         this.model_view.error = null
     }
     fail(err: Error): void {
@@ -42,16 +60,20 @@ export async function GET(request: Request ) {
     return NextResponse.json(presenter.model_view.response, {status: 200});
 }
 
-type CreateModeView = {
-    response: boolean | null,
+export type ApiCreationSaveGoal = {
+    is_saved: boolean
+}
+
+type CreateSaveGoalModeView = {
+    response: ApiCreationSaveGoal | null,
     error: Error | null
 }
 
 class AddSaveGoalPresenter implements IAddSaveGoalPresenter {
-    model_view: CreateModeView = {response: null, error: null}
+    model_view: CreateSaveGoalModeView = {response: null, error: null}
 
     success(response: boolean): void {
-        this.model_view.response = response 
+        this.model_view.response = {is_saved: response} 
         this.model_view.error = null
     }
     fail(err: Error): void {
@@ -67,7 +89,7 @@ export async function POST(request: Request) {
 
     let use_case = new AddSaveGoalUseCase(repo.savingRepo, repo.accountRepo, new UUIDMaker(), presenter)
     
-    let req: RequestNewSaveGoal = await request.json()
+    let req: RequestAddSaveGoalUseCase = await request.json()
 
     await use_case.execute(req)
 

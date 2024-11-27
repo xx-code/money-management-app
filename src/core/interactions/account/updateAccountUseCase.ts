@@ -8,17 +8,12 @@ export type RequestUpdateAccountUseCase = {
     title: string|null;
 }
 
-export type AccountResponse = {
-    account_id: string
-    title: string
-}
-
 interface IUpdateAccountUseCase {
     execute(request: RequestUpdateAccountUseCase): void
 }
 
 export interface IUpdateAccountUseCaseResponse {
-    success(account_updated: AccountResponse): void
+    success(account_updated: boolean): void
     fail(err: Error): void
 }
 
@@ -47,9 +42,9 @@ export class UpdateAccountUseCase implements IUpdateAccountUseCase {
             }
 
 
-            let account_updated = await this.repository.update(account);
+            let is_updated = await this.repository.update(account);
 
-            this.presenter.success({account_id: account_updated.id, title: account_updated.title});
+            this.presenter.success(is_updated);
         } catch(err) {
             this.presenter.fail(err as Error);
         }

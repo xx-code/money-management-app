@@ -26,6 +26,14 @@ export interface ITransfertTransactionUseCaseResponse {
     fail(err: Error): void
 }
 
+export interface ITransfertTransactionAdapter {
+    transaction_repository: TransactionRepository
+    record_repository: RecordRepository
+    category_repository: CategoryRepository
+    account_repository: AccountRepository
+    crypto: CryptoService
+}
+
 export class TransfertTransactionUseCase implements IUpdateTransactionUseCase {
     private transaction_repository: TransactionRepository;
     private record_repository: RecordRepository;
@@ -35,13 +43,13 @@ export class TransfertTransactionUseCase implements IUpdateTransactionUseCase {
 
     private presenter: ITransfertTransactionUseCaseResponse;
 
-    constructor(transaction_repo: TransactionRepository, presenter: ITransfertTransactionUseCaseResponse, account_repo: AccountRepository, category_repo: CategoryRepository, tag_repo: TagRepository, record_repo: RecordRepository, crypto: CryptoService) {
-        this.transaction_repository = transaction_repo;
-        this.record_repository = record_repo;
-        this.category_repository = category_repo;
-        this.account_repository = account_repo;
+    constructor(adapter: ITransfertTransactionAdapter, presenter: ITransfertTransactionUseCaseResponse) {
+        this.transaction_repository = adapter.transaction_repository;
+        this.record_repository = adapter.record_repository;
+        this.category_repository = adapter.category_repository;
+        this.account_repository = adapter.account_repository;
         this.presenter = presenter;
-        this.crypto = crypto;
+        this.crypto = adapter.crypto;
     }
 
     async execute(request: RequestTransfertTransactionUseCase): Promise<void> {

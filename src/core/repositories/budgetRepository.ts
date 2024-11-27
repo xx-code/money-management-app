@@ -7,5 +7,5 @@ export interface BudgetRepository {
     getAll(): Promise<Budget[]>;
     delete(id: string): Promise<boolean>;
     archived(id: string, balance: number): Promise<boolean>;
-    update(request: Budget): Promise<Budget>;
+    update(request: Budget): Promise<boolean>;
 }

@@ -1,9 +1,8 @@
 import { NotFoundError } from "../../errors/notFoundError";
 import { TagRepository } from "../../repositories/tagRepository";
-import { formatted } from "../../entities/formatted";
 
 export interface IDeleteTagUseCase {
-    execute(title: string): void;
+    execute(id: string): void;
 }
 
 export interface IDeleteTagUseCaseResponse {
@@ -20,16 +19,15 @@ export class DeleteTagUseCase implements IDeleteTagUseCase {
         this.presenter = presenter;
     }
 
-    async execute(title: string): Promise<void> {
+    async execute(id: string): Promise<void> {
         try {
-            title = formatted(title);
-            let tag = await this.repository.get(title);
+            let tag = await this.repository.get(id);
 
             if (tag == null) {
                 throw new NotFoundError('Tag not found');
             }
 
-            let is_deleted = await this.repository.delete(title);
+            let is_deleted = await this.repository.delete(id);
             this.presenter.success(is_deleted);
         } catch(err) {
             this.presenter.fail(err as Error);

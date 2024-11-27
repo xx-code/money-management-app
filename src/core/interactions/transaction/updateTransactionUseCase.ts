@@ -31,6 +31,16 @@ export interface IUpdateTransactionUseCaseResponse {
     fail(err: Error): void
 }
 
+export interface IUpdateTransactionAdapter {
+    transaction_repository: TransactionRepository
+    category_repository: CategoryRepository
+    tag_repository: TagRepository
+    record_repository: RecordRepository
+    account_repository: AccountRepository
+    crypto: CryptoService
+}
+
+
 export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
     private transaction_repository: TransactionRepository;
     private record_repository: RecordRepository;
@@ -41,14 +51,14 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
 
     private presenter: IUpdateTransactionUseCaseResponse;
 
-    constructor(transaction_repo: TransactionRepository, crypo: CryptoService, account_repo: AccountRepository, category_repo: CategoryRepository, tag_repo: TagRepository, record_repo: RecordRepository, presenter: IUpdateTransactionUseCaseResponse,) {
-        this.transaction_repository = transaction_repo;
-        this.record_repository = record_repo;
-        this.category_repository = category_repo;
-        this.tag_repository = tag_repo;
-        this.account_repository = account_repo;
+    constructor(adapter: IUpdateTransactionAdapter, presenter: IUpdateTransactionUseCaseResponse,) {
+        this.transaction_repository = adapter.transaction_repository;
+        this.record_repository = adapter.record_repository;
+        this.category_repository = adapter.category_repository;
+        this.tag_repository = adapter.tag_repository;
+        this.account_repository = adapter.account_repository;
         this.presenter = presenter;
-        this.crypto = crypo
+        this.crypto = adapter.crypto
     }
     
 

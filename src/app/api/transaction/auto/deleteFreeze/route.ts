@@ -24,7 +24,7 @@ class AutoDeleteFreezeBalancePresenter implements IAutoDeleteFreezeBalancePresen
 async function executeAutoDelete() {  
     let presenter: AutoDeleteFreezeBalancePresenter = new AutoDeleteFreezeBalancePresenter()
     const repositories = await initRepository() 
-    let auto_delete_freeze_usecase = new AutoDeleteFreezeBalanceUseCase(repositories.transactionRepo, presenter)
+    let auto_delete_freeze_usecase = new AutoDeleteFreezeBalanceUseCase(repositories.transactionRepo, repositories.recordRepo, presenter)
     await auto_delete_freeze_usecase.execute() 
     if (presenter.model_view.error !== null) {
         console.log(presenter.model_view.error)

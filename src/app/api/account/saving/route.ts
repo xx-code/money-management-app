@@ -1,26 +1,44 @@
-import { Account } from "@/core/entities/account";
 import { GetAllAccountUseCase, IGetAllAccountUseCaseResponse } from "@/core/interactions/account/getAllAccountUseCase";
 import { NextResponse } from "next/server";
 import { initRepository } from "../../libs/init_repo";
+import { SaveGoalResponse } from "@/core/interactions/saveGoal/getAllSaveGoal";
+
+export type ApiSaveGoalResponse = {
+  id: string
+  title: string
+  description: string
+  target: number 
+  balance: number
+}
 
 type ModelViewAllAccount = {
-    error: Error | null
-    response: Account[]
-  }
+  error: Error | null
+  response: ApiSaveGoalResponse[]
+}
   
-  class GetAllAccountApiResponse implements IGetAllAccountUseCaseResponse {
-    public model_view: ModelViewAllAccount = { error: null, response: [] };
-  
-    success(all_accounts: Account[]): void {
-      this.model_view.response = all_accounts;
-      this.model_view.error = null;
+class GetAllAccountApiResponse implements IGetAllAccountUseCaseResponse {
+  public model_view: ModelViewAllAccount = { error: null, response: [] };
+
+  success(all_save_goal: SaveGoalResponse[]): void {
+    let save_goals: ApiSaveGoalResponse[] = []
+    for(let save_goal of all_save_goal) {
+      save_goals.push({
+        id: save_goal.id,
+        title: save_goal.title,
+        description: save_goal.description,
+        target: save_goal.target,
+        balance: save_goal.balance
+      })
     }
-  
-    fail(err: Error): void {
-      this.model_view.response = [];
-      this.model_view.error = err;
-    }
+    this.model_view.response = save_goals;
+    this.model_view.error = null;
   }
+
+  fail(err: Error): void {
+    this.model_view.response = [];
+    this.model_view.error = err;
+  }
+}
   
 
 export async function GET() {

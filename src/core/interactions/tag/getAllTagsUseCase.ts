@@ -1,13 +1,17 @@
-import { Tag } from "../../entities/tag";
 import { TagRepository } from "../../repositories/tagRepository";
-import { reverseFormatted } from "../../entities/formatted";
 
+export type TagOutput = {
+    id: string
+    value: string
+    color: string|null
+}
+ 
 export interface IGetAllTagUseCase {
     execute(): void;
 }
 
 export interface IGetAllTagUseCaseResponse {
-    success(tags: Tag[]): void;
+    success(tags: TagOutput[]): void;
     fail(err: Error): void;
 }
 
@@ -22,11 +26,15 @@ export class GetAllTagUseCase implements IGetAllTagUseCase {
 
     async execute(): Promise<void> {
         try {
-            let results = await this.repository.get_all();
+            let results = await this.repository.getAll();
 
-            let tags: Tag[] = []
+            let tags: TagOutput[] = []
             for(let result of results) {
-                tags.push(reverseFormatted(result))
+                tags.push({
+                    id: result.id,
+                    value: result.getValue(),
+                    color: result.color
+                })
             }  
 
             this.presenter.success(tags);

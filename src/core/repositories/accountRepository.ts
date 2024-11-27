@@ -6,5 +6,5 @@ export interface AccountRepository {
     get(id: string): Promise<Account | null>;
     getAll(): Promise<Account[]>; 
     delete(id: string): Promise<boolean>;
-    update(account: Account): Promise<Account>;
+    update(account: Account): Promise<boolean>;
 }

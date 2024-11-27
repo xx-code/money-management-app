@@ -1,12 +1,17 @@
-import { CreationBudgetUseCase, CreationBudgetUseCaseRequest } from "@/core/interactions/budgets/creationBudgetUseCase";
-import { BudgetOutput, GetAllBudgetUseCase, IGetAllBudgetUseCaseResponse } from "@/core/interactions/budgets/getAllBudgetUseCase";
+import { CreationBudgetUseCase, ICreationBudgetAdapter, RequestCreationBudgetUseCase } from "@/core/interactions/budgets/creationBudgetUseCase";
+import { BudgetOutput, GetAllBudgetUseCase, IGetAllBudgetAdapter, IGetAllBudgetUseCaseResponse } from "@/core/interactions/budgets/getAllBudgetUseCase";
 import { ICreationCategoryUseCaseResponse } from "@/core/interactions/category/creationCategoryUseCase";
 import UUIDMaker from "@/services/crypto";
 import { NextResponse } from "next/server";
 import { initRepository } from "../libs/init_repo";
+import { category_repo } from "@/app/configs/repository";
+
+export type ApiCreationBudget = {
+    is_saved: boolean
+}
 
 type CreationBudgetModelView = {
-    response: {is_saved: boolean} | null,
+    response: ApiCreationBudget | null,
     error: Error | null
 }
 
@@ -25,18 +30,23 @@ class CreationBudgetWithCategoryPresenter implements ICreationCategoryUseCaseRes
 
 export async function POST(
     request: Request
-) {
-    let uuid = new UUIDMaker();
-    
+) {    
     let request_obj = await request.json();
-    let request_budget_category: CreationBudgetUseCaseRequest = request_obj;
+    let request_budget_category: RequestCreationBudgetUseCase = request_obj;
     // request_budget_category.categories = JSON.parse(request_obj);
 
     let presenter = new CreationBudgetWithCategoryPresenter();
 
     const repo = await initRepository() 
 
-    let use_case = new CreationBudgetUseCase(repo.budgetRepo, repo.categoryRepo, repo.tagRepo, presenter, uuid);
+    let adapters: ICreationBudgetAdapter = {
+        category_repository: repo.categoryRepo,
+        budget_repository: repo.budgetRepo,
+        tag_repository: repo.tagRepo,
+        crypo: new UUIDMaker()
+    }
+
+    let use_case = new CreationBudgetUseCase(adapters, presenter);
     await use_case.execute(request_budget_category);
 
     if (presenter.model_view.error !== null) {
@@ -74,7 +84,14 @@ export async function GET() {
 
     let repo = await initRepository()
 
-    let use_case = new GetAllBudgetUseCase(repo.budgetRepo, repo.categoryRepo, repo.transactionRepo, presenter);
+    let adapters: IGetAllBudgetAdapter = {
+        budget_repository: repo.budgetRepo,
+        category_repository: repo.categoryRepo,
+        transaction_repository: repo.transactionRepo,
+        tag_repository: repo.tagRepo
+    }
+
+    let use_case = new GetAllBudgetUseCase(adapters, presenter);
     await use_case.execute();
 
     if (presenter.model_view.error !== null) {

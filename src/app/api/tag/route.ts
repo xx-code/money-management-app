@@ -1,19 +1,24 @@
 import { DB_FILENAME, tag_repo } from "@/app/configs/repository";
-import { Tag } from "@/core/entities/tag";
-import { CreationTagUseCase, ICreationTagUseCaseResponse } from "@/core/interactions/tag/creationTagUseCase"
-import { GetAllTagUseCase, IGetAllTagUseCaseResponse } from "@/core/interactions/tag/getAllTagsUseCase";
+import { CreationTagUseCase, ICreationTagUseCaseResponse, RequestCreationTagUseCase } from "@/core/interactions/tag/creationTagUseCase"
+import { GetAllTagUseCase, IGetAllTagUseCaseResponse, TagOutput } from "@/core/interactions/tag/getAllTagsUseCase";
 import { NextResponse } from "next/server";
+import { initRepository } from "../libs/init_repo";
+import UUIDMaker from "@/services/crypto";
+
+export type ApiCreationTagResponse = {
+    is_saved: boolean
+}
 
 type CreationTagModelView = {
-    response: {title: string} | null,
+    response: ApiCreationTagResponse| null,
     error: Error | null
 }
 
 class CreationTagPresenter implements ICreationTagUseCaseResponse {
     model_view: CreationTagModelView = {response: null, error: null};
 
-    success(title: string): void {
-        this.model_view.response = { title: title };
+    success(is_saved: boolean): void {
+        this.model_view.response = {is_saved: is_saved}
         this.model_view.error = null;
     }
     fail(err: Error): void {
@@ -25,14 +30,14 @@ class CreationTagPresenter implements ICreationTagUseCaseResponse {
 export async function POST(
     request: Request
 ) {
-    let request_creation_tag: {title: string} = await request.json();
+    let request_creation_tag: RequestCreationTagUseCase = await request.json();
 
     let presenter = new CreationTagPresenter();
 
-    await tag_repo.init(DB_FILENAME);
+    let repo = await initRepository()
 
-    let use_case = new CreationTagUseCase(tag_repo, presenter);
-    await use_case.execute(request_creation_tag.title);
+    let use_case = new CreationTagUseCase(repo.tagRepo, new UUIDMaker(), presenter);
+    await use_case.execute(request_creation_tag);
 
     if (presenter.model_view.error != null) {
         return new Response(presenter.model_view.error.message, {
@@ -43,16 +48,22 @@ export async function POST(
     return NextResponse.json(presenter.model_view.response, {status: 200});
 }
 
+export type ApiGetAllTagResponse = {
+    id: string
+    title: string
+    color: string|null
+}
+
 type GetAllTagModelView = {
-    response: { tags: string[] } | null,
+    response: ApiGetAllTagResponse[] | null,
     error: Error | null
 }
 
 class GetAllTagPresenter implements IGetAllTagUseCaseResponse {
-    model_view: GetAllTagModelView = { response: {tags: []}, error: null}
+    model_view: GetAllTagModelView = { response: [], error: null}
 
-    success(tags: Tag[]): void {
-        this.model_view.response = { tags: tags };
+    success(tags: TagOutput[]): void {
+        this.model_view.response = tags.map(tag => ({id: tag.id, title: tag.value, color: tag.color}))
         this.model_view.error = null;
     }
     fail(err: Error): void {

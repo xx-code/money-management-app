@@ -3,16 +3,20 @@ import { initRepository } from "../../libs/init_repo"
 import UUIDMaker from "@/services/crypto"
 import { NextResponse } from "next/server"
 
-type ModelView = {
-    response: boolean | null,
+export type ApiIncreaseSaveGoalResponse = {
+    is_increased: boolean
+}
+
+type ApiIncreaseSaveGoalModelView = {
+    response: ApiIncreaseSaveGoalResponse | null,
     error: Error | null
 }
 
 class IncreaseSaveGoalPresenter implements IIncreaseSaveGoalPresenter {
-    model_view: ModelView = {response: null, error: null}
+    model_view: ApiIncreaseSaveGoalModelView = {response: null, error: null}
 
     success(response: boolean): void {
-        this.model_view.response = response 
+        this.model_view.response = {is_increased: response} 
         this.model_view.error = null
     }
     fail(err: Error): void {

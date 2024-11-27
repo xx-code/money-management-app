@@ -20,21 +20,23 @@ export interface IDeleteSaveGoalPresenter {
     fail(err: Error): void;
 }
 
+export interface IDeleteSaveGaolAdapter {
+    transaction_repository: TransactionRepository
+    account_repository: AccountRepository
+    saving_repository: SavingRepository
+}
 
 export class DeleteSaveGoalUseCase implements IDeleteSaveGoalUseCase {
     private transaction_repo: TransactionRepository
     private account_repo: AccountRepository
     private saving_repo: SavingRepository
     private presenter: IDeleteSaveGoalPresenter
-    private crypto: CryptoService
 
-    constructor(presenter: IDeleteSaveGoalPresenter, uiid: CryptoService, transaction_repo: TransactionRepository, account_repo: AccountRepository, saving_repo: SavingRepository) {
+    constructor(adapter: IDeleteSaveGaolAdapter, presenter: IDeleteSaveGoalPresenter) {
         this.presenter = presenter
-        this.transaction_repo = transaction_repo
-        this.account_repo = account_repo
-        this.saving_repo = saving_repo
-
-        this.crypto = uiid
+        this.transaction_repo = adapter.transaction_repository
+        this.account_repo = adapter.account_repository
+        this.saving_repo = adapter.saving_repository
     }
 
     async execute(request: RequestDeleteSaveGoal): Promise<void> {

@@ -1,10 +1,13 @@
-import { DeleteSaveGoalUseCase, IDeleteSaveGoalPresenter, RequestDeleteSaveGoal } from "@/core/interactions/saveGoal/deleteSaveGoal"
+import { DeleteSaveGoalUseCase, IDeleteSaveGaolAdapter, IDeleteSaveGoalPresenter, RequestDeleteSaveGoal } from "@/core/interactions/saveGoal/deleteSaveGoal"
 import { initRepository } from "../../libs/init_repo"
 import { NextResponse } from "next/server"
-import UUIDMaker from "@/services/crypto"
+
+export type ApiDeleteSaveGoalResponse = {
+    is_deleted: boolean
+}
 
 type DeleteModelView = {
-    response: boolean | null,
+    response: ApiDeleteSaveGoalResponse | null,
     error: Error | null
 }
 
@@ -12,7 +15,7 @@ class DeleteSaveGoalPresenter implements IDeleteSaveGoalPresenter {
     model_view: DeleteModelView = {response: null, error: null}
 
     success(response: boolean): void {
-        this.model_view.response = response 
+        this.model_view.response = { is_deleted: response } 
         this.model_view.error = null
     }
     fail(err: Error): void {
@@ -30,7 +33,13 @@ export async function POST(
 
     let repo = await initRepository()
 
-    let use_case = new DeleteSaveGoalUseCase(presenter, new UUIDMaker() , repo.transactionRepo, repo.accountRepo, repo.savingRepo, repo.recordRepo)
+    let adapters: IDeleteSaveGaolAdapter = {
+        account_repository: repo.accountRepo,
+        saving_repository: repo.savingRepo,
+        transaction_repository: repo.transactionRepo
+    }
+
+    let use_case = new DeleteSaveGoalUseCase(adapters, presenter)
    
     let req: RequestDeleteSaveGoal = await request.json()
 

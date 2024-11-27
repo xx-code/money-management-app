@@ -1,5 +1,4 @@
 import { TransactionPaginationResponse } from "../domains/metaData/transaction";
-import { DateParser } from "../domains/helpers";
 import { Transaction, TransactionType } from "../domains/entities/transaction";
 
 export type TransactionFilter = {

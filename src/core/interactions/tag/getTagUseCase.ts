@@ -1,14 +1,18 @@
-import { Tag } from "../../entities/tag";
 import { NotFoundError } from "../../errors/notFoundError";
 import { TagRepository } from "../../repositories/tagRepository";
-import { formatted, reverseFormatted } from "../../entities/formatted";
+
+export type TagOutput = {
+    id: string
+    value: string
+    color: string|null
+}
 
 export interface IGetTagUseCase {
-    execute(title: string): void;
+    execute(id: string): void;
 }
 
 export interface IGetTagUseCaseResponse {
-    success(tag: Tag): void;
+    success(tag: TagOutput): void;
     fail(err: Error): void;
 }
 
@@ -21,14 +25,18 @@ export class GetTagUseCase implements IGetTagUseCase {
         this.presenter = presenter;
     }
 
-    async execute(title: string): Promise<void> {
+    async execute(id: string): Promise<void> {
         try {
-            let tag = await this.repository.get(formatted(title));
+            let tag = await this.repository.get(id);
             if (tag == null) {
                 throw new NotFoundError('Tag no found');
             }
 
-            this.presenter.success(tag);
+            this.presenter.success({
+                id: tag.id,
+                value: tag.getValue(),
+                color: tag.color
+            });
         } catch(err) {
             this.presenter.fail(err as Error)
         }
