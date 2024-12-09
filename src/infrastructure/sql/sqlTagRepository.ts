@@ -70,7 +70,7 @@ export class SqlLiteTag extends SqlLiteRepository implements TagRepository {
     }
     getAll(): Promise<Tag[]> {
         return new Promise(async (resolve, reject) => {
-            let results = await this.db.all(`SELECT id, value, color FROM tags}`);
+            let results = await this.db.all(`SELECT id, value, color FROM tags`);
 
             let tags = [];
 

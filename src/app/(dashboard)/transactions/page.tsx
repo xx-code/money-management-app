@@ -1,14 +1,14 @@
 'use client';
 
 import Dropdown from "@/app/components/dropdown";
-import ListTransaction from "../_home/listTransaction";
+import ListTransaction from "../_home/components/list-transaction";
 import Button from "@/app/components/button";
 import CardInfoResume from "./cardInfoResume";
 
 import './page.css';
 import Tag from "@/app/components/tag";
 import TextInput from "@/app/components/textInput";
-import TransactionPagination from "../_home/transactionPagination";
+import TransactionPagination from "../_home/components/transaction-pagination";
 import { useEffect, useState } from "react";
 import { Transaction } from "@/core/entities/transaction";
 import { AccountDisplay } from "@/core/entities/account";

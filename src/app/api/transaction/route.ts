@@ -1,5 +1,5 @@
 import { AddTransactionUseCase, IAddTransactionAdapter, IAddTransactionUseCaseResponse, RequestAddTransactionUseCase } from "@/core/interactions/transaction/addTransactionUseCase"
-import UUIDMaker from "@/services/crypto";
+import UUIDMaker from "@/app/services/crypto";
 import { NextResponse } from "next/server";
 import { initRepository } from "../libs/init_repo";
 

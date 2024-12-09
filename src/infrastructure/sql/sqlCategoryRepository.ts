@@ -60,19 +60,22 @@ export class SqlLitecategory extends SqlLiteRepository implements CategoryReposi
 
     get(id: string): Promise<Category | null> {
         return new Promise(async (resolve, reject) => {
+            
             let result = await this.db.get(`
                 SELECT id, title, icon, color FROM categories WHERE id = ?`,
                 id
             );
 
-            let category_dto: CategoryDto = {
-                id: result['id'],
-                title: result['title'], 
-                icon: result['icon'],
-                color: result['color']
-            }
+            console.log(id)
 
             if (result != undefined) {
+                let category_dto: CategoryDto = {
+                    id: result['id'],
+                    title: result['title'], 
+                    icon: result['icon'],
+                    color: result['color']
+                }
+
                 resolve(CategoryMapper.to_domain(category_dto));
             } else {
                 resolve(null);

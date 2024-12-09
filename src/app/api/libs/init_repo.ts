@@ -1,14 +1,29 @@
-import { DB_FILENAME, account_repo, category_repo, record_repo, tag_repo, transaction_repo, future_transaction_repo, budget_repo, saving_repo} from "@/app/configs/repository";
+import { SqlLiteConnection } from "@/infrastructure/sql/sql_lite_connector";
+import { SqlLiteAccount } from "@/infrastructure/sql/sqlAccountRepository";
+import { SqlLiteBudget } from "@/infrastructure/sql/sqlBudgetRepository";
+import { SqlLitecategory } from "@/infrastructure/sql/sqlCategoryRepository";
+import { SqlLiteRecord } from "@/infrastructure/sql/sqlRecordRepository";
+import { SqlLiteSaving } from "@/infrastructure/sql/sqlSavingRepository";
+import { SqlLiteTag } from "@/infrastructure/sql/sqlTagRepository";
+import { SqlLiteTransaction } from "@/infrastructure/sql/sqlTransactionRepository";
 
 export async function initRepository() {
-    await account_repo.init(DB_FILENAME);
-    await category_repo.init(DB_FILENAME);
-    await budget_repo.init(DB_FILENAME);
-    await tag_repo.init(DB_FILENAME);
-    await record_repo.init(DB_FILENAME);
-    await transaction_repo.init(DB_FILENAME, account_repo.table_account_name, category_repo.table_category_name, tag_repo.table_tag_name, record_repo.table_record_name);
-    await future_transaction_repo.init(DB_FILENAME, account_repo.table_account_name, category_repo.table_category_name, tag_repo.table_tag_name, record_repo.table_record_name)
-    await saving_repo.init(DB_FILENAME, account_repo.table_account_name)
+    let sql_lite = await SqlLiteConnection.getInstance()
+
+    const account_repo = new SqlLiteAccount();
+    await account_repo.init(sql_lite)
+    const category_repo = new SqlLitecategory();
+    await category_repo.init(sql_lite)
+    const tag_repo = new SqlLiteTag();
+    await tag_repo.init(sql_lite)
+    const record_repo = new SqlLiteRecord();
+    await record_repo.init(sql_lite)
+    const transaction_repo = new SqlLiteTransaction()
+    await transaction_repo.init(sql_lite)
+    const budget_repo = new SqlLiteBudget()
+    await budget_repo.init(sql_lite)
+    const saving_repo = new SqlLiteSaving()
+    await saving_repo.init(sql_lite)
 
     return {
         accountRepo: account_repo,
@@ -16,7 +31,6 @@ export async function initRepository() {
         tagRepo: tag_repo,
         recordRepo: record_repo,
         transactionRepo: transaction_repo,
-        transactionFutreRepo: future_transaction_repo,
         budgetRepo: budget_repo,
         savingRepo: saving_repo
     }

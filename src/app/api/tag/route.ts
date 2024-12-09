@@ -1,9 +1,8 @@
-import { DB_FILENAME, tag_repo } from "@/app/configs/repository";
 import { CreationTagUseCase, ICreationTagUseCaseResponse, RequestCreationTagUseCase } from "@/core/interactions/tag/creationTagUseCase"
 import { GetAllTagUseCase, IGetAllTagUseCaseResponse, TagOutput } from "@/core/interactions/tag/getAllTagsUseCase";
 import { NextResponse } from "next/server";
 import { initRepository } from "../libs/init_repo";
-import UUIDMaker from "@/services/crypto";
+import UUIDMaker from "@/app/services/crypto";
 
 export type ApiCreationTagResponse = {
     is_saved: boolean
@@ -75,9 +74,9 @@ class GetAllTagPresenter implements IGetAllTagUseCaseResponse {
 export async function GET() {
     let presenter = new GetAllTagPresenter();
 
-    await tag_repo.init(DB_FILENAME);
+    let repo = await initRepository()
     
-    let use_case = new GetAllTagUseCase(tag_repo, presenter);
+    let use_case = new GetAllTagUseCase(repo.tagRepo, presenter);
     await use_case.execute();
 
     if (presenter.model_view.error != null) {

@@ -41,7 +41,7 @@ export function mapperTransactionType(value: string): TransactionType {
 
 export class RecordMapper {
     static to_domain(dto: RecordDto): Record {
-        let record = new Record(dto.id, new Money(dto.price), DateParser.fromString(dto.date), mapperTransactionType(dto.type))
+        let record = new Record(dto.id, new Money(dto.price), DateParser.fromString(dto.date), mapperTransactionType(dto.type.toUpperCase()))
         record.description = dto.description
 
         return record

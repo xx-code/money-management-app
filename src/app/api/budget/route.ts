@@ -1,10 +1,9 @@
 import { CreationBudgetUseCase, ICreationBudgetAdapter, RequestCreationBudgetUseCase } from "@/core/interactions/budgets/creationBudgetUseCase";
 import { BudgetOutput, GetAllBudgetUseCase, IGetAllBudgetAdapter, IGetAllBudgetUseCaseResponse } from "@/core/interactions/budgets/getAllBudgetUseCase";
 import { ICreationCategoryUseCaseResponse } from "@/core/interactions/category/creationCategoryUseCase";
-import UUIDMaker from "@/services/crypto";
+import UUIDMaker from "@/app/services/crypto";
 import { NextResponse } from "next/server";
 import { initRepository } from "../libs/init_repo";
-import { category_repo } from "@/app/configs/repository";
 
 export type ApiCreationBudget = {
     is_saved: boolean

@@ -4,7 +4,7 @@ import { IUpdateBudgetAdapter, IUpdateBudgetUseCase, IUpdateBudgetUseCasePresent
 import { NextResponse } from "next/server"
 import { initRepository } from "../../libs/init_repo"
 import { BudgetOutput } from "@/core/interactions/budgets/getAllBudgetUseCase"
-import UUIDMaker from "@/services/crypto"
+import UUIDMaker from "@/app/services/crypto"
 
 export type ApiGetBudget = {
     id: string,

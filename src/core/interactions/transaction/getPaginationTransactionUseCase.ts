@@ -7,6 +7,7 @@ import { Transaction } from "@/core/domains/entities/transaction";
 import ValidationError from "@/core/errors/validationError";
 import { DateParser, formatted, isEmpty } from "@/core/domains/helpers";
 import { mapperTransactionType } from "@/core/mappers/transaction";
+import { Category } from "@/core/domains/entities/category";
 
 export type RequestGetPagination = {
     page: number;
@@ -201,7 +202,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
                 let record = await this.record_repository.get(transaction.record_ref)
 
                 if (category === null || record === null ) {
-                    throw new ValidationError('Error while get transaction in category or record retreived')
+                    throw new ValidationError("Error with categories")
                 }
 
                 let category_res: TransactionCategoryResponse = {

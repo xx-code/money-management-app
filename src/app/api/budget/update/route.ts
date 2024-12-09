@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import cron from 'node-cron'
 import { initRepository } from "../../libs/init_repo";
 import { AutoUpdateBudgetUseCase, IAutoUpdateBudgetPresenter } from "@/core/interactions/budgets/autoUpdateBudgetUseCase";
-import UUIDMaker from "@/services/crypto";
+import UUIDMaker from "@/app/services/crypto";
 
 type UpdateModelView = {
     response: string | null,

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { initRepository } from "../libs/init_repo"
 import { GetAllSaveGoal, IGetAllSaveGoalPresenter, SaveGoalResponse } from "@/core/interactions/saveGoal/getAllSaveGoal"
 import { AddSaveGoalUseCase, IAddSaveGoalPresenter, RequestAddSaveGoalUseCase } from "@/core/interactions/saveGoal/addSaveGoal"
-import UUIDMaker from "@/services/crypto"
+import UUIDMaker from "@/app/services/crypto"
 
 export type ApiSaveGoalResponse = {
     id: string,

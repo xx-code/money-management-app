@@ -12,8 +12,13 @@ export type ApiTransactionResponse = {
     tags: {id: string, title: string, color: string|null } []
 }
 
+export type ApiTransactionPaginationResponse = {
+    transactions: ApiTransactionResponse[],
+    max_pages: number
+}
+
 type PaginationTransactionsModelView = {
-    response: {transactions: ApiTransactionResponse[], max_pages: number} | null,
+    response: ApiTransactionPaginationResponse | null,
     error: Error | null
 }
 

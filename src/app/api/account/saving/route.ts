@@ -1,7 +1,7 @@
 import { GetAllAccountUseCase, IGetAllAccountUseCaseResponse } from "@/core/interactions/account/getAllAccountUseCase";
 import { NextResponse } from "next/server";
 import { initRepository } from "../../libs/init_repo";
-import { SaveGoalResponse } from "@/core/interactions/saveGoal/getAllSaveGoal";
+import { GetAllSaveGoal, IGetAllSaveGoalPresenter, SaveGoalResponse } from "@/core/interactions/saveGoal/getAllSaveGoal";
 
 export type ApiSaveGoalResponse = {
   id: string
@@ -16,7 +16,7 @@ type ModelViewAllAccount = {
   response: ApiSaveGoalResponse[]
 }
   
-class GetAllAccountApiResponse implements IGetAllAccountUseCaseResponse {
+class GetAllAccountApiResponse implements IGetAllSaveGoalPresenter {
   public model_view: ModelViewAllAccount = { error: null, response: [] };
 
   success(all_save_goal: SaveGoalResponse[]): void {
@@ -44,7 +44,7 @@ class GetAllAccountApiResponse implements IGetAllAccountUseCaseResponse {
 export async function GET() {
     let presenter = new GetAllAccountApiResponse();
     let repo = await initRepository()
-    let account = new GetAllAccountUseCase(repo.accountRepo, repo.transactionRepo, presenter);
+    let account = new GetAllSaveGoal(repo.accountRepo, repo.transactionRepo, presenter);
     await account.execute(true);
   
     if (presenter.model_view.error != null) {

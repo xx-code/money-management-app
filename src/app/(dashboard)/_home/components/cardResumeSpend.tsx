@@ -1,22 +1,29 @@
+import { Money } from '@/core/domains/helpers';
 import './cardResumeSpend.css'
 
-export function CardResumeSpend({title, last_month='------', current_month='------'} : {title: string, last_month: string|undefined, current_month: string|undefined}) {
+type Props = {
+    title: string, 
+    lastMonth: Money|undefined, 
+    currentMonth: Money|undefined
+}
 
+export function CardResumeSpend({title, lastMonth, currentMonth}: Props) {
+    
     let percent = '--';
     let color = 'white';
 
-    if (!isNaN(Number(last_month))) {
-        let diff = (Number(current_month) - Number(last_month)) * 100;
+    if (!isNaN(Number(lastMonth))) {
+        let diff = (Number(currentMonth) - Number(lastMonth)) * 100;
   
-        let value_percent = Number(last_month) !== 0 ? Math.abs(diff)/Math.abs(Number(last_month)) : NaN;
+        let value_percent = Number(lastMonth) !== 0 ? Math.abs(diff)/Math.abs(Number(lastMonth)) : NaN;
         if (!isNaN(value_percent)) {
             percent = (Math.round(value_percent * 100)/100).toString();
         }
 
         // refactor
-        if (Number(last_month) < Number(current_month)) {
+        if (Number(lastMonth) < Number(currentMonth)) {
             color = '#4FDC4C';
-        } else if (Number(last_month) > Number(current_month)) {
+        } else if (Number(lastMonth) > Number(currentMonth)) {
             color = '#DC4C4C';
         }
     
@@ -32,11 +39,11 @@ export function CardResumeSpend({title, last_month='------', current_month='----
                     <div className="card-resume-spend-sub-info">
                         <div className="card-resume-spend-sub-info-1">
                             <h6>Dernier mois</h6>
-                            <p>${last_month}</p>
+                            <p>{lastMonth? lastMonth.toString() : "---"}</p>
                         </div>
                         <div className="card-resume-spend-sub-info-1">
                             <h6>Mois actuelle</h6>
-                            <p>${current_month}</p>
+                            <p>{lastMonth ? lastMonth.toString() : "---"}</p>
                         </div>
                     </div>
                 </div>

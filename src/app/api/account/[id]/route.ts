@@ -1,4 +1,3 @@
-import { DB_FILENAME, account_repo, category_repo, record_repo, tag_repo, transaction_repo } from '@/app/configs/repository';
 import { GetAccountUseCase, IGetAccountUseCaseResponse } from '../../../../core/interactions/account/getAccountUseCase';
 import { NextResponse } from 'next/server';
 import { DeleteAccountUseCase, IDeleteAccountUseCaseResponse } from '@/core/interactions/account/deleteAccountUseCase';
@@ -38,11 +37,10 @@ export async function GET(
     const id = params.id;
 
     let repo = await initRepository()
-    await transaction_repo.init(DB_FILENAME, repo.accountRepo, repo.categoryRepo, repo.tagRepo, repo.recordRepo);
 
     let presenter = new GetAccountApiResponse();
 
-    let use_case = new GetAccountUseCase(account_repo, transaction_repo, presenter);
+    let use_case = new GetAccountUseCase(repo.accountRepo, repo.transactionRepo, presenter);
     await use_case.execute(id);
 
     if (presenter.model_view.error != null) {

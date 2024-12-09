@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { CreationCategoryUseCase, RequestCreationCategoryUseCase, ICreationCategoryUseCaseResponse } from '../../../core/interactions/category/creationCategoryUseCase';
-import { DB_FILENAME, category_repo } from '../../configs/repository';
 import { CategoryResponse, GetAllCategoryUseCase, IGetAllCategoryUseCaseResponse } from '@/core/interactions/category/getAllCategoryUseCase';
-import UUIDMaker from '@/services/crypto';
+import UUIDMaker from '@/app/services/crypto';
 import { initRepository } from '../libs/init_repo';
 
 export type ApiCreationCategoryResponse = {

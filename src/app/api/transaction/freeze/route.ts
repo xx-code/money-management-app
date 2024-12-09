@@ -1,7 +1,7 @@
 import { AddFreezeBalanceUseCase, IAddFreezeBalancePresenter } from "@/core/interactions/freezerBalance/addFreezeBalanceUseCase";
 import { NextResponse } from "next/server";
 import { initRepository } from "../../libs/init_repo";
-import UUIDMaker from "@/services/crypto";
+import UUIDMaker from "@/app/services/crypto";
 
 export type ApiFreezeBalanceResponse = {
     is_freezed: boolean

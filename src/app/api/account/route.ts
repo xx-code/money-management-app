@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { CreationAccountUseCase, ICreationAccountUseCaseResponse, RequestCreationAccountUseCase } from '../../../core/interactions/account/creationAccountUseCase';
 import { GetAllAccountUseCase, IGetAllAccountUseCaseResponse } from '../../../core/interactions/account/getAllAccountUseCase';
-import UUIDMaker from '../../../services/crypto';
-import { DB_FILENAME, account_repo, category_repo, record_repo, tag_repo, transaction_repo } from '../../configs/repository';
+import UUIDMaker from '../../services/crypto';
 import { AccountResponse } from '@/core/interactions/account/getAccountUseCase';
 import { initRepository } from '../libs/init_repo';
 
@@ -48,12 +47,10 @@ export async function POST(request: Request) {
     });
   }
 
-  return new Response(presenter.model_view.response ? 'Success' : 'Fail', {
-    status: 200,
-  });
+  return NextResponse.json(presenter.model_view.response, { status: 200 });
 }
 
-export type ApiGetAllResponse = {
+export type ApiGetAllAccountResponse = {
   account_id: string
   title: string
   balance: number
@@ -61,14 +58,14 @@ export type ApiGetAllResponse = {
 
 type ModelViewAllAccount = {
   error: Error | null
-  response: ApiGetAllResponse[]
+  response: ApiGetAllAccountResponse[]
 }
 
 class GetAllAccountApiResponse implements IGetAllAccountUseCaseResponse {
   public model_view: ModelViewAllAccount = { error: null, response: [] };
 
   success(all_accounts: AccountResponse[]): void {
-    let accounts: ApiGetAllResponse[] = []
+    let accounts: ApiGetAllAccountResponse[] = []
     for (let account of all_accounts) {
       accounts.push({
         account_id: account.account_id, 
@@ -102,5 +99,5 @@ export async function GET() {
     });
   }
 
-  return NextResponse.json({ accounts: presenter.model_view.response }, { status: 200 });
+  return NextResponse.json(presenter.model_view.response, { status: 200 });
 }

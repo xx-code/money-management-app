@@ -1,4 +1,5 @@
 import EntityError from "../errors/entityError"
+import { TransactionType } from "./entities/transaction"
 
 export enum Period {
     YEAR = 'Year',
@@ -8,6 +9,7 @@ export enum Period {
 }
 
 export function mapperPeriod(value: string): Period {
+    value = value.toLocaleUpperCase()
     if (!(value in Period))
         throw new EntityError('Error while map Period')
    
@@ -27,7 +29,17 @@ export function mapperPeriod(value: string): Period {
         return Period.DAY
    
     return Period.DAY
- }
+}
+
+export function mapperTransactionType(value: string): TransactionType {
+    if (!(value in TransactionType))
+        throw new EntityError('error while map transaction')
+
+    if (value === "CREDIT")
+        return TransactionType.CREDIT
+
+    return TransactionType.DEBIT
+}
  
 
 export const FREEZE_CATEGORY_ID = 'category-freeze'

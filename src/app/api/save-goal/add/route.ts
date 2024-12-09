@@ -1,6 +1,6 @@
 import { IIncreaseSaveGoalPresenter, IncreaseSaveGoalUseCase, RequestIncreaseSaveGoal } from "@/core/interactions/saveGoal/increaseSaveGoal"
 import { initRepository } from "../../libs/init_repo"
-import UUIDMaker from "@/services/crypto"
+import UUIDMaker from "@/app/services/crypto"
 import { NextResponse } from "next/server"
 
 export type ApiIncreaseSaveGoalResponse = {

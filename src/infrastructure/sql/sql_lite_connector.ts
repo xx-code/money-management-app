@@ -1,5 +1,8 @@
 import { open_database } from "@/config/sqlLiteConnection"
 
+const SQL_LITE_DB_VERSION = 1
+const DB_FILENAME = process.env.NODE_ENV === 'production' ? 'database.db' : 'testdb.db'; 
+
 
 export class SqlLiteConnection {
     private static instance: SqlLiteConnection | null = null
@@ -15,7 +18,7 @@ export class SqlLiteConnection {
                 try {
                     await SqlLiteConnection.instance.createTable()
                 } catch(err) {
-                    reject('Error while try to create table') 
+                    reject('Error while try to create table: ' + err) 
                 }
                 
             }
@@ -25,12 +28,20 @@ export class SqlLiteConnection {
     }
 
     public async getDb() {
-        return await open_database('')
+        return await open_database(DB_FILENAME)
     }
 
 
     private async createTable() {
         let db = await this.getDb()
+
+        let create_table_versions = `
+            CREATE TABLE IF NOT EXISTS versions (
+                value INTEGER NOT NULL
+            )
+        `
+        await db.exec(create_table_versions)
+
         let create_table_account = `
             CREATE TABLE IF NOT EXISTS accounts (
                 id TEXT PRIMARY KEY,
@@ -145,21 +156,71 @@ export class SqlLiteConnection {
             )
         `
         await db.exec(create_table_transaction_tag)
+
+        let result = await db.all(`SELECT value FROM versions WHERE value`)
+        
+        if (result.length === 0) {
+
+            await db.run('INSERT INTO versions (value) VALUES (?)', SQL_LITE_DB_VERSION)
+
+            await this.migrationTableV1(db)
+        } else {
+            let result = await db.all(`SELECT value FROM versions WHERE value = ?`, SQL_LITE_DB_VERSION)
+
+            if (result === undefined) {
+                // Make last update 
+            }
+        }
+
     }
 
     private async migrationTableV1(db: any) {
+        await db.exec('BEGIN TRANSACTION')
         let add_new_column = `
             ALTER TABLE categories
-            ADD color NULL
+            ADD color TEXT
         `
-        await db.exec(add_new_column)
+        // await db.exec(add_new_column)
+
+        let rename_tag_name = `
+            ALTER TABLE tags RENAME TO old_tags
+        `
+       //  await db.exec(rename_tag_name)
+
+        let create_table_tag = `
+            CREATE TABLE IF NOT EXISTS tags (
+                id TEXT PRIMARY KEY,
+                value TEXT NOT NULL,
+                color TEXT
+            )
+        `
+        let results = await db.all(`SELECT * FROM old_tags`);
+        for(let result of results) {
+            await db.run(`
+            INSERT INTO tags (id, value) VALUES (?, ?)`,
+            result['title'], result['title']
+        );}
+
+        await db.exec(create_table_tag)
+
+        await db.exec(`ALTER TABLE records RENAME COLUMN price To amount`)
+
+        await db.exec('DROP TABLE IF EXISTS budget_categories')
+
+        await db.exec('DROP TABLE IF EXISTS budget_categories_categories')
+
+        await db.exec('DROP TABLE IF EXISTS budget_tags')
+
+        await db.exec('DROP TABLE IF EXISTS budget_tags_tags')
+
+        await db.exec('COMMIT')
     }
 }
 
 export class SqlLiteRepository {
     protected db: any
 
-    constructor(sql_lite: SqlLiteConnection) {
-       this.db = sql_lite.getDb()
+    async init(sql_lite: SqlLiteConnection) {
+        this.db = await sql_lite.getDb()
     }
 }

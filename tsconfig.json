@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "server.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "server.js", "src/app/(dashboard)/hooks/api-fetching.tsz", "src/app/(dashboard)/_home/components/transactions-wrapper.tsz"],
   "exclude": ["node_modules"]
 }

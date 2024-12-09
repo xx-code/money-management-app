@@ -3,7 +3,7 @@ import { GetTransactionUseCase, IGetTransactionAdapter, IGetTransactionUseCaseRe
 import { IUpdateTransactionAdapter, IUpdateTransactionUseCaseResponse, RequestUpdateTransactionUseCase, UpdateTransactionUseCase } from "@/core/interactions/transaction/updateTransactionUseCase";
 import { NextResponse } from "next/server";
 import { initRepository } from "../../libs/init_repo";
-import UUIDMaker from "@/services/crypto";
+import UUIDMaker from "@/app/services/crypto";
 
 export type ApiGetTransactionResponse = {
     account_id: string, 

@@ -151,18 +151,19 @@ export function determinedStartEndDate(date: Date, period: Period, period_time: 
     let today_month = date.getMonth();
     let today_week_day = date.getDay();
 
-    if (period === 'Year') {
+
+    if (period === Period.YEAR) {
         let year = today_year * period_time
         start_date = new Date(year, 0, 1);
         end_date = new Date(year, 31, 11);
     } 
-    else if (period === "Month") {
+    else if (period === Period.MONTH) {
         let month = today_month + (11 * (period_time - 1))
         start_date = new Date(today_year, month, 1);
         let last_day_of_month = new Date(today_year, today_month + 1, 0).getDate();
         end_date = new Date(today_year, month, last_day_of_month);
     }
-    else if (period === "Week") {
+    else if (period === Period.WEEK) {
         let day = (date.getDate() + (6 * (period_time - 1)))
         let monday_date = day - today_week_day + (today_week_day === 0 ? -6 : 0);
         let sunday_date = day - (6-today_week_day);

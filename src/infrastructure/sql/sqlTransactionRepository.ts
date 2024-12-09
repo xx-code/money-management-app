@@ -161,15 +161,15 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
 
 
             let results = await this.db.all(`
-                SELECT id, id_account, id_category, id_record
+                SELECT transactions.id, id_account, id_category, id_record
                 FROM 
                     transactions 
                 JOIN accounts
                     ON accounts.id = transactions.id_account
                 JOIN records
-                    ON records.id = records.id_record
+                    ON records.id = transactions.id_record
                 JOIN categories
-                    ON categories.id = categories.id_category
+                    ON categories.id = transactions.id_category
                 ${where}
                 ORDER BY 
                     date(records.date) ${sort_by !== null ? (sort_by!.asc ? 'ASC':'DESC') : 'DESC'}
@@ -185,9 +185,9 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
                 JOIN accounts
                     ON accounts.id = transactions.id_account
                 JOIN records
-                    ON records.id = records.id_record
+                    ON records.id = transactions.id_record
                 JOIN categories
-                    ON categories.id = categories.id_category
+                    ON categories.id = transactions.id_category
                 ${where}`);
 
             let max_page = Math.ceil(count['COUNT(*)']/size);
@@ -202,7 +202,7 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
                     record: result['id_record'],
                     account_ref: result['id_account'],
                     tags: tags,
-                    category_ref: result['id_account']
+                    category_ref: result['id_category']
                 }
 
                 transactions.push(transaction_dto);
@@ -361,7 +361,7 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
             
                 results_credit = await this.db.get(`
                     SELECT 
-                        transactions.id, id_account, record_id, SUM(records.amount) as total_price 
+                        transactions.id, id_account, id_record, SUM(records.amount) as total_price 
                     FROM 
                         transactions 
                     JOIN accounts
@@ -405,7 +405,7 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
                 
                 results_debit = await this.db.get(`
                     SELECT 
-                        transactions.id, id_account, record_id, SUM(records.amount) as total_price 
+                        transactions.id, id_account, id_record, SUM(records.amount) as total_price 
                     FROM 
                         transactions 
                     JOIN accounts
