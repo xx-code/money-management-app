@@ -1,5 +1,5 @@
 import { TransactionModel } from "@/app/api/models/transaction";
-import { ApiTransactionPaginationResponse, ApiTransactionResponse } from "@/app/api/pagination_transactions/route";
+import { ApiTransactionPaginationResponse } from "@/app/api/pagination_transactions/route";
 import { ApiGetBalanceResponse } from "@/app/api/transaction/get_balance_by/route";
 import { mapperPeriod, Period } from "@/core/domains/constants";
 import { determinedStartEndDate, Money } from "@/core/domains/helpers";

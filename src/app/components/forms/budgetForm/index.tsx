@@ -90,7 +90,7 @@ const verifyInput = (input: BudgetInput): {isOk: boolean, errors: BudgetInputErr
         isOk = false;
     } 
 
-    if (input.categoriesSelected.length === 0 && input.categoriesSelected.length === 0) {
+    if ((input.categoriesSelected.length === 0 && input.categoriesSelected.length === 0) && isEmpty(input.dateEnd)) {
         errors = {...errors, category: 'Vous devez selection au moins une categorie'};
         isOk = false;
     }

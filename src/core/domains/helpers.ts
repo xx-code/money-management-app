@@ -453,7 +453,7 @@ export class Money {
 
     // Affichage formaté
     toString(): string {
-        return `${this.amount} ${this.currency}`;
+        return `${this.amount.toFixed(2)} ${this.currency}`;
     }
 }
  

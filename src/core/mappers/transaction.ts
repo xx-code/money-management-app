@@ -33,7 +33,7 @@ export function mapperTransactionType(value: string): TransactionType {
     if (value === TransactionType.DEBIT)
         return TransactionType.DEBIT
 
-
+    return TransactionType.CREDIT
 }
 
 export class RecordMapper {
