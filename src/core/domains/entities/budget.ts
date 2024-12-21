@@ -23,7 +23,7 @@ export class Budget {
     __delete_event_category: string[] = []
 
     computeCurrentSpend(records: Record[]): Money {
-        let price_records = records.map(record => record.price);
+        let price_records = records.map(record => record.amount);
         let current_spend = price_records.reduce((accumulator, current_value) => accumulator + current_value.getAmount(), 0);
         
         let to_money = new Money(current_spend)
@@ -35,10 +35,10 @@ export class Budget {
         if (this.tags.includes(tag))
             throw new EntityError('Tag already exist, in Budget. Not duplicate allow.')
         this.__add_event_tag.push(tag)
-        if (this.__delete_event_tag.includes(tag)) {
-            let index_add_tag = this.__add_event_tag.indexOf(tag)
-            this.__add_event_tag.splice(index_add_tag, 1)
-        }
+        // if (this.__delete_event_tag.includes(tag)) {
+        //     let index_add_tag = this.__add_event_tag.indexOf(tag)
+        //     this.__add_event_tag.splice(index_add_tag, 1)
+        // }
         this.tags.push(tag)
     }
 
@@ -48,10 +48,10 @@ export class Budget {
             throw new EntityError('Tag do not exist, in Budget.')
 
         this.__delete_event_tag.push(tag)
-        if (this.__delete_event_tag.includes(tag)) {
-            let index_del_tag = this.__delete_event_tag.indexOf(tag)
-            this.__delete_event_tag.splice(index_del_tag, 1)
-        }
+        // if (this.__delete_event_tag.includes(tag)) {
+        //     let index_del_tag = this.__delete_event_tag.indexOf(tag)
+        //     this.__delete_event_tag.splice(index_del_tag, 1)
+        // }
         this.tags.splice(index_tag, 1)
     }
     
@@ -60,10 +60,10 @@ export class Budget {
             throw new EntityError('Category already exist, in Budget. Not duplicate allow.')
 
         this.__add_event_category.push(category)
-        if (this.__delete_event_category.includes(category)) {
-            let index_add_category = this.__add_event_category.indexOf(category)
-            this.__add_event_category.splice(index_add_category, 1)
-        }
+        // if (this.__delete_event_category.includes(category)) {
+        //     let index_add_category = this.__add_event_category.indexOf(category)
+        //     this.__add_event_category.splice(index_add_category, 1)
+        // }
 
         this.categories.push(category)
     }
@@ -75,10 +75,10 @@ export class Budget {
             throw new EntityError('Tag do not exist, in Budget.')
 
         this.__delete_event_category.push(category)
-        if (this.__delete_event_category.includes(category)) {
-            let index_del_category = this.__delete_event_category.indexOf(category)
-            this.__delete_event_category.splice(index_del_category, 1)
-        }
+        // if (this.__delete_event_category.includes(category)) {
+        //     let index_del_category = this.__delete_event_category.indexOf(category)
+        //     this.__delete_event_category.splice(index_del_category, 1)
+        // }
         this.categories.splice(index_category, 1)
     }
 }

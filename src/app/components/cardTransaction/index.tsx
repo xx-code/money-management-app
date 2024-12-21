@@ -26,6 +26,7 @@ type Props = {
 }
 
 export default function CardTransaction({transaction, onEdit, onDelete} : Props) {
+
     return (
         <div className="card-transaction">
             <div className="card-transaction-content">
@@ -45,7 +46,7 @@ export default function CardTransaction({transaction, onEdit, onDelete} : Props)
                     <div className='ml-1'>
                        <div className='flex flex-wrap'>
                             {
-                                transaction.tags.map((tag, index) => <Tag key={index} title={tag.value} onDelete={undefined} color={undefined}/>) 
+                                transaction.tags.map((tag, index) => <Tag key={index} title={tag.value} onDelete={undefined} color={tag.color}/>) 
                             }
                         </div>   
                     </div>
@@ -57,7 +58,7 @@ export default function CardTransaction({transaction, onEdit, onDelete} : Props)
                         transaction.type === TransactionType.CREDIT ?
                             <h4>{transaction.amount.toString()}</h4>
                         :
-                            <h4>{- transaction.amount.toString()}</h4>
+                            <h4>{ "-" + transaction.amount.toString()}</h4>
                     }
                     <h5>{transaction.date}</h5>
                 </div>

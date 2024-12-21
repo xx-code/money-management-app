@@ -1,7 +1,14 @@
+import { BudgetModel } from "@/app/api/models/budgets";
 import CardBudget from "@/app/components/cardWithProgressBar";
-import { BudgetOutput } from "@/core/interactions/budgets/getAllBudgetUseCase";
+import { Money } from "@/core/domains/helpers";
 
-export default function ListBudget({budgets, onUpdate, onDelete}: {budgets: Array<BudgetOutput>, onUpdate: any, onDelete: any}) {
+type Props = {
+    budgets: BudgetModel[],
+    onDelete: (id: string) => void
+    onUpdate: (id: string) => void
+}
+
+export default function ListBudget({budgets, onDelete, onUpdate}: Props) {
     return (
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
             {
@@ -11,8 +18,8 @@ export default function ListBudget({budgets, onUpdate, onDelete}: {budgets: Arra
                             key={index}
                             title={budget.title}
                             description=""
-                            targetPrice={budget.target} 
-                            currentPrice={budget.currentBalance} 
+                            targetPrice={new Money(budget.target)} 
+                            currentPrice={new Money(budget.currentBalance)} 
                             onUpdate={() => onUpdate(budget.id)} 
                             onDelete={() => onDelete(budget.id)}
                         />

@@ -3,16 +3,10 @@ import { CategoryResponse, GetCategoryUseCase, IGetCategoryUseCaseResponse } fro
 import { RequestUpdateCategoryUseCase, UpdateCategoryUseCase } from "@/core/interactions/category/updateCategoryUseCase";
 import { NextResponse } from "next/server";
 import { initRepository } from "../../libs/init_repo";
-
-export type ApiCategoryResponse = {
-    category_id: string,
-    title: string,
-    icon: string,
-    color: string|null
-}
+import { CategoryModel } from "../../models/categories";
 
 type GetCategoryModelView = {
-    response: ApiCategoryResponse | null,
+    response: CategoryModel | null,
     error: Error | null
 }
 
@@ -20,7 +14,7 @@ class GetCategoryPresenter implements IGetCategoryUseCaseResponse {
     model_view: GetCategoryModelView = {response: null, error: null};
 
     success(category: CategoryResponse): void {
-        this.model_view.response = { category_id: category.category_id, title: category.title, icon: category.icon, color: category.color };
+        this.model_view.response = { categoryId: category.category_id, title: category.title, icon: category.icon, color: category.color };
         this.model_view.error = null;
     }
     fail(err: Error): void {

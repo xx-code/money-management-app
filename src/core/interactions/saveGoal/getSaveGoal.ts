@@ -2,12 +2,21 @@ import ValidationError from "@/core/errors/validationError"
 import { SavingRepository } from "../../repositories/savingRepository"
 import { TransactionRepository } from "../../repositories/transactionRepository"
 
+export type SaveGoalItemResponse = {
+    id: string
+    title: string
+    link: string
+    price: number
+    html_to_target: string
+}
+
 export type SaveGoalResponse = {
     id: string,
     title: string,
     description: string,
     target: number,
     balance: number
+    items: SaveGoalItemResponse[] 
 }
 
 
@@ -46,7 +55,8 @@ export class GetSaveGoalUseCase implements IGetSaveGoalUseCase {
                 title: save_goal.title,
                 description: save_goal.description,
                 balance: balance,
-                target: save_goal.target.getAmount()
+                target: save_goal.target.getAmount(),
+                items: save_goal.items.map(item => ({id: item.id, title: item.title, link: item.link, price: item.price.getAmount(), html_to_target: item.html_to_track}))
             }
 
             this.presenter.success(response)

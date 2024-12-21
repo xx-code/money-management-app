@@ -38,6 +38,7 @@ export type TransactionTagResponse = {
 
 export type TransactionResponse = {
     transaction_id: string
+    account_id: string
     amount: number
     date: string
     description: string
@@ -227,6 +228,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
                 }
 
                 transactions.push({
+                    account_id: transaction.account_ref,
                     transaction_id: transaction.id,
                     amount: record.amount.getAmount(),
                     category: category_res,

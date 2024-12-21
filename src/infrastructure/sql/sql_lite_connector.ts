@@ -42,6 +42,20 @@ export class SqlLiteConnection {
         `
         await db.exec(create_table_versions)
 
+        let results_version = await db.all(`SELECT value FROM versions WHERE value`)
+        
+        if (results_version.length === 0) {
+            await db.run('INSERT INTO versions (value) VALUES (?)', SQL_LITE_DB_VERSION)
+            await this.migrationTableV1(db)
+        } else {
+            let result_version = await db.get(`SELECT value FROM versions WHERE value = ?`, SQL_LITE_DB_VERSION)
+
+            if (result_version['value'] !== SQL_LITE_DB_VERSION) {
+                await db.run('UPDATE versions SET value = ?', SQL_LITE_DB_VERSION)
+                await this.migrationTableV1(db)
+            }
+        }
+
         let create_table_account = `
             CREATE TABLE IF NOT EXISTS accounts (
                 id TEXT PRIMARY KEY,
@@ -132,6 +146,19 @@ export class SqlLiteConnection {
         `
         await db.exec(create_table_saving)
 
+        let create_table_saving_items = `
+            CREATE TABLE IF NOT EXISTS savings_items (
+                id TEXT PRIMARY KEY,
+                id_saving_goal TEXT NOT NULL,
+                title TEXT NOT NULL,
+                link TEXT,
+                html_to_target TEXT,
+                price INTERGERT,
+                FOREIGN KEY (id_saving_goal) REFERENCES savings (id)
+            )
+        `
+        await db.exec(create_table_saving_items)
+
         let create_table_transaction = `
             CREATE TABLE IF NOT EXISTS transactions (
                 id TEXT PRIMARY KEY,
@@ -157,21 +184,6 @@ export class SqlLiteConnection {
         `
         await db.exec(create_table_transaction_tag)
 
-        let result = await db.all(`SELECT value FROM versions WHERE value`)
-        
-        if (result.length === 0) {
-
-            await db.run('INSERT INTO versions (value) VALUES (?)', SQL_LITE_DB_VERSION)
-
-            await this.migrationTableV1(db)
-        } else {
-            let result = await db.all(`SELECT value FROM versions WHERE value = ?`, SQL_LITE_DB_VERSION)
-
-            if (result === undefined) {
-                // Make last update 
-            }
-        }
-
     }
 
     private async migrationTableV1(db: any) {
@@ -180,12 +192,12 @@ export class SqlLiteConnection {
             ALTER TABLE categories
             ADD color TEXT
         `
-        // await db.exec(add_new_column)
+        await db.exec(add_new_column)
 
         let rename_tag_name = `
             ALTER TABLE tags RENAME TO old_tags
         `
-       //  await db.exec(rename_tag_name)
+       await db.exec(rename_tag_name)
 
         let create_table_tag = `
             CREATE TABLE IF NOT EXISTS tags (
@@ -194,14 +206,15 @@ export class SqlLiteConnection {
                 color TEXT
             )
         `
+
+        await db.exec(create_table_tag)
+
         let results = await db.all(`SELECT * FROM old_tags`);
         for(let result of results) {
             await db.run(`
             INSERT INTO tags (id, value) VALUES (?, ?)`,
             result['title'], result['title']
         );}
-
-        await db.exec(create_table_tag)
 
         await db.exec(`ALTER TABLE records RENAME COLUMN price To amount`)
 
@@ -212,6 +225,8 @@ export class SqlLiteConnection {
         await db.exec('DROP TABLE IF EXISTS budget_tags')
 
         await db.exec('DROP TABLE IF EXISTS budget_tags_tags')
+
+        await db.exec('DROP TABLE IF EXISTS budget_categories_old')
 
         await db.exec('COMMIT')
     }

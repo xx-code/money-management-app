@@ -4,6 +4,7 @@ import { GetAllAccountUseCase, IGetAllAccountUseCaseResponse } from '../../../co
 import UUIDMaker from '../../services/crypto';
 import { AccountResponse } from '@/core/interactions/account/getAccountUseCase';
 import { initRepository } from '../libs/init_repo';
+import { AccountModel } from '../models/accounts';
 
 export type ApiCreateAccountResponse = {
   is_created: boolean
@@ -50,25 +51,20 @@ export async function POST(request: Request) {
   return NextResponse.json(presenter.model_view.response, { status: 200 });
 }
 
-export type ApiGetAllAccountResponse = {
-  account_id: string
-  title: string
-  balance: number
-}
 
 type ModelViewAllAccount = {
   error: Error | null
-  response: ApiGetAllAccountResponse[]
+  response: AccountModel[]
 }
 
 class GetAllAccountApiResponse implements IGetAllAccountUseCaseResponse {
   public model_view: ModelViewAllAccount = { error: null, response: [] };
 
   success(all_accounts: AccountResponse[]): void {
-    let accounts: ApiGetAllAccountResponse[] = []
+    let accounts: AccountModel[] = []
     for (let account of all_accounts) {
       accounts.push({
-        account_id: account.account_id, 
+        accountId: account.account_id, 
         title: account.title,
         balance: account.balance
       })

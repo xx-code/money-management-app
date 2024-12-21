@@ -12,20 +12,23 @@ export function CardResumeSpend({title, lastMonth, currentMonth}: Props) {
     let percent = '--';
     let color = 'white';
 
-    if (!isNaN(Number(lastMonth))) {
-        let diff = (Number(currentMonth) - Number(lastMonth)) * 100;
+    if (!isNaN(Number(lastMonth?.getAmount()))) {
+        let diff = (Number(currentMonth?.getAmount()) - Number(lastMonth?.getAmount())) * 100;
   
-        let value_percent = Number(lastMonth) !== 0 ? Math.abs(diff)/Math.abs(Number(lastMonth)) : NaN;
+        let value_percent = Number(lastMonth?.getAmount()) !== 0 ? Math.abs(diff)/Math.abs(Number(lastMonth?.getAmount())) : NaN;
         if (!isNaN(value_percent)) {
             percent = (Math.round(value_percent * 100)/100).toString();
         }
 
-        // refactor
-        if (Number(lastMonth) < Number(currentMonth)) {
-            color = '#4FDC4C';
-        } else if (Number(lastMonth) > Number(currentMonth)) {
-            color = '#DC4C4C';
+        if (lastMonth && currentMonth) {
+           if (Number(lastMonth.getAmount()) < Number(currentMonth.getAmount())) {
+                color = '#4FDC4C';
+            } else if (Number(lastMonth) > Number(currentMonth)) {
+                color = '#DC4C4C';
+            } 
         }
+        // refactor
+        
     
     }
 
@@ -43,7 +46,7 @@ export function CardResumeSpend({title, lastMonth, currentMonth}: Props) {
                         </div>
                         <div className="card-resume-spend-sub-info-1">
                             <h6>Mois actuelle</h6>
-                            <p>{lastMonth ? lastMonth.toString() : "---"}</p>
+                            <p>{currentMonth ? currentMonth.toString() : "---"}</p>
                         </div>
                     </div>
                 </div>

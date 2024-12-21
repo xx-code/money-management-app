@@ -34,10 +34,12 @@ export class SqlLiteTag extends SqlLiteRepository implements TagRepository {
 
     get(id: string): Promise<Tag | null> {
         return new Promise(async (resolve, reject) => {
+            
             let result = await this.db.get(`
-                SELECT id, value, color FROM tags WHERE value = ?`,
+                SELECT id, value, color FROM tags WHERE id = ?`,
                 id
             );
+
             if (result != undefined) {
                 let tag: TagDto = {
                     id: result['id'],
@@ -66,6 +68,18 @@ export class SqlLiteTag extends SqlLiteRepository implements TagRepository {
             } else {
                 resolve(null);
             }
+        })
+    }
+    update(tag: Tag): Promise<boolean> {
+        return new Promise(async (resolve, reject) => {
+            let dto = TagMapper.to_persistence(tag)
+            await this.db.run(`
+                UPDATE tags SET value = ?, color = ? WHERE id = ?   
+            `, dto.value, dto.color, dto.id)
+
+            let updated_tag = await this.get(tag.id)
+
+            resolve(updated_tag !== null)
         })
     }
     getAll(): Promise<Tag[]> {

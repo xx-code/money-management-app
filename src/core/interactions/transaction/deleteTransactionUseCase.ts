@@ -36,8 +36,6 @@ export class DeleteTransactionUseCase implements IDeleteTransactionUseCase {
             }
 
             let is_deleted = await this.repository.delete(id);
-
-            console.log(id)
             
             this.presenter.success(is_deleted);
         } catch(err) {

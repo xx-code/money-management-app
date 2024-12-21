@@ -68,7 +68,7 @@ export class TransfertTransactionUseCase implements IUpdateTransactionUseCase {
             }
 
             
-            if (!isEmpty(request.date))
+            if (isEmpty(request.date))
                 throw new ValidationError('date must not be empty')
 
             let date = DateParser.fromString(request.date)

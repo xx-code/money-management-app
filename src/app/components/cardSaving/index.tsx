@@ -1,17 +1,15 @@
-import { BudgetWithCategoryDisplay, BudgetWithTagDisplay, isBudgetCategory } from '@/core/entities/budget';
 import './index.css';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import styled, { keyframes } from "styled-components";
-import { SaveGoalDisplay } from '@/core/entities/save_goal';
 
 // @ts-ignore
 library.add(fas);
 
 
-export default function CardSaving({savingGoald, onUpdate, onDelete, onIncrease, onTransfert} : {savingGoald: SaveGoalDisplay, onIncrease: any, onTransfert: any, onUpdate: any, onDelete: any}) {
+export default function CardSaving({savingGoald, onUpdate, onDelete, onIncrease, onTransfert} : {savingGoald: any, onIncrease: any, onTransfert: any, onUpdate: any, onDelete: any}) {
 
     const computerPercentEvolution = () => {
        let percent = (savingGoald.balance * 100 ) / savingGoald.target

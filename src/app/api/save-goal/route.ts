@@ -3,18 +3,11 @@ import { initRepository } from "../libs/init_repo"
 import { GetAllSaveGoal, IGetAllSaveGoalPresenter, SaveGoalResponse } from "@/core/interactions/saveGoal/getAllSaveGoal"
 import { AddSaveGoalUseCase, IAddSaveGoalPresenter, RequestAddSaveGoalUseCase } from "@/core/interactions/saveGoal/addSaveGoal"
 import UUIDMaker from "@/app/services/crypto"
-
-export type ApiSaveGoalResponse = {
-    id: string,
-    title: string,
-    description: string,
-    target: number,
-    balance: number
-}
+import { SaveGoalModel } from "../models/save-goal"
 
 
 type ModelView = {
-    response: ApiSaveGoalResponse[] | null,
+    response: SaveGoalModel[] | null,
     error: Error | null
 }
 
@@ -22,14 +15,15 @@ class GetAllGoalPresenter implements IGetAllSaveGoalPresenter {
     model_view: ModelView = {response: null, error: null}
 
     success(response: SaveGoalResponse[]): void {
-        let save_goals: ApiSaveGoalResponse[] = []
+        let save_goals: SaveGoalModel[] = []
         for (let save_goal of response) {
             save_goals.push({
                 id: save_goal.id,
                 title: save_goal.title,
                 description: save_goal.description,
                 balance: save_goal.balance,
-                target: save_goal.target
+                target: save_goal.target,
+                items: save_goal.items.map(item => ({id: item.id, link: item.link, title: item.title, htmlToTarget: item.html_to_target, price: item.price}))
             })
         }
         this.model_view.response = save_goals 

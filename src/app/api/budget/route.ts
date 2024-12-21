@@ -4,6 +4,7 @@ import { ICreationCategoryUseCaseResponse } from "@/core/interactions/category/c
 import UUIDMaker from "@/app/services/crypto";
 import { NextResponse } from "next/server";
 import { initRepository } from "../libs/init_repo";
+import { BudgetModel } from "../models/budgets";
 
 export type ApiCreationBudget = {
     is_saved: boolean
@@ -59,7 +60,7 @@ export async function POST(
 }
 
 type GetAllBudgeModelView = {
-    response: { budgets: BudgetOutput[] } | null,
+    response: BudgetModel[]  | null,
     error: Error | null
 }
 
@@ -67,7 +68,22 @@ class GetAllBudgetWithCategoriesPresenter implements IGetAllBudgetUseCaseRespons
     model_view: GetAllBudgeModelView = {response: null, error: null};
 
     success(budgets: BudgetOutput[]): void {
-        this.model_view.response = {budgets: budgets};
+        this.model_view.response = []
+        for(let budget of budgets) {
+            this.model_view.response.push({
+                id: budget.id,
+                title: budget.title,
+                target: budget.target,
+                categories: budget.categories,
+                tags: budget.tags,
+                period: budget.period,
+                periodTime: budget.period_time,
+                currentBalance: budget.currentBalance,
+                startDate: budget.start_date,
+                updateDate: budget.update_date,
+                endDate: budget.end_date
+            })
+        }
         this.model_view.error = null;
     }
    

@@ -1,6 +1,6 @@
 import { Period } from "../domains/constants";
 import { Budget, BudgetBuilder } from "../domains/entities/budget";
-import { DateParser, Money } from "../domains/helpers";
+import { DateParser, isEmpty, Money } from "../domains/helpers";
 
 export type BudgetDto = {
     id: string;
@@ -30,10 +30,10 @@ export class MapperBudger {
         budget_builder.setCategories(budget_dto.categories)
         budget_builder.setPeriodTime(budget_dto.period_time)
 
-        if (budget_dto.date_end !== null)
-            budget_builder.setDateEnd(DateParser.fromString(budget_dto.date_end))
+        if (!isEmpty(budget_dto.date_end))
+            budget_builder.setDateEnd(DateParser.fromString(budget_dto.date_end!))
 
-        if (budget_dto.period !== null)
+        if (!isEmpty(budget_dto.period))
             budget_builder.setPeriod(<Period>budget_dto.period)
 
         return budget_builder.getBudget()!

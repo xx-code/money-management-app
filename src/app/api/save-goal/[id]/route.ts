@@ -2,17 +2,11 @@ import { IGetSaveGoalPresenter, GetSaveGoalUseCase, SaveGoalResponse } from "@/c
 import { NextResponse } from "next/server"
 import { initRepository } from "../../libs/init_repo"
 import { IUpdateSaveGoalPresenter, RequestUpdateSaveGoalUseCase, UpdateSaveGoalUseCase } from "@/core/interactions/saveGoal/updateSaveGoal"
-
-export type ApiSaveGoalResponse = {
-    id: string,
-    title: string,
-    description: string,
-    target: number,
-    balance: number
-}
+import { SaveGoalModel } from "../../models/save-goal"
+import UUIDMaker from "@/app/services/crypto"
 
 type GetModelView = {
-    response: ApiSaveGoalResponse | null,
+    response: SaveGoalModel | null,
     error: Error | null
 }
 
@@ -20,12 +14,13 @@ class GetGoalPresenter implements IGetSaveGoalPresenter {
     model_view: GetModelView = {response: null, error: null}
 
     success(response: SaveGoalResponse): void {
-        let save_goal: ApiSaveGoalResponse = {
+        let save_goal: SaveGoalModel = {
             id: response.id,
             title: response.title,
             description: response.description,
             target: response.target,
-            balance: response.balance
+            balance: response.balance,
+            items: response.items.map(item => ({id: item.id, link: item.link, title: item.title, htmlToTarget: item.html_to_target, price: item.price}))
         }
         this.model_view.response = save_goal 
         this.model_view.error = null
@@ -91,7 +86,7 @@ export async function PUT(
 
     let repo = await initRepository()
 
-    let use_case = new UpdateSaveGoalUseCase(presenter, repo.savingRepo)
+    let use_case = new UpdateSaveGoalUseCase(presenter, repo.savingRepo, new UUIDMaker())
 
     await use_case.execute(req)
 

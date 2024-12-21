@@ -66,8 +66,6 @@ export class SqlLitecategory extends SqlLiteRepository implements CategoryReposi
                 id
             );
 
-            console.log(id)
-
             if (result != undefined) {
                 let category_dto: CategoryDto = {
                     id: result['id'],
@@ -90,14 +88,16 @@ export class SqlLitecategory extends SqlLiteRepository implements CategoryReposi
                 title
             );
 
-            let category_dto: CategoryDto = {
-                id: result['id'],
-                title: result['title'], 
-                icon: result['icon'],
-                color: result['color']
-            }
+            
 
             if (result != undefined) {
+                let category_dto: CategoryDto = {
+                    id: result['id'],
+                    title: result['title'], 
+                    icon: result['icon'],
+                    color: result['color']
+                }
+                
                 resolve(CategoryMapper.to_domain(category_dto));
             } else {
                 resolve(null);
@@ -106,7 +106,7 @@ export class SqlLitecategory extends SqlLiteRepository implements CategoryReposi
     }
     getAll(): Promise<Category[]> {
         return new Promise(async (resolve, reject) => {
-            let results = await this.db.all(`SELECT id, title, icon FROM categories`);
+            let results = await this.db.all(`SELECT id, title, icon, color FROM categories`);
 
             let categories = [];
 
@@ -118,7 +118,6 @@ export class SqlLitecategory extends SqlLiteRepository implements CategoryReposi
                     color: result['color']
                 }))
             }
-
             resolve(categories);
         })
     }

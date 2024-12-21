@@ -22,6 +22,9 @@ export class Record {
         this.date = date
         this.type = type
 
+        this.date.setHours(date.getHours())
+        this.date.setMinutes(date.getMinutes())
+        this.date.setSeconds(date.getSeconds())
     }
 }
 

@@ -6,22 +6,25 @@ import { CardResumeSpend } from "./components/cardResumeSpend";
 import CardStat from "./components/cardStats";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import CardResumeHome, { CardResumeAccount } from './components/cardResumeHome';
+import CardResumeHome from './components/cardResumeHome';
 import TopNav from '../topNav';
 import TransactionPaginations from './components/list-transaction';
 import { useResumeMonth, useTransactionPagination } from '../hooks/transactions';
 import { CardTranscationValue } from '@/app/components/cardTransaction';
-import { ApiTransactionResponse } from '@/app/api/pagination_transactions/route';
 import { Money } from '@/core/domains/helpers';
 import { RequestGetPagination } from '@/core/interactions/transaction/getPaginationTransactionUseCase';
 import { useAccountsFetching } from '../hooks/accounts';
-import { TransactionType } from "@/core/domains/entities/transaction";
+import { useRouter } from "next/navigation";
+import { mapperTransactionType } from "@/core/domains/constants";
+import { Transaction } from "@/core/domains/entities/transaction";
+import { TransactionModel } from "@/app/api/models/transaction";
 
 
 export default function Home() {
   const { accounts, loading, error, fetchAllAccounts } = useAccountsFetching()
   const { transactions, errorPagination, fetchTransactionPagination, pagination } = useTransactionPagination()
   const { totalGains, totalSpend, fetchTotals } = useResumeMonth()
+  const router = useRouter()
 
   const [accountSelected, setAccountSelected] = useState(-1)
 
@@ -32,7 +35,7 @@ export default function Home() {
       const requestPagination: RequestGetPagination = {
         page: page,
         size: size,
-        account_filter: accountSelected > 0 ? [accounts[accountSelected].account_id] : [],
+        account_filter: accountSelected > 0 ? [accounts[accountSelected].accountId] : [],
         category_filter: [],
         tag_filter: [],
         sort_by: null,
@@ -48,7 +51,7 @@ export default function Home() {
 
   async function selectAccount(accountId: string) {
     
-    let index = accounts.findIndex(el => el.account_id === accountId)
+    let index = accounts.findIndex(el => el.accountId === accountId)
     console.log(index)
     if (index !== -1) {
       setAccountSelected(index)
@@ -84,15 +87,15 @@ export default function Home() {
 }
 
 
-  function mapperTransaction(trans: ApiTransactionResponse): CardTranscationValue {
+  function mapperTransaction(trans: TransactionModel): CardTranscationValue {
     return {
-      transactionId: trans.transaction_id,
+      transactionId: trans.id,
       amount: new Money(trans.amount),
-      category: { category_id: trans.category.id, icon: trans.category.icon, color: trans.category.color, title: trans.category.title },
+      category: { category_id: trans.category.categoryId, icon: trans.category.icon, color: trans.category.color, title: trans.category.title },
       date: trans.date,
       description: trans.description,
-      tags: trans.tags.map(tag => ({ tag_id: tag.id, color: tag.color, value: tag.title })),
-      type: TransactionType.CREDIT
+      tags: trans.tags.map(tag => ({ tag_id: tag.tagId, color: tag.color, value: tag.value })),
+      type: mapperTransactionType(trans.type) 
     }
   }
 
@@ -117,7 +120,7 @@ export default function Home() {
                 accountSelected={accountSelected}
                 deleteAccount={deleteAccount}
                 onSelectAccount={selectAccount}
-                accounts={accounts.map(account => ({ accountId: account.account_id, accountBalance: new Money(account.balance), accountTitle: account.title }))}
+                accounts={accounts.map(account => ({ accountId: account.accountId, accountBalance: new Money(account.balance), accountTitle: account.title }))}
               />
             </>
           }
@@ -142,7 +145,9 @@ export default function Home() {
                 errorPagination === null ?
                   <TransactionPaginations
                     transactions={transactions.map(trans => mapperTransaction(trans))}
-                    onEdit={() => { }}
+                    onEdit={(id: string) => {
+                      router.push(`/transaction/${id}`)
+                    }}
                     onDelete={deleteTransaction}
                     currentPage={pagination.currentPage}
                     maxPage={pagination.maxPage}

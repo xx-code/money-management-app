@@ -1,19 +1,10 @@
 import { GetPaginationTransaction, IGetPaginationTransactionAdapter, IGetPaginationTransactionResponse, RequestGetPagination, TransactionPaginationResponse, TransactionResponse } from "@/core/interactions/transaction/getPaginationTransactionUseCase";
 import { NextResponse } from "next/server";
 import { initRepository } from "../libs/init_repo";
-
-export type ApiTransactionResponse = {
-    transaction_id: string
-    amount: number
-    date: string
-    description: string
-    type: string
-    category: {id: string, title: string, icon: string, color: string|null}
-    tags: {id: string, title: string, color: string|null } []
-}
+import { TransactionModel } from "../models/transaction";
 
 export type ApiTransactionPaginationResponse = {
-    transactions: ApiTransactionResponse[],
+    transactions: TransactionModel[],
     max_pages: number
 }
 
@@ -26,18 +17,20 @@ class PaginationTransactionPresenter implements IGetPaginationTransactionRespons
     model_view: PaginationTransactionsModelView = {response: null, error: null};
 
     success(response: TransactionPaginationResponse): void {
-        let transactions: ApiTransactionResponse[] = []
+        let transactions: TransactionModel[] = []
         for(let trans of response.transactions) {
             transactions.push({
-                transaction_id: trans.transaction_id,
+                id: trans.transaction_id,
                 amount: trans.amount,
                 date: trans.date,
                 description: trans.description,
                 type: trans.type,
-                category: { id: trans.category.icon, title: trans.category.title,
+                category: {
+                    categoryId: trans.category.icon, title: trans.category.title,
                     icon: trans.category.icon, color: trans.category.color
                 },
-                tags: trans.tags.map(tag => ({id: tag.id, title: tag.value, color: tag.color}))
+                tags: trans.tags.map(tag => ({ tagId: tag.id, value: tag.value, color: tag.color })),
+                accountId: trans.account_id
             })
         }
         this.model_view.response = {transactions: transactions, max_pages: response.max_pages};

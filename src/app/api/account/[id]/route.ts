@@ -4,14 +4,11 @@ import { DeleteAccountUseCase, IDeleteAccountUseCaseResponse } from '@/core/inte
 import { IUpdateAccountUseCaseResponse, RequestUpdateAccountUseCase, UpdateAccountUseCase } from '@/core/interactions/account/updateAccountUseCase';
 import { AccountResponse } from '@/core/interactions/account/getAllAccountUseCase';
 import { initRepository } from '../../libs/init_repo';
+import { AccountModel } from '../../models/accounts';
 
-export type ApiGetAccountResponse = {
-    title: string,
-    balance: number
-} 
 
 type CreationAccountModelView = {
-    response: ApiGetAccountResponse | null,
+    response: AccountModel | null,
     error: Error | null
 }
    
@@ -20,7 +17,7 @@ class GetAccountApiResponse implements IGetAccountUseCaseResponse {
     model_view: CreationAccountModelView = {response: null, error: null};
 
     success(account: AccountResponse): void {
-        this.model_view.response = {title: account.title,  balance: 0};
+        this.model_view.response = {accountId: account.account_id, title: account.title,  balance: 0};
         this.model_view.error = null;
     }
     fail(error: Error): void {

@@ -1,14 +1,16 @@
+import { TransactionModel } from "@/app/api/models/transaction";
 import { ApiTransactionPaginationResponse, ApiTransactionResponse } from "@/app/api/pagination_transactions/route";
 import { ApiGetBalanceResponse } from "@/app/api/transaction/get_balance_by/route";
 import { mapperPeriod, Period } from "@/core/domains/constants";
 import { determinedStartEndDate, Money } from "@/core/domains/helpers";
+import { RequestGetBalanceBy } from "@/core/interactions/transaction/getBalanceByUseCase";
 import { RequestGetPagination } from "@/core/interactions/transaction/getPaginationTransactionUseCase";
 import axios from "axios";
 import { useState } from "react";
 
 export const useTransactionPagination = () => {
     const [pagination, setPagination] = useState({currentPage: 1, maxPage: 1})
-    const [transactions, setTransactions] = useState<ApiTransactionResponse[]>([])
+    const [transactions, setTransactions] = useState<TransactionModel[]>([])
     const [errorPagination, setErrorPagination] = useState<any|null>(null)
 
     const fetchTransactionPagination = async (request: RequestGetPagination) => {
@@ -56,7 +58,7 @@ export const useResumeMonth = () => {
               const resCurrent = await axios.post('/api/transaction/get_balance_by', { type: type, date_start: currentMonthDate.start_date.toString(), date_end: currentMonthDate.end_date.toString() });
               const balanceCurrentMonth: ApiGetBalanceResponse = resCurrent.data
         
-              resolve({pastMonth: new Money(balanceLastMonth.balance) , currentMonth: new Money(balanceCurrentMonth.balance)});
+              resolve({pastMonth: new Money(Math.abs(balanceLastMonth.balance)) , currentMonth: new Money(Math.abs(balanceCurrentMonth.balance))});
             } catch (error) {
               reject(error);
             }
@@ -72,6 +74,57 @@ export const useResumeMonth = () => {
         setTotalGains(gains);
         } catch (error) {
         console.error(error);
+        }
+    };
+
+    return { totalSpend, totalGains, fetchTotals };
+}
+
+export const useBalances = () => {
+    const [totalSpend, setTotalSpend] = useState<Money>();
+    const [totalGains, setTotalGains] = useState<Money>();
+
+    const getTotalBalance = async (filter: RequestGetBalanceBy): Promise<Money> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+              const res = await axios.post('/api/transaction/get_balance_by', filter);
+              const balance: ApiGetBalanceResponse = res.data
+        
+              resolve(new Money(Math.abs(balance.balance)))
+            } catch (error) {
+              reject(error);
+            }
+        })
+    }      
+
+    const fetchTotals = async (request: RequestGetPagination) => {
+        try {
+            let requestDebit: RequestGetBalanceBy  = {
+                accounts_id: request.account_filter,
+                tags_filter: request.tag_filter,
+                categories_filter: request.category_filter,
+                date_start: request.date_start,
+                date_end: request.date_end,
+                type: "DEBIT",
+                price: undefined
+            }
+            const spend = await getTotalBalance(requestDebit);
+
+            let requestCredit: RequestGetBalanceBy  = {
+                accounts_id: request.account_filter,
+                tags_filter: request.tag_filter,
+                categories_filter: request.category_filter,
+                date_start: request.date_start,
+                date_end: request.date_end,
+                type: "CREDIT",
+                price: undefined
+            }
+            const gains = await getTotalBalance(requestCredit);
+
+            setTotalSpend(spend);
+            setTotalGains(gains);
+        } catch (error) {
+            console.error(error);
         }
     };
 

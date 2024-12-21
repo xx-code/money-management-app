@@ -26,22 +26,20 @@ export type TransactionPaginationDto = {
 }
 
 export function mapperTransactionType(value: string): TransactionType {
-    if (!(value in TransactionType))
-        throw new EntityError('Error while map transaction type in record mapper')
     
-
     if (value === TransactionType.CREDIT)
         return TransactionType.CREDIT
 
     if (value === TransactionType.DEBIT)
         return TransactionType.DEBIT
 
-    return TransactionType.CREDIT
+
 }
 
 export class RecordMapper {
     static to_domain(dto: RecordDto): Record {
         let record = new Record(dto.id, new Money(dto.price), DateParser.fromString(dto.date), mapperTransactionType(dto.type.toUpperCase()))
+        record.type = mapperTransactionType(dto.type)
         record.description = dto.description
 
         return record

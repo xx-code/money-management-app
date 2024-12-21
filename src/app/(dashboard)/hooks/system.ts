@@ -1,10 +1,10 @@
-import { ApiCategoryRespone } from "@/app/api/category/route"
-import { ApiGetAllTagResponse } from "@/app/api/tag/route"
+import { CategoryModel } from "@/app/api/models/categories"
+import { TagModel } from "@/app/api/models/tag"
 import axios from "axios"
 import { useState } from "react"
 
 export function useCategories() {
-    const [categories, setCategories] = useState<ApiCategoryRespone[]>([])
+    const [categories, setCategories] = useState<CategoryModel[]>([])
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setErrorCategories] = useState<any|null>(null)
 
@@ -31,7 +31,7 @@ export function useCategories() {
 }
 
 export function useTags() {
-    const [tags, setTags] = useState<ApiGetAllTagResponse[]>([])
+    const [tags, setTags] = useState<TagModel[]>([])
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setErrorTags] = useState<any|null>(null)
 

@@ -1,0 +1,72 @@
+.card-saving {
+    background-color: #F5F6F8;
+    border-radius: 8px;
+    padding: 15px;
+    flex: 1;
+}
+
+.card-saving .card-saving-title h3 {
+    font-weight: bold;
+}
+
+.card-saving .card-saving-info-bar .card-saving-info-bar-sild {
+    position: relative;
+    width: 100%;
+    height: 24px;
+    background-color:  gainsboro;
+    border-radius: 8px;
+    margin-block: 8px;
+}
+
+.card-saving .card-saving-btn {
+
+}
+
+.card-saving .card-item {
+
+}
+
+.card-saving .card-saving-info-bar .card-saving-info-bar-sild .current{
+    position: absolute;
+    left: 2px;
+}
+
+.card-saving .card-saving-info-bar .card-saving-info-bar-sild .bar-load {
+    background-color: #483f8f9f;
+    border-radius: 8px;
+    
+}
+
+.card-saving .card-saving-info-bar .card-saving-info-bar-sild .target{
+    position: absolute;
+    top: 0;
+    right:2px;
+}
+
+.card-saving .card-saving-btn {
+    display: flex;
+    gap: 10px;
+}
+
+.card-saving .card-saving-btn .icon-modif {
+    width: 2rem;
+    height: 2rem;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+}
+
+.card-saving .card-saving-btn .icon-modif:hover {
+    opacity: 0.7;
+}
+
+.card-saving .card-item {
+    margin-top: 8px;
+}
+
+.card-saving .card-item li {
+    display: flex;
+}

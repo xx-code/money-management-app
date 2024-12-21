@@ -72,14 +72,13 @@ export class GetAllBudgetUseCase implements IGetAllBudgetUseCase {
    async execute(): Promise<void> {
        try {
            let budgets = await this.budget_repository.getAll();
-          
+        
            let budgets_display = [];
            for (let i = 0; i < budgets.length; i++) {
                let budget = budgets[i];
               
                let start_date = budget.date_start
                let end_date = budget.date_update
-
 
                if (budget.period)  {
                    let current_date_budget = determinedStartEndDateBudget(budget.period!, budget.period_time!)
@@ -128,6 +127,7 @@ export class GetAllBudgetUseCase implements IGetAllBudgetUseCase {
                    end_date: budget.date_end ? budget.date_end.toString() : null,
                    tags: tags
                };
+
                budgets_display.push(budget_display);
            }
            this.presenter.success(budgets_display)

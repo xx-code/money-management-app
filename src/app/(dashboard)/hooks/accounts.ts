@@ -1,9 +1,9 @@
-import { ApiGetAllAccountResponse } from "@/app/api/account/route"
+import { AccountModel } from "@/app/api/models/accounts"
 import axios from "axios"
 import { useState } from "react"
 
-export function useAccountsFetching() {
-    const [accounts, setAccounts] = useState<ApiGetAllAccountResponse[]>([])
+export function useAccountsFetching(doCalculAllBalance: boolean = true) {
+    const [accounts, setAccounts] = useState<AccountModel[]>([])
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<any|null>(null)
 
@@ -11,10 +11,12 @@ export function useAccountsFetching() {
         try {
             setLoading(true)
             const response = await axios.get('/api/account')
-            let accounts:ApiGetAllAccountResponse[] = response.data
+            let accounts:AccountModel[] = response.data
             
-            let totalBalance = accounts.reduce((sum, current) => sum + current.balance, 0)
-            accounts.unshift({account_id: '', balance: totalBalance, title: "Tout"})
+            if (doCalculAllBalance) {
+                let totalBalance = accounts.reduce((sum, current) => sum + current.balance, 0)
+                accounts.unshift({accountId: '', balance: totalBalance, title: "Tout"})
+            }
          
             setAccounts(accounts)
         } catch(error: any) {

@@ -5,23 +5,11 @@ import { NextResponse } from "next/server"
 import { initRepository } from "../../libs/init_repo"
 import { BudgetOutput } from "@/core/interactions/budgets/getAllBudgetUseCase"
 import UUIDMaker from "@/app/services/crypto"
+import { BudgetModel } from "../../models/budgets"
 
-export type ApiGetBudget = {
-    id: string,
-    title: string,
-    target: number,
-    current: number,
-    period: string|null,
-    period_time: number,
-    date_update: string,
-    date_start: string,
-    date_end: string|null,
-    categories: {id: string, title: string, color: string|null}[]
-    tags: {id: string, title: string, color: string|null}[]
-} 
 
 type GetBudgetModelView = {
-    response: ApiGetBudget | null,
+    response: BudgetModel | null,
     error: Error | null
 }
 
@@ -29,17 +17,17 @@ class GetBudgetPresenter implements IGetBudgetUseCaseResponse {
     model_view: GetBudgetModelView = {response: null, error: null}
 
     success(budget: BudgetOutput): void {
-        let budget_res: ApiGetBudget = {
+        let budget_res: BudgetModel = {
             id: budget.id,
             title: budget.title,
             target: budget.target,
-            current: budget.currentBalance,
+            currentBalance: budget.currentBalance,
             period: budget.period,
-            period_time: budget.period_time,
-            date_update: budget.update_date,
-            date_start: budget.start_date,
-            date_end: budget.end_date,
-            categories: budget.categories.map(cat => ({id: cat.id, title: cat.title, color: cat.color})),
+            periodTime: budget.period_time,
+            updateDate: budget.update_date,
+            startDate: budget.start_date,
+            endDate: budget.end_date,
+            categories: budget.categories.map(cat => ({id: cat.id, title: cat.title, icon: cat.icon, color: cat.color})),
             tags: budget.tags.map(tag => ({id: tag.id, title: tag.title, color: tag.color}))
         }
 

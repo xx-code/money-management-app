@@ -65,6 +65,7 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
                     id_category,
                     id_record
                 FROM 
+                transactions
                 WHERE transactions.id = ?`,
                 id
             );
@@ -77,7 +78,7 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
                     record: result['id_record'],
                     account_ref: result['id_account'],
                     tags: tags,
-                    category_ref: result['id_account']
+                    category_ref: result['id_category']
                 }
 
                 resolve(TransactionMapper.to_domain(transaction_dto));
@@ -260,7 +261,7 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
                 filter_id_cat.push(`'${category}'`);
             }
 
-            let where_id_catogry = `$categories.id in (${filter_id_cat})`;
+            let where_id_catogry = `categories.id in (${filter_id_cat})`;
 
             let filter_id_tag: string[] = [];
             for (let tag of filter_by.tags) {
@@ -275,16 +276,12 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
                 `
             ); 
 
-            console.log(result_filter_by_tag)
-
             let filter_id_transaction_tag: string[] = [];
             for(let result of result_filter_by_tag) {
                 filter_id_transaction_tag.push(`"${result['id_transaction']}"` );
             }
             
             let where_id_transaction_tag = `transactions.id in (${filter_id_transaction_tag})`;
-
-            
 
             let where_debit = '';
             let where_credit = '';
@@ -401,8 +398,7 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
                         WHERE LOWER(type) = 'debit' AND ${this.table_category_name}.id = '${TRANSFERT_CATEGORY_ID}'
                     `)
                 }*/
-                
-                
+                      
                 results_debit = await this.db.get(`
                     SELECT 
                         transactions.id, id_account, id_record, SUM(records.amount) as total_price 

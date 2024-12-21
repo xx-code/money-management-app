@@ -3,6 +3,7 @@ import { GetAllTagUseCase, IGetAllTagUseCaseResponse, TagOutput } from "@/core/i
 import { NextResponse } from "next/server";
 import { initRepository } from "../libs/init_repo";
 import UUIDMaker from "@/app/services/crypto";
+import { TagModel } from "../models/tag";
 
 export type ApiCreationTagResponse = {
     is_saved: boolean
@@ -47,14 +48,9 @@ export async function POST(
     return NextResponse.json(presenter.model_view.response, {status: 200});
 }
 
-export type ApiGetAllTagResponse = {
-    id: string
-    title: string
-    color: string|null
-}
 
 type GetAllTagModelView = {
-    response: ApiGetAllTagResponse[] | null,
+    response: TagModel[] | null,
     error: Error | null
 }
 
@@ -62,7 +58,7 @@ class GetAllTagPresenter implements IGetAllTagUseCaseResponse {
     model_view: GetAllTagModelView = { response: [], error: null}
 
     success(tags: TagOutput[]): void {
-        this.model_view.response = tags.map(tag => ({id: tag.id, title: tag.value, color: tag.color}))
+        this.model_view.response = tags.map(tag => ({tagId: tag.id, title: tag.value, color: tag.color}))
         this.model_view.error = null;
     }
     fail(err: Error): void {

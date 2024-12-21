@@ -5,12 +5,21 @@ export interface IGetAllSaveGoal {
     execute(): void
 }
 
+export type SaveGoalItemResponse = {
+    id: string
+    title: string
+    link: string
+    price: number
+    html_to_target: string
+}
+
 export type SaveGoalResponse = {
     id: string,
     title: string,
     description: string,
     target: number,
-    balance: number
+    balance: number,
+    items: SaveGoalItemResponse[]
 }
 
 export interface IGetAllSaveGoalPresenter {
@@ -44,7 +53,8 @@ export class GetAllSaveGoal implements IGetAllSaveGoal {
                         title: save_goal.title,
                         description: save_goal.description,
                         balance: balance,
-                        target: save_goal.target.getAmount()
+                        target: save_goal.target.getAmount(),
+                        items: save_goal.items.map(item => ({id: item.id, title: item.title, link: item.link, price: item.price.getAmount(), html_to_target: item.html_to_track}))
                     }
                 ) 
             }

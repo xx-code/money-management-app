@@ -1,3 +1,4 @@
+import { FREEZE_CATEGORY_ID, SAVING_CATEGORY_ID, TRANSFERT_CATEGORY_ID } from "@/core/domains/constants";
 import { CategoryRepository } from "../../repositories/categoryRepository";
 
 export type CategoryResponse = {
@@ -31,6 +32,9 @@ export class GetAllCategoryUseCase implements IGetAllCategoryUseCase {
 
             let categories: CategoryResponse[] = [];
             for (let result of results) {
+                if ([SAVING_CATEGORY_ID, TRANSFERT_CATEGORY_ID, FREEZE_CATEGORY_ID].includes(result.id))
+                    continue
+
                 categories.push({
                     category_id: result.id,
                     title: result.getTitle(),
@@ -38,6 +42,7 @@ export class GetAllCategoryUseCase implements IGetAllCategoryUseCase {
                     icon: result.icon
                 });
             }
+            
             this.presenter.success(categories);
         } catch(err) {
             this.presenter.fail(err as Error);

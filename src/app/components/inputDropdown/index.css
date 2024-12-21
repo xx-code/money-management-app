@@ -1,0 +1,87 @@
+.search-dropdown {
+    position: relative;
+}
+
+
+.search-dropdown .label {
+    font-size: small;
+    color: #828282;
+}
+
+
+.search-dropdown .focus-title {
+    margin-top: 0 !important;
+    margin-left: 1em;
+    font-size: 12px;
+    color: #7E7E7E;
+}
+
+.search-dropdown .error {
+    outline: red 0.1px solid;
+}
+
+.search-dropdown .focus-input {
+    padding-top: 0.8em;
+}
+
+.search-dropdown input {
+    border: none;
+    border-radius: 0.4em;
+    padding: 0.5em 0.8em;
+    background-color: #E6E6E6;
+    transition: 150ms;
+    color: #22bd8c;
+    width: 100%;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.search-dropdown span {
+    font-size: 11px;
+    margin-top: -2px;
+    color: red;
+}
+
+.search-dropdown input:focus {
+    color: #22bd8c;
+    outline: none;
+}
+
+.search-dropdown .icon {
+    position: absolute;
+    right: 5px;
+    top: 35%;
+    cursor: pointer;
+}
+
+.search-option {
+    display: none;
+    position: absolute;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+    border-bottom-left-radius: 0.4em;
+    border-bottom-right-radius: 0.4em;
+    padding-top: 0.8em;
+    padding-bottom: 0.4em;
+    transition: ease-in 50ms;
+    height: 0;
+    width: 100%;
+    overflow: auto;
+    z-index: 1000;
+}
+
+
+.search-option-display {
+    display: block;
+    height: fit-content;
+    max-height: 500px;
+}
+
+.search-option .option {
+    padding: 0.8em 0.5em;
+    cursor: pointer;
+}
+
+.search-option .option:hover {
+    background-color: #00000009;
+}

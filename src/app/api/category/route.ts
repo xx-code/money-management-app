@@ -3,6 +3,7 @@ import { CreationCategoryUseCase, RequestCreationCategoryUseCase, ICreationCateg
 import { CategoryResponse, GetAllCategoryUseCase, IGetAllCategoryUseCaseResponse } from '@/core/interactions/category/getAllCategoryUseCase';
 import UUIDMaker from '@/app/services/crypto';
 import { initRepository } from '../libs/init_repo';
+import { CategoryModel } from '../models/categories';
 
 export type ApiCreationCategoryResponse = {
     is_saved: boolean
@@ -49,15 +50,9 @@ export async function POST(
     return NextResponse.json(presenter.model_view.response, {status: 200});
 }
 
-export type ApiCategoryRespone = {
-    category_id: string
-    title: string
-    icon: string
-    color: string|null
-}
 
 type GetAllCategoryModelView = {
-    response : ApiCategoryRespone[],
+    response : CategoryModel[],
     error: Error | null
 }
 
@@ -65,11 +60,11 @@ class GetAllCategoryPresenter implements IGetAllCategoryUseCaseResponse {
     model_view: GetAllCategoryModelView = {response: [], error: null};
 
     success(categories: CategoryResponse[]): void {
-        let res_categories: ApiCategoryRespone[] = []
+        let res_categories: CategoryModel[] = []
         for (let category of categories) {
-            res_categories.push({category_id: category.category_id, title: category.title, icon: category.icon, color: category.color})
+            res_categories.push({categoryId: category.category_id, title: category.title, icon: category.icon, color: category.color})
         }
-        this.model_view.response = categories
+        this.model_view.response = res_categories
         this.model_view.error = null
     }
     fail(err: Error): void {

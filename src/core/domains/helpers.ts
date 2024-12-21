@@ -185,6 +185,10 @@ export function determinedStartEndDateBudget(period: Period, period_time: number
     return determinedStartEndDate(today, period, period_time)
 }
 
+export function searchInArr(value: string, array: string[]) : string[] {
+    let results = array.filter(value_arr => value_arr.toLowerCase().search(value.toLowerCase()) !== -1);
+    return results;
+}
 
 export class DateParser {
     private year: number = 0;
@@ -449,7 +453,7 @@ export class Money {
 
     // Affichage formaté
     toString(): string {
-        return `${this.amount.toFixed(2)} ${this.currency}`;
+        return `${this.amount} ${this.currency}`;
     }
 }
  

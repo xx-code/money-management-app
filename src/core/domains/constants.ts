@@ -1,4 +1,5 @@
 import EntityError from "../errors/entityError"
+import ValidationError from "../errors/validationError"
 import { TransactionType } from "./entities/transaction"
 
 export enum Period {
@@ -8,11 +9,41 @@ export enum Period {
     DAY = 'Day'
 }
 
+export const periodsSystem = [
+    {
+        name: 'Jour',
+        value: Period.DAY
+    },
+    {
+        name: 'Semaine',
+        value: Period.WEEK
+    },
+    {
+        name: 'Mois',
+        value: Period.MONTH
+    },
+    {
+        name: 'Année',
+        value: Period.YEAR
+    }
+]
+
+export const periodsBudget = [
+    {
+        name: 'Semaine',
+        value: Period.WEEK
+    },
+    {
+        name: 'Mois',
+        value: Period.MONTH
+    },
+    {
+        name: 'Année',
+        value: Period.YEAR
+    }
+]
+
 export function mapperPeriod(value: string): Period {
-    value = value.toLocaleUpperCase()
-    if (!(value in Period))
-        throw new EntityError('Error while map Period')
-   
     if (value === Period.YEAR)
         return Period.YEAR
  
@@ -28,14 +59,11 @@ export function mapperPeriod(value: string): Period {
     if (value == Period.DAY)
         return Period.DAY
    
-    return Period.DAY
+    throw new ValidationError('Impossible to mapp period')
 }
 
 export function mapperTransactionType(value: string): TransactionType {
-    if (!(value in TransactionType))
-        throw new EntityError('error while map transaction')
-
-    if (value === "CREDIT")
+    if (value === TransactionType.CREDIT)
         return TransactionType.CREDIT
 
     return TransactionType.DEBIT

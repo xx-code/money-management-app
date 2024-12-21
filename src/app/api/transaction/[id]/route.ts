@@ -4,21 +4,10 @@ import { IUpdateTransactionAdapter, IUpdateTransactionUseCaseResponse, RequestUp
 import { NextResponse } from "next/server";
 import { initRepository } from "../../libs/init_repo";
 import UUIDMaker from "@/app/services/crypto";
-
-export type ApiGetTransactionResponse = {
-    account_id: string, 
-    category_title: string, 
-    category_icon: string,
-    category_color: string|null,
-    date: string,
-    tags: {tag_id: string, tag_value: string, tag_color: string|null}[], 
-    type: string, 
-    amount: number, 
-    description: string
-}
+import { TransactionModel } from "../../models/transaction";
 
 type GetTransaction = {
-    response : ApiGetTransactionResponse | null,
+    response : TransactionModel | null,
     error: Error | null
 }
 
@@ -27,11 +16,15 @@ class GetTransactionPresenter implements IGetTransactionUseCaseResponse {
 
     success(transaction: TransactionResponse): void {
         this.model_view.response = {
-            account_id: transaction.account_id,
-            category_title: transaction.category.title,
-            category_icon: transaction.category.icon,
-            category_color: transaction.category.color,
-            tags: transaction.tags.map(tag => ({tag_id: tag.id, tag_value: tag.value, tag_color: tag.color})),
+            id: transaction.transaction_id,
+            accountId: transaction.account_id,
+            category: {
+                categoryId: transaction.category.id,
+                title: transaction.category.title,
+                icon: transaction.category.icon,
+                color: transaction.category.color
+            },
+            tags: transaction.tags.map(tag => ({tagId: tag.id, value: tag.value, color: tag.color})),
             description: transaction.description,
             date: transaction.date,
             amount: transaction.amount,

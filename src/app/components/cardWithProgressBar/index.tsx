@@ -1,10 +1,10 @@
-import { BudgetWithCategoryDisplay, BudgetWithTagDisplay, isBudgetCategory } from '@/core/entities/budget';
 import './index.css';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import styled, { keyframes } from "styled-components";
+import { Money } from '@/core/domains/helpers';
 
 // @ts-ignore
 library.add(fas);
@@ -12,14 +12,14 @@ library.add(fas);
 interface Props {
     title: string
     description: string
-    targetPrice: number
-    currentPrice: number
+    targetPrice: Money
+    currentPrice: Money
     onUpdate: () => void
     onDelete: () => void 
 }
 
 export default function CardWithProgressBar({title, description, targetPrice, currentPrice, onUpdate, onDelete} : Props) {
-    let percent = (currentPrice * 100) / targetPrice
+    let percent = (currentPrice.getAmount() * 100) / targetPrice.getAmount()
     percent = Math.ceil(percent);
     percent = percent > 100 ? 100 : percent;
     let size = 60
@@ -44,9 +44,9 @@ export default function CardWithProgressBar({title, description, targetPrice, cu
                     </div>
                     <div className='card-budget-info-bar'>
                         <div className='card-budget-info-bar-sild'>
-                            <p className='current'>${currentPrice}</p>
+                            <p className='current'>{currentPrice.toString()}</p>
                             <div className='bar-load' style={{width: `${percent}%`, height: '100%'}}></div>
-                            <p className='target'>${targetPrice}</p>
+                            <p className='target'>{targetPrice.toString()}</p>
                         </div>
                     </div>
                 </div>

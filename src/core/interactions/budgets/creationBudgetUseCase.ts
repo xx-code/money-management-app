@@ -93,8 +93,6 @@ export class CreationBudgetUseCase implements ICreationBudgetUseCase {
                     throw new ValidationError('Error while try saving new tag in budget')
                 tags.push(id_tag)
             }
- 
- 
             budget_builder.setTags(tags)
  
  
@@ -104,6 +102,9 @@ export class CreationBudgetUseCase implements ICreationBudgetUseCase {
             let date_start: DateParser = DateParser.fromString(request.date_start)
             budget_builder.setDateStart(date_start)           
            
+            if (request.target <= 0) 
+                throw new ValidationError("Target must be greater than 0")
+
             budget_builder.setTarget(new Money(request.target))
  
  
@@ -115,6 +116,13 @@ export class CreationBudgetUseCase implements ICreationBudgetUseCase {
             // refactoring
             if (!isEmpty(request.period)) {
                 let period = mapperPeriod(request.period)
+                budget_builder.setPeriod(period)
+                
+                if (request.period_time <= 0) {
+                    throw new ValidationError('Period time must be greater than 0')
+                }
+                budget_builder.setPeriodTime(request.period_time)
+
                 let date_to_update = determinedEndDateWith(date_start.toDate(), period, request.period_time)
                 budget_builder.setDateUpdate(date_to_update)
             } else {

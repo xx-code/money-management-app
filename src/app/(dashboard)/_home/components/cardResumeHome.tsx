@@ -60,12 +60,12 @@ export default function CardResumeHome({ accounts, accountSelected=-1, deleteAcc
                                 <a className="card-resume-btn-icon" style={{backgroundColor: "#4FDC4C"}} href="/transaction/new-transaction">
                                     <FontAwesomeIcon icon={["fas", "plus"]} />
                                 </a>
-                                <div className="card-resume-btn-icon"  style={{backgroundColor: "#b2bac4"}}>
+                                <a className="card-resume-btn-icon"  style={{backgroundColor: "#b2bac4"}} href="/transaction/freeze">
                                     <FontAwesomeIcon icon={["fas", "snowflake"]} />
-                                </div>
-                                <div className="card-resume-btn-icon"  style={{backgroundColor: "#6755D7"}}>
+                                </a>
+                                <a className="card-resume-btn-icon"  style={{backgroundColor: "#6755D7"}} href="/transaction/transfert">
                                     <FontAwesomeIcon icon={["fas", "right-left"]} />
-                                </div>
+                                </a>
                             </div>
                             {
                                 accountSelected > 0?

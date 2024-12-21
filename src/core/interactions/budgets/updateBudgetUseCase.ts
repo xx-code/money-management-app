@@ -62,7 +62,7 @@ export class UpdateBudgetUseCase implements IUpdateBudgetUseCase {
            let budget = await this.budget_repository.get(request.id);
 
 
-           if (budget == null) {
+           if (budget === null) {
                throw new NotFoundError('Budget not found');
            }
 
@@ -73,12 +73,10 @@ export class UpdateBudgetUseCase implements IUpdateBudgetUseCase {
 
 
            if (!isEmpty(request.target)) {
-               budget.target = new Money(request.target!)
-           }
-
-
-           if (!isEmpty(request.period_time)) {
-               budget.period_time = request.period_time!
+                if (request.target! <= 0) 
+                    throw new ValidationError("Target must be greater than 0")
+                
+                budget.target = new Money(request.target!)
            }
 
            if (!isEmpty(request.is_archived)) {
@@ -91,8 +89,7 @@ export class UpdateBudgetUseCase implements IUpdateBudgetUseCase {
            }
             
 
-
-           if (!isEmpty(request.categories != null)) {
+           if (!isEmpty(request.categories)) {
                for (let category_ref of budget.categories) {
                    if (!request.categories!.includes(category_ref))
                        budget.deleteCategory(category_ref)
@@ -101,7 +98,7 @@ export class UpdateBudgetUseCase implements IUpdateBudgetUseCase {
 
                for (let category_ref of request.categories!) {
                    let category = await this.category_repository.get(category_ref);
-                   if (category == null)
+                   if (category === null)
                        throw new ValidationError('This category not exist');
 
                    if (!budget.categories.includes(category_ref))
@@ -141,15 +138,28 @@ export class UpdateBudgetUseCase implements IUpdateBudgetUseCase {
                budget.date_end = date_end
            }
 
+           if (request.date_end === "") {
+                budget.date_end = null
+           }
+
            // refactoring
            if (!isEmpty(request.period)) {
                 let period = mapperPeriod(request.period!)
+                budget.period = period
+                if (!isEmpty(request.period_time)) {
+                    if (request.period_time! <= 0)
+                        throw new ValidationError('Period time must be greater than 0')
+                    budget.period_time = request.period_time!
+                }
+
                 let date_to_update = determinedEndDateWith(budget.date_start.toDate(), period, budget.period_time)
                 budget.date_update = date_to_update
             } else {
                 if (isEmpty(request.date_end)) {
                     throw new ValidationError('this format of budget is impossible set at less a date end')
                 }
+                budget.period = null 
+                budget.period_time = 0
                 let date_end: DateParser = DateParser.fromString(request.date_start!)
                 budget.date_update = date_end
             }

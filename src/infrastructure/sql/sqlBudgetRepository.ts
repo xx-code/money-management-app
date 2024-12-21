@@ -19,7 +19,7 @@ export class SqlLiteBudget extends SqlLiteRepository implements BudgetRepository
 
             let categories: string[] = []
             for (let result of result_category) {
-                categories.push(result['id']);
+                categories.push(result['id_category']);
             }
 
             resolve(categories);
@@ -39,7 +39,7 @@ export class SqlLiteBudget extends SqlLiteRepository implements BudgetRepository
 
             let tags: string[] = []
             for (let result of result_tag) {
-                tags.push(result['id']);
+                tags.push(result['id_tag']);
             }
 
             resolve(tags);
@@ -116,7 +116,7 @@ export class SqlLiteBudget extends SqlLiteRepository implements BudgetRepository
     }
     getAll(): Promise<Budget[]> {
         return new Promise(async (resolve, reject) => {
-            let results = await this.db.all(`SELECT id, title, target, period, period_time, date_start, date_update, date_end FROM budgets Where is_archived = 0`);
+            let results = await this.db.all(`SELECT id, title, target, period, period_time, is_archived, date_start, date_update, date_end FROM budgets Where is_archived = 0`);
 
             let budgets: Budget[] = [];
 
@@ -189,14 +189,14 @@ export class SqlLiteBudget extends SqlLiteRepository implements BudgetRepository
             }
 
             if (request.__delete_event_tag.length > 0) {
-                await this.db.run(`DELETE FROM budget_tags WHERE id_category in (?)`, request.__delete_event_tag.toString());
+                await this.db.run(`DELETE FROM budget_tags WHERE id_tag in (?)`, request.__delete_event_tag.toString());
             } 
 
             if (request.__add_event_tag.length > 0) {
-                for (let category of request.__add_event_tag) {
+                for (let tag of request.__add_event_tag) {
                     await this.db.run(`
                         INSERT INTO budgets_tags (id_budget, id_tag) VALUES (?, ?)`,
-                        request.id, category
+                        request.id, tag
                     );
                 }
             }
