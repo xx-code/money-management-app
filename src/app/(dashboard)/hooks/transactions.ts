@@ -106,7 +106,7 @@ export const useBalances = () => {
                 categories_filter: request.category_filter,
                 date_start: request.date_start,
                 date_end: request.date_end,
-                type: "DEBIT",
+                type: "Debit",
                 price: undefined
             }
             const spend = await getTotalBalance(requestDebit);
@@ -117,7 +117,7 @@ export const useBalances = () => {
                 categories_filter: request.category_filter,
                 date_start: request.date_start,
                 date_end: request.date_end,
-                type: "CREDIT",
+                type: "Credit",
                 price: undefined
             }
             const gains = await getTotalBalance(requestCredit);

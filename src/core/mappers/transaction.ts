@@ -25,6 +25,7 @@ export type TransactionPaginationDto = {
     num_items: number
 }
 
+// Todo refactor not correct
 export function mapperTransactionType(value: string): TransactionType {
     
     if (value === TransactionType.CREDIT)

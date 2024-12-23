@@ -287,7 +287,7 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
 
             let where_debit = '';
             let where_credit = '';
-            let value_where = [where_excluse];
+            let value_where = [];
             
             if (filter_id_transaction_tag.length > 0) {
                 value_where.push(where_id_transaction_tag);

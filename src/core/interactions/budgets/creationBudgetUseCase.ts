@@ -129,7 +129,7 @@ export class CreationBudgetUseCase implements ICreationBudgetUseCase {
                 if (isEmpty(request.date_end)) {
                     throw new ValidationError('this format of budget is impossible set at less a date end')
                 }
-                let date_end: DateParser = DateParser.fromString(request.date_start)
+                let date_end: DateParser = DateParser.fromString(request.date_end)
                 budget_builder.setDateUpdate(date_end)
             }
            

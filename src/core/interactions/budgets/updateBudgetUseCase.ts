@@ -160,7 +160,7 @@ export class UpdateBudgetUseCase implements IUpdateBudgetUseCase {
                 }
                 budget.period = null 
                 budget.period_time = 0
-                let date_end: DateParser = DateParser.fromString(request.date_start!)
+                let date_end: DateParser = DateParser.fromString(request.date_end!)
                 budget.date_update = date_end
             }
           

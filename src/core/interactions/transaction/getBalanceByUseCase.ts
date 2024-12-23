@@ -79,7 +79,6 @@ export class GetBalanceByUseCase implements IGetBalanceByUseCase {
                 price: price?.getAmount()
             }
 
-
             let balance = await this.transaction_repository.getBalance(filter);
 
             this.presenter.success(balance);

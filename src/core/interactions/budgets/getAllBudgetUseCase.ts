@@ -103,6 +103,7 @@ export class GetAllBudgetUseCase implements IGetAllBudgetUseCase {
                    if (tag !== null)
                        tags.push({id: tag.id, title: tag.getValue(), color: tag.color })
                }
+
           
                let balance = await this.transaction_repository.getBalance({
                    categories: budget.categories,
