@@ -46,6 +46,7 @@ export default function Home() {
         price: undefined
       }
       fetchTransactionPagination(requestPagination)
+      fetchTotals()
     }
   }
 
@@ -65,9 +66,8 @@ export default function Home() {
     if (isOK) {
       try {
         await axios.delete(`/api/transaction/${id}`);
-
+        setupRequestFetching(pagination.currentPage, accountSelected)
       } catch (err: any) {
-        console.log(err);
         alert(err.data);
       }
     }
@@ -101,7 +101,6 @@ export default function Home() {
 
   useEffect(() => {
     fetchAllAccounts()
-    fetchTotals()
     setupRequestFetching(1, -1)
     setAccountSelected(0)
   }, []);

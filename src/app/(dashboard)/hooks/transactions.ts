@@ -17,6 +17,7 @@ export const useTransactionPagination = () => {
         try {
             let response = await axios.post('/api/pagination_transactions', request)
             let data:ApiTransactionPaginationResponse = response.data
+            
             setPagination({currentPage: request.page, maxPage: data.max_pages})
             setTransactions(data.transactions)
         } catch(error: any) {

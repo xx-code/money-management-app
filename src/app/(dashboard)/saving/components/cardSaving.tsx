@@ -77,15 +77,15 @@ export default function CardSaving({title, description, currentPrice, targetPric
                                 </div>
                             </li>
                             {
-                                items.map(item => {
+                                items.map((item, index) => {
                                     return (
-                                        <li>
+                                        <li key={index}>
                                             <div style={{flex: 2}}>
                                                 {
                                                     isEmpty(item.link) ?
                                                         <p>- {item.title}</p>
                                                     :
-                                                        <a href={item.link}>- {item.title}</a>
+                                                        <a href={item.link} target='_blank'>- {item.title}</a>
                                                 }
                                             </div>
                                             <div style={{flex: 1}}>{item.price.toString()}</div>

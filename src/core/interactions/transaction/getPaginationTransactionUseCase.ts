@@ -137,7 +137,7 @@ export class GetPaginationTransaction implements IGetPaginationTransaction {
             }
 
             let date_start = null
-            if (!isEmpty(request.date_end))
+            if (!isEmpty(request.date_start))
                 date_start = DateParser.fromString(request.date_start!)
             
             let date_end = null

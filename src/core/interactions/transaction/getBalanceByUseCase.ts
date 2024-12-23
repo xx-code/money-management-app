@@ -52,7 +52,7 @@ export class GetBalanceByUseCase implements IGetBalanceByUseCase {
             }
 
             let date_start = null
-            if (!isEmpty(request.date_end))
+            if (!isEmpty(request.date_start))
                 date_start = DateParser.fromString(request.date_start!)
             
             let date_end = null
@@ -78,6 +78,7 @@ export class GetBalanceByUseCase implements IGetBalanceByUseCase {
                 type: type,
                 price: price?.getAmount()
             }
+
 
             let balance = await this.transaction_repository.getBalance(filter);
 

@@ -13,20 +13,6 @@ export default function Saving() {
     const hookSaveGoals = useSaveGoals()
     const router = useRouter()
 
-    async function deleteSaveGoal(id: string, accountId: string) {
-        // try {
-        //     let req: RequestDeleteSaveGoal = {
-        //         account_tranfert_ref: accountId,
-        //         save_goal_ref: id
-        //     }
-        //     // Have stack info
-        //     await axios.post(`/api/save-goal/delete`, req)
-        //     hookSaveGoals.fetchSaveGoal()
-        // } catch(err: any) {
-        //     alert(err.response.data)
-        // }
-    }
-
     useEffect(() => {
         hookSaveGoals.fetchSaveGoal()
     }, [])
@@ -42,7 +28,7 @@ export default function Saving() {
                     saveGoals={hookSaveGoals.saveGoals} 
                     onUpdateSaveGoals={(id: string) => router.push(`/saving/${id}`)} 
                     onIncreaseSaveGoal={(id: string) => router.push(`/saving/add/${id}`)} 
-                    onDeleteSaveGoal={deleteSaveGoal} 
+                    onDeleteSaveGoal={(id: string) => router.push(`/saving/delete/${id}`)} 
                     onTransfertSaveGoal={() => {}}                
                 />
             </div>

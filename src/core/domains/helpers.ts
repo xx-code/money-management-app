@@ -405,9 +405,9 @@ export class Money {
 
 
     constructor(amount: number = 0, currency: string = 'CAD') {
-        if (amount < 0) {
-            throw new Error("Amount cannot be negative.");
-        }
+        // if (amount < 0) {
+        //     throw new Error("Amount cannot be negative.");
+        // }
         this.amount = amount;
         this.currency = currency.toUpperCase();
     }

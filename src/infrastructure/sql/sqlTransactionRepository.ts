@@ -4,6 +4,7 @@ import { TransactionPaginationResponse } from "@/core/domains/metaData/transacti
 import { SqlLiteRepository } from "./sql_lite_connector";
 import { TransactionDto, TransactionMapper, TransactionPaginationMapper } from "@/core/mappers/transaction";
 import { isEmpty } from "@/core/domains/helpers";
+import { SAVING_CATEGORY_ID, TRANSFERT_CATEGORY_ID } from "@/core/domains/constants";
 
 export class SqlLiteTransaction extends SqlLiteRepository implements TransactionRepository {
     private async getAllTag(id_transaction: string): Promise<string[]> {
@@ -141,14 +142,11 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
                 value_where.push(where_id_catogry);
             }
 
-            const is_start_date_empty = filter_by.start_date === null || filter_by.start_date === undefined;
-            const is_end_date_empty = filter_by.end_date === null || filter_by.end_date === undefined;
-
-            if (!is_start_date_empty) {
+            if (!isEmpty(filter_by.start_date)) {
                 value_where.push(`date >= '${filter_by.start_date!.toString()}'`)
             }
 
-            if (!is_end_date_empty) {
+            if (!isEmpty(filter_by.end_date)) {
                 value_where.push(`date <= '${filter_by.end_date!.toString()}'`)
             }
 
@@ -261,6 +259,8 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
                 filter_id_cat.push(`'${category}'`);
             }
 
+            let exclude_cat = [TRANSFERT_CATEGORY_ID, SAVING_CATEGORY_ID]
+
             let where_id_catogry = `categories.id in (${filter_id_cat})`;
 
             let filter_id_tag: string[] = [];
@@ -283,9 +283,11 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
             
             let where_id_transaction_tag = `transactions.id in (${filter_id_transaction_tag})`;
 
+            let where_excluse = `categories.id NOT IN (${exclude_cat.map(cat => `'${cat}'`)})`
+
             let where_debit = '';
             let where_credit = '';
-            let value_where = [];
+            let value_where = [where_excluse];
             
             if (filter_id_transaction_tag.length > 0) {
                 value_where.push(where_id_transaction_tag);
@@ -299,14 +301,11 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
                 value_where.push(where_id_catogry);
             }
 
-            const is_start_date_empty = filter_by.start_date === null || filter_by.start_date === undefined;
-            const is_end_date_empty = filter_by.end_date === null || filter_by.end_date === undefined;
-
-            if (!is_start_date_empty) {
+            if (!isEmpty(filter_by.start_date)) {
                 value_where.push(`date >= '${filter_by.start_date!.toString()}'`)
             }
 
-            if (!is_end_date_empty) {
+            if (!isEmpty(filter_by.end_date)) {
                 value_where.push(`date <= '${filter_by.end_date!.toString()}'`)
             }
 
@@ -334,28 +333,6 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
 
 
             if (!isEmpty(where_credit)) {
-                /*if (where_id_catogry.includes(TRANSFERT_CATEGORY_ID) || filter_id_cat.length === 0) { 
-                    result_total_credit_transfert = await this.db.get(`
-                        SELECT 
-                            ${this.table_name}.id, 
-                            ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
-                            ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
-                            ${this.table_category_name}.title as category_title, ${this.table_category_name}.icon,
-                            SUM(${this.table_record_name}.price) as total_price 
-                        FROM 
-                            ${this.table_name} 
-                        JOIN ${this.table_account_name}
-                            ON ${this.table_account_name}.id = ${this.table_name}.id_account
-                        JOIN ${this.table_record_name}
-                            ON ${this.table_record_name}.id = ${this.table_name}.id_record
-                        JOIN ${this.table_category_name}
-                            ON ${this.table_category_name}.id = ${this.table_name}.id_category
-                        WHERE LOWER(type) = 'credit' AND ${this.table_category_name}.id = '${TRANSFERT_CATEGORY_ID}'
-                    `)
-        
-                }*/
-
-            
                 results_credit = await this.db.get(`
                     SELECT 
                         transactions.id, id_account, id_record, SUM(records.amount) as total_price 
@@ -366,39 +343,19 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
                     JOIN records
                         ON records.id = transactions.id_record
                     JOIN categories
-                        ON categories.id = transactions.id_category 
+                        ON categories.id = transactions.id_category
                     ${where_credit}
                     `
                 );
             }
 
-            // let transfert_credit =  result_total_credit_transfert !== null ? result_total_credit_transfert['total_price'] : 0;
+
             let credit =  results_credit !== null ? results_credit['total_price'] : 0;
 
             let results_debit:any = null;
             let result_total_debit_transfert:any = null;
 
-            if (!isEmpty(where_debit)) { 
-                /*if (where_id_catogry.includes(TRANSFERT_CATEGORY_ID) || filter_id_cat.length === 0) {
-                    result_total_debit_transfert = await this.db.get(`
-                        SELECT 
-                            ${this.table_name}.id, 
-                            ${this.table_account_name}.id as account_id,  ${this.table_account_name}.title as account_title, ${this.table_account_name}.credit_value, ${this.table_account_name}.credit_limit, 
-                            ${this.table_record_name}.id  as record_id, ${this.table_record_name}.price, ${this.table_record_name}.date, ${this.table_record_name}.description, ${this.table_record_name}.type,
-                            ${this.table_category_name}.title  as category_title, ${this.table_category_name}.icon,
-                            SUM(${this.table_record_name}.price) as total_price 
-                        FROM 
-                            ${this.table_name} 
-                        JOIN ${this.table_account_name}
-                            ON ${this.table_account_name}.id = ${this.table_name}.id_account
-                        JOIN ${this.table_record_name}
-                            ON ${this.table_record_name}.id = ${this.table_name}.id_record
-                        JOIN ${this.table_category_name}
-                            ON ${this.table_category_name}.id = ${this.table_name}.id_category
-                        WHERE LOWER(type) = 'debit' AND ${this.table_category_name}.id = '${TRANSFERT_CATEGORY_ID}'
-                    `)
-                }*/
-                      
+            if (!isEmpty(where_debit)) {             
                 results_debit = await this.db.get(`
                     SELECT 
                         transactions.id, id_account, id_record, SUM(records.amount) as total_price 
@@ -409,7 +366,7 @@ export class SqlLiteTransaction extends SqlLiteRepository implements Transaction
                     JOIN records
                         ON records.id = transactions.id_record
                     JOIN categories
-                        ON categories.id = transactions.id_category 
+                        ON categories.id = transactions.id_category
                     ${where_debit}
                     `
                 );

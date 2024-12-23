@@ -1,0 +1,30 @@
+.modal-add-new-transaction {
+    background-color: white;
+    padding-top: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.transaction-content {
+    min-width: 350px;
+}
+
+.nav-modal-add-new-transaction .nav-btn {
+    text-align: center;
+    width: 100%;
+    padding: 0.8rem;
+    color: white;
+    background-color: #CACACA;
+    cursor: pointer;
+}
+
+.nav-modal-add-new-transaction .is-active-nav-btn {
+    background-color: #313343;
+}
+
+
+.modal-body {
+    
+}
