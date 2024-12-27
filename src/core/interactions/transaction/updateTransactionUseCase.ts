@@ -110,14 +110,24 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
                 transaction.category_ref = new_category.id;
             }
 
-            if (!isEmpty(request.tags_ref)) {
+            if (request.tags_ref !== null) {
                 for (let tag_ref of transaction.getTags()) {
-                    if (request.tags_ref!.includes(tag_ref))
+                    if (!request.tags_ref!.includes(tag_ref))
                         transaction.deleteTag(tag_ref) 
+                }
+
+                for (let tag_ref of request.tags_ref!){
+                    let tag = await this.tag_repository.get(tag_ref)
+
+                    if (tag == null)
+                        throw new ValidationError('This tag not exist');
+
+                    if (!transaction.getTags().includes(tag_ref))
+                        transaction.addTag(tag_ref)
                 }
             }
 
-            if (isEmpty(request.new_tags_ref)) {
+            if (!isEmpty(request.new_tags_ref)) {
                 for(let i = 0; i < request.new_tags_ref.length; i++) {
                     if (isEmpty(request.new_tags_ref[i]))
                         throw new ValidationError('A tag have not value')
@@ -126,7 +136,7 @@ export class UpdateTransactionUseCase implements IUpdateTransactionUseCase {
                     let is_save = await this.tag_repository.save(new Tag(new_id_tag, request.new_tags_ref[i], null))
 
                     if (is_save)
-                        throw new Error(`Tag ${request.new_tags_ref[i]}not saved`)
+                        throw new Error(`Tag ${request.new_tags_ref[i]} not saved`)
 
                     transaction.addTag(new_id_tag)
                 }

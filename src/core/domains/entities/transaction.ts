@@ -53,10 +53,10 @@ export class Transaction {
         if (this.tags_ref.includes(tag))
             throw new EntityError('Tag already exist, in transaction. Not duplicate allow.')
         this.__add_event_tag.push(tag)
-        if (this.__delete_event_tag.includes(tag)) {
-            let index_add_tag = this.__add_event_tag.indexOf(tag)
-            this.__add_event_tag.splice(index_add_tag, 1)
-        }
+        // if (this.__delete_event_tag.includes(tag)) {
+        //     let index_add_tag = this.__add_event_tag.indexOf(tag)
+        //     this.__add_event_tag.splice(index_add_tag, 1)
+        // }
         this.tags_ref.push(tag)
     }
 
@@ -66,10 +66,10 @@ export class Transaction {
             throw new EntityError('Tag do not exist, in Transaction.')
 
         this.__delete_event_tag.push(tag)
-        if (this.__delete_event_tag.includes(tag)) {
-            let index_del_tag = this.__delete_event_tag.indexOf(tag)
-            this.__delete_event_tag.splice(index_del_tag, 1)
-        }
+        // if (this.__delete_event_tag.includes(tag)) {
+        //     let index_del_tag = this.__delete_event_tag.indexOf(tag)
+        //     this.__delete_event_tag.splice(index_del_tag, 1)
+        // }
         this.tags_ref.splice(index_tag, 1)
     }
 

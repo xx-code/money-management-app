@@ -49,7 +49,7 @@ export default function Transactions() {
     }
 
     function filterTransaction(inputFilter: FilterInput) {
-        setupRequestFetching(pagination.currentPage, accountSelected, inputFilter)
+        setupRequestFetching(1, accountSelected, inputFilter)
         setFilter(inputFilter)
     }
 

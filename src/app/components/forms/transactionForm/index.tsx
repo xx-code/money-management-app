@@ -305,6 +305,8 @@ export default function TransactionForm({accounts, categories, tags, transaction
                     amount: inputTransaction.amount
                 }
 
+                console.log(request)
+
                 await axios.put(`/api/transaction/${transaction!.id}`, request)
                 onSubmit()
             }
