@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { mapperTransactionType } from "@/core/domains/constants";
 import { Transaction } from "@/core/domains/entities/transaction";
 import { TransactionModel } from "@/app/api/models/transaction";
+import { cleanTransactionsPageStorage } from "@/app/_utils/cleanLocalStorage";
 
 
 export default function Home() {
@@ -145,6 +146,7 @@ export default function Home() {
                   <TransactionPaginations
                     transactions={transactions.map(trans => mapperTransaction(trans))}
                     onEdit={(id: string) => {
+                      cleanTransactionsPageStorage()
                       router.push(`/transaction/${id}`)
                     }}
                     onDelete={deleteTransaction}

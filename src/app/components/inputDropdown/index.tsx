@@ -34,6 +34,7 @@ type Props = {
 
 export default function InputDropDown({type, value, name, onChange, label, options = [], onClickOption, error, overOnBlur, placeholder="", remover = false}: Props) {
     const [focused, setFocused] = useState(false);
+    const [isBlur, setIsBlur] = useState(true)  // Patch: When we write tag to search and we don't want value in search by overOnBlur 
 
     const onFocus = () => {
         setFocused(true)
@@ -41,17 +42,24 @@ export default function InputDropDown({type, value, name, onChange, label, optio
 
     const onBlur = () => {
         if (overOnBlur !== undefined) {
-            overOnBlur();
+            overOnBlur(); 
         }
         setTimeout(() => {
+            setIsBlur(true)
             setFocused(false);
         }, 150);
     }
 
     const handleClickOutside = () => {
         setFocused(false)
-        if (onBlur)
+        if (onBlur && !isBlur)
             onBlur()
+        setIsBlur(true)
+    }
+
+    const handleClickOption = (name:any, value: string) => {
+        setIsBlur(false)
+        onClickOption(name, value)
     }
 
     const ref = useOutsideClick(handleClickOutside)
@@ -81,7 +89,7 @@ export default function InputDropDown({type, value, name, onChange, label, optio
                         { options.map((option, index) =>{ 
                             return (
                                 <div key={index} className='option' 
-                                    onClick={() => onClickOption(name, option.value)}>
+                                    onClick={() => handleClickOption(name, option.value)}>
                                         {option.displayValue}
                                 </div> 
                             )
@@ -90,7 +98,7 @@ export default function InputDropDown({type, value, name, onChange, label, optio
                         {
                             remover ?
                                 <div className='option' 
-                                    onClick={() => onClickOption(name, "")}>
+                                    onClick={() => handleClickOption(name, "")}>
                                         Aucun
                                 </div> 
                                 :

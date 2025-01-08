@@ -131,6 +131,7 @@ function reducer(state: TransactionInput, action: ActionInput) {
             tags.push(action.value)
             return {
                 ...state,
+                tag: '',
                 tagsSelected: tags
             }
         } 
@@ -194,7 +195,6 @@ export default function TransactionForm({accounts, categories, tags, transaction
         }
 
         if (name === "tag") {
-            dispatch({type: "update_field", value: "", field: 'tag'})
             dispatch({type: "add_tag", value: value, field: ''})
             setSearchTag(tags)
         }

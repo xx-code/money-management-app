@@ -12,9 +12,10 @@ import { useCategories, useTags } from "../hooks/system";
 import { RequestGetPagination } from "@/core/interactions/transaction/getPaginationTransactionUseCase";
 import { useRouter } from "next/navigation";
 import { mapperTransactionType } from "@/core/domains/constants";
-import { Money } from "@/core/domains/helpers";
+import { isEmpty, Money } from "@/core/domains/helpers";
 import { CardTranscationValue } from "@/app/components/cardTransaction";
 import { TransactionModel } from '@/app/api/models/transaction';
+import { cleanTransactionsPageStorage } from '@/app/_utils/cleanLocalStorage';
 
 export default function Transactions() {
     const { accounts, loading, error, fetchAllAccounts } = useAccountsFetching()
@@ -84,6 +85,14 @@ export default function Transactions() {
         }
     }
 
+    async function showTransaction(id: string, filter: FilterInput) {
+        localStorage.setItem('currentPage', pagination.currentPage.toString())
+        localStorage.setItem('tag_filter', filter.tagsSelected.toString())
+        localStorage.setItem('category_filter', filter.categoriesSelected.toString())
+
+        router.push(`/transaction/${id}`)
+    }
+
     const renderFilterForm = () => {
         if (hookCategories.loading || hookTags.loading) {
             return <div>Loading...</div>
@@ -99,6 +108,8 @@ export default function Transactions() {
         )
     }
 
+
+
     const renderTransactionPagination = () => {
         if (errorPagination) {
             return <h1>{errorPagination}</h1>
@@ -107,9 +118,7 @@ export default function Transactions() {
         return (
             <TransactionPaginations
                 transactions={transactions.map(trans => mapperTransaction(trans))}
-                onEdit={(id: string) => {
-                    router.push(`/transaction/${id}`)
-                }}
+                onEdit={(id: string) => showTransaction(id, filter)}
                 onDelete={deleteTransaction}
                 currentPage={pagination.currentPage}
                 maxPage={pagination.maxPage}
@@ -139,7 +148,30 @@ export default function Transactions() {
        hookCategories.fetchCategories()
        hookTags.fetchTags()
        fetchAllAccounts()
-       setupRequestFetching(1, 0, filter)
+
+       let inputFiler = filter
+       let currentPage = 1 
+
+       if (!isEmpty(localStorage.getItem('currentPage')))
+            currentPage = Number(localStorage.getItem('currentPage'))
+       console.log(currentPage)
+       if (!isEmpty(localStorage.getItem('category_filter'))) {
+            let catFilter = localStorage.getItem('category_filter')!.split(',')
+            inputFiler.categoriesSelected = catFilter
+            setFilter({...filter, categoriesSelected: catFilter})
+       }
+            
+
+       if (!isEmpty(localStorage.getItem('tag_filter'))) {
+            let tagFilter = localStorage.getItem('tag_filter')!.split(',')
+            inputFiler.tagsSelected = tagFilter 
+            setFilter({...filter, tagsSelected: tagFilter})
+       }
+
+       console.log(inputFiler)
+
+       setupRequestFetching(currentPage, 0, inputFiler)
+       cleanTransactionsPageStorage()
     }, [])
 
     return (
