@@ -27,7 +27,8 @@ export default function CardWithProgressBar({title, description, targetPrice, cu
     let radius = (size - stroke)/2;
     let circumference = (radius) * Math.PI * 2;
     let dash = (percent: number) => (percent * circumference) / 100;
-    let strokeDash = (percent: number) => circumference - dash(percent);
+
+    let leftMoney = Object.assign(targetPrice).subtract(currentPrice)
 
     return (
         <div className='card-budget'>
@@ -44,7 +45,7 @@ export default function CardWithProgressBar({title, description, targetPrice, cu
                     </div>
                     <div className='card-budget-info-bar'>
                         <div className='card-budget-info-bar-sild'>
-                            <p className='current'>{currentPrice.toString()}</p>
+                            <p className='current'>{ leftMoney.toString()}</p>
                             <div className='bar-load' style={{width: `${percent}%`, height: '100%'}}></div>
                             <p className='target'>{targetPrice.toString()}</p>
                         </div>

@@ -1,7 +1,7 @@
 import { BudgetRepository } from "../../repositories/budgetRepository";
 import { TransactionRepository } from "../../repositories/transactionRepository";
 import { CategoryRepository } from "../../repositories/categoryRepository";
-import { determinedStartEndDateBudget } from "@/core/domains/helpers";
+import { determinedStartEndDate, determinedStartEndDateBudget, isEmpty } from "@/core/domains/helpers";
 import { TagRepository } from "@/core/repositories/tagRepository";
 import { TransactionType } from "@/core/domains/entities/transaction";
 
@@ -80,14 +80,14 @@ export class GetAllBudgetUseCase implements IGetAllBudgetUseCase {
                let start_date = budget.date_start
                let end_date = budget.date_update
 
-               if (budget.period)  {
-                   let current_date_budget = determinedStartEndDateBudget(budget.period!, budget.period_time!)
-                   start_date = current_date_budget.start_date
-                   end_date = current_date_budget.end_date
-                   if (budget.date_end && end_date.compare(budget.date_end) < 0)
-                       end_date = budget.date_end
+               if (!isEmpty(budget.period))  {
+                //    let current_date_budget = determinedStartEndDate(start_date.toDate(), budget.period!, budget.period_time!)
+                //    start_date = current_date_budget.start_date
+                //    end_date = current_date_budget.end_date
+                end_date = budget.date_update
+                if (budget.date_end && end_date.compare(budget.date_end) < 0)
+                    end_date = budget.date_end
                }
-
 
                let categories: BudgetCategoryOutput[] =  []
                for(let category_id of budget.categories) {
@@ -95,6 +95,8 @@ export class GetAllBudgetUseCase implements IGetAllBudgetUseCase {
                    if (category !== null)
                        categories.push({id: category.id, title: category.getTitle(), icon: category.icon, color: category.color})
                }
+
+               console.log(end_date)
 
 
                let tags: BudgetTagOutput[] = []
